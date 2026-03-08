@@ -83,8 +83,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        setTimeout(() => {
-          fetchProfile(session.user.id);
+        setTimeout(async () => {
+          const profileData = await fetchProfile(session.user.id);
+          await syncPendingSignupRole(session.user.id, profileData?.role);
           checkAdmin(session.user.id);
         }, 0);
       } else {
