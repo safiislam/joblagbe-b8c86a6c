@@ -15,6 +15,9 @@ import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Companies from "./pages/Companies";
 import CompanyProfile from "./pages/CompanyProfile";
+import Jobs from "./pages/Jobs";
+import Courses from "./pages/Courses";
+import Ebooks from "./pages/Ebooks";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
