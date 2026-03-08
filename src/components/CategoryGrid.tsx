@@ -21,7 +21,6 @@ const CategoryGrid = () => {
     },
   });
 
-  // Get job counts per category
   const { data: jobCounts } = useQuery({
     queryKey: ["job-counts-by-category"],
     queryFn: async () => {
@@ -33,26 +32,28 @@ const CategoryGrid = () => {
   });
 
   return (
-    <section className="bg-secondary/50 py-16">
+    <section className="bg-secondary/40 py-16">
       <div className="container">
-        <h2 className="text-center text-2xl font-bold md:text-3xl">Browse by Category</h2>
-        <p className="mt-2 text-center text-muted-foreground">Explore opportunities in your field</p>
+        <div className="text-center">
+          <h2 className="text-2xl font-bold md:text-3xl font-bangla">ক্যাটাগরি অনুযায়ী খুঁজুন</h2>
+          <p className="mt-2 text-muted-foreground">Explore opportunities in your field</p>
+        </div>
 
-        <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+        <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 sm:gap-4">
           {categories?.map((cat) => {
             const Icon = iconMap[cat.icon] || Monitor;
             const count = jobCounts?.[cat.id] || 0;
             return (
               <button
                 key={cat.id}
-                className="group flex flex-col items-center gap-3 rounded-xl border bg-card p-5 shadow-card transition-all hover:-translate-y-1 hover:shadow-elevated"
+                className="group flex flex-col items-center gap-3 rounded-2xl border bg-card p-4 shadow-card transition-all hover:-translate-y-1 hover:shadow-elevated sm:p-5"
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-all group-hover:bg-primary group-hover:text-primary-foreground group-hover:scale-110">
                   <Icon className="h-6 w-6" />
                 </div>
                 <div className="text-center">
-                  <p className="text-sm font-semibold">{cat.name}</p>
-                  <p className="text-xs text-muted-foreground">{count} jobs</p>
+                  <p className="text-sm font-semibold leading-tight">{cat.name}</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">{count} jobs</p>
                 </div>
               </button>
             );

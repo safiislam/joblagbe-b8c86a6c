@@ -1,26 +1,41 @@
-import { Search, MapPin } from "lucide-react";
+import { Search, MapPin, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+const stats = [
+  { value: "১০,০০০+", label: "চাকরির বিজ্ঞপ্তি" },
+  { value: "৫,০০০+", label: "কোম্পানি" },
+  { value: "১ লক্ষ+", label: "চাকরিপ্রার্থী" },
+];
 
 const HeroSection = () => {
   return (
-    <section className="relative overflow-hidden bg-background py-16 md:py-24">
-      {/* Subtle background pattern */}
+    <section className="relative overflow-hidden bg-gradient-to-b from-primary/5 via-background to-background py-14 md:py-20">
+      {/* Decorative dots */}
       <div className="absolute inset-0 opacity-[0.03]" style={{
         backgroundImage: "radial-gradient(hsl(var(--primary)) 1px, transparent 1px)",
         backgroundSize: "24px 24px",
       }} />
 
-      <div className="container relative text-center">
-        <h1 className="mx-auto max-w-3xl font-bangla text-3xl font-bold leading-tight text-foreground md:text-5xl animate-fade-in">
-          আপনার ক্যারিয়ারের পরবর্তী ধাপ শুরু হোক এখানে
-        </h1>
-        <p className="mx-auto mt-4 max-w-xl text-muted-foreground md:text-lg animate-fade-in" style={{ animationDelay: "0.1s" }}>
-          Thousands of jobs from top employers across Bangladesh. Find your dream career today.
-        </p>
+      <div className="container relative">
+        <div className="mx-auto max-w-3xl text-center">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border bg-card px-4 py-1.5 text-sm shadow-card animate-fade-in">
+            <TrendingUp className="h-4 w-4 text-accent" />
+            <span className="text-muted-foreground">বাংলাদেশের #১ জব পোর্টাল</span>
+          </div>
 
+          <h1 className="font-bangla text-3xl font-bold leading-tight text-foreground md:text-5xl lg:text-[3.5rem] animate-fade-in">
+            আপনার ক্যারিয়ারের পরবর্তী ধাপ{" "}
+            <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">শুরু হোক এখানে</span>
+          </h1>
+          <p className="mx-auto mt-4 max-w-xl text-muted-foreground md:text-lg animate-fade-in" style={{ animationDelay: "0.1s" }}>
+            Thousands of jobs from top employers across Bangladesh. Find your dream career today.
+          </p>
+        </div>
+
+        {/* Search bar */}
         <div className="mx-auto mt-8 max-w-2xl animate-fade-in" style={{ animationDelay: "0.2s" }}>
-          <div className="flex flex-col gap-3 rounded-xl border bg-card p-3 shadow-elevated md:flex-row md:items-center md:gap-2 md:p-2">
-            <div className="flex flex-1 items-center gap-2 rounded-lg bg-secondary px-3 py-2.5">
+          <div className="flex flex-col gap-3 rounded-2xl border bg-card p-3 shadow-elevated md:flex-row md:items-center md:gap-2 md:p-2">
+            <div className="flex flex-1 items-center gap-2 rounded-xl bg-secondary px-4 py-3">
               <Search className="h-5 w-5 shrink-0 text-muted-foreground" />
               <input
                 type="text"
@@ -28,7 +43,7 @@ const HeroSection = () => {
                 className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
               />
             </div>
-            <div className="flex flex-1 items-center gap-2 rounded-lg bg-secondary px-3 py-2.5">
+            <div className="flex flex-1 items-center gap-2 rounded-xl bg-secondary px-4 py-3">
               <MapPin className="h-5 w-5 shrink-0 text-muted-foreground" />
               <input
                 type="text"
@@ -36,18 +51,29 @@ const HeroSection = () => {
                 className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
               />
             </div>
-            <Button className="bg-accent text-accent-foreground hover:bg-accent/90 px-8 py-2.5 text-base font-semibold rounded-lg">
+            <Button className="bg-accent text-accent-foreground hover:bg-accent/90 px-8 py-3 text-base font-semibold rounded-xl">
               Search
             </Button>
           </div>
         </div>
 
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-2 text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: "0.3s" }}>
+        {/* Popular tags */}
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: "0.3s" }}>
           <span>Popular:</span>
-          {["Software Engineer", "Marketing", "Accountant", "Designer"].map((tag) => (
-            <button key={tag} className="rounded-full border px-3 py-1 text-xs transition-colors hover:border-primary hover:text-primary">
+          {["Software Engineer", "Marketing", "Accountant", "Designer", "Data Entry"].map((tag) => (
+            <button key={tag} className="rounded-full border bg-card px-3 py-1 text-xs transition-colors hover:border-primary hover:text-primary hover:shadow-card">
               {tag}
             </button>
+          ))}
+        </div>
+
+        {/* Stats */}
+        <div className="mt-10 flex justify-center gap-8 md:gap-16 animate-fade-in" style={{ animationDelay: "0.4s" }}>
+          {stats.map((s) => (
+            <div key={s.label} className="text-center">
+              <p className="text-2xl font-bold text-primary md:text-3xl font-bangla">{s.value}</p>
+              <p className="mt-1 text-xs text-muted-foreground font-bangla md:text-sm">{s.label}</p>
+            </div>
           ))}
         </div>
       </div>
