@@ -11,6 +11,10 @@ import PostJob from "./pages/PostJob";
 import Admin from "./pages/Admin";
 import SeekerDashboard from "./pages/SeekerDashboard";
 import EmployerDashboard from "./pages/EmployerDashboard";
+import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
+import Companies from "./pages/Companies";
+import CompanyProfile from "./pages/CompanyProfile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +34,10 @@ const App = () => (
             <Route path="/admin" element={<Admin />} />
             <Route path="/my-applications" element={<SeekerDashboard />} />
             <Route path="/employer-dashboard" element={<EmployerDashboard />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
+            <Route path="/companies" element={<Companies />} />
+            <Route path="/company/:id" element={<CompanyProfile />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
