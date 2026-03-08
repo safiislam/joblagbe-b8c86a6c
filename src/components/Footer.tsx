@@ -1,4 +1,5 @@
 import { Facebook, Youtube, Mail, Phone } from "lucide-react";
+import { Link } from "react-router-dom";
 import logo from "@/assets/logo.png";
 
 const Footer = () => {
@@ -22,18 +23,18 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold">Job Seekers</h4>
             <ul className="mt-3 space-y-2.5 text-sm text-muted-foreground">
-              <li><a href="#jobs" className="transition-colors hover:text-primary">Browse Jobs</a></li>
-              <li><a href="#" className="transition-colors hover:text-primary">Companies</a></li>
-              <li><a href="#" className="transition-colors hover:text-primary">Career Advice</a></li>
-              <li><a href="#" className="transition-colors hover:text-primary">Courses</a></li>
+              <li><a href="/#jobs" className="transition-colors hover:text-primary">Browse Jobs</a></li>
+              <li><Link to="/companies" className="transition-colors hover:text-primary">Companies</Link></li>
+              <li><Link to="/blog" className="transition-colors hover:text-primary">Career Tips</Link></li>
+              <li><Link to="/my-applications" className="transition-colors hover:text-primary">My Applications</Link></li>
             </ul>
           </div>
           <div>
             <h4 className="font-semibold">Employers</h4>
             <ul className="mt-3 space-y-2.5 text-sm text-muted-foreground">
-              <li><a href="/post-job" className="transition-colors hover:text-primary">Post a Job</a></li>
-              <li><a href="#" className="transition-colors hover:text-primary">Pricing</a></li>
-              <li><a href="#" className="transition-colors hover:text-primary">Employer Dashboard</a></li>
+              <li><Link to="/post-job" className="transition-colors hover:text-primary">Post a Job</Link></li>
+              <li><Link to="/employer-dashboard" className="transition-colors hover:text-primary">Employer Dashboard</Link></li>
+              <li><Link to="/companies" className="transition-colors hover:text-primary">All Companies</Link></li>
             </ul>
           </div>
           <div>
@@ -41,8 +42,7 @@ const Footer = () => {
             <ul className="mt-3 space-y-2.5 text-sm text-muted-foreground">
               <li className="flex items-center gap-2"><Mail className="h-4 w-4" /> support@joblagbe.com</li>
               <li className="flex items-center gap-2"><Phone className="h-4 w-4" /> +880 1XXX-XXXXXX</li>
-              <li><a href="#" className="transition-colors hover:text-primary">About Us</a></li>
-              <li><a href="#" className="transition-colors hover:text-primary">Privacy Policy</a></li>
+              <li><Link to="/blog" className="transition-colors hover:text-primary">Blog</Link></li>
             </ul>
           </div>
         </div>
