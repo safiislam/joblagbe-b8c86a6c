@@ -71,22 +71,38 @@ const EmployerDashboard = () => {
       
       if (!data || data.length === 0) return [];
       
-      // Fetch profiles for applicants
       const userIds = data.map(a => a.user_id);
       const { data: profiles } = await supabase
         .from("profiles")
-        .select("user_id, full_name")
+        .select("user_id, full_name, resume_url")
         .in("user_id", userIds);
       
-      const profileMap: Record<string, string | null> = {};
-      profiles?.forEach(p => { profileMap[p.user_id] = p.full_name; });
+      const profileMap: Record<string, { full_name: string | null; resume_url: string | null }> = {};
+      profiles?.forEach(p => { profileMap[p.user_id] = { full_name: p.full_name, resume_url: p.resume_url }; });
       
       return data.map(a => ({
         ...a,
-        profiles: { full_name: profileMap[a.user_id] || null }
+        profiles: profileMap[a.user_id] || { full_name: null, resume_url: null }
       })) as ApplicationRow[];
     },
     enabled: !!selectedJobId,
+  });
+
+  const updateStatus = useMutation({
+    mutationFn: async ({ appId, status }: { appId: string; status: string }) => {
+      const { error } = await supabase
+        .from("applications")
+        .update({ status })
+        .eq("id", appId);
+      if (error) throw error;
+    },
+    onSuccess: (_, { status }) => {
+      queryClient.invalidateQueries({ queryKey: ["job-applicants", selectedJobId] });
+      toast.success(`Application ${status}`);
+    },
+    onError: () => {
+      toast.error("Failed to update status");
+    },
   });
 
   if (loading || !user) return null;
