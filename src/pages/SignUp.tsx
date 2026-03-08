@@ -43,11 +43,13 @@ const SignUp = () => {
 
   const handleGoogleSignUp = async () => {
     setGoogleLoading(true);
+    localStorage.setItem("pending_signup_role", role);
     const { error } = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+      redirect_uri: `${window.location.origin}/?role=${role}`,
     });
     setGoogleLoading(false);
     if (error) {
+      localStorage.removeItem("pending_signup_role");
       toast.error("Google sign-in failed. Please try again.");
     }
   };
