@@ -10,7 +10,7 @@ const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 const AIChatWidget = () => {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([
-    { role: "assistant", content: "আসসালামু আলাইকুম! 👋 আমি Job Lagbe AI। চাকরি খোঁজা, আবেদন, বা ক্যারিয়ার নিয়ে যেকোনো প্রশ্ন করুন!" },
+    { role: "assistant", content: "আসসালামু আলাইকুম! 👋 আমি **Jobu** — আপনার ক্যারিয়ার সহায়ক। চাকরি খোঁজা, আবেদন, সার্কুলার, বা ক্যারিয়ার নিয়ে যেকোনো প্রশ্ন করুন!" },
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
