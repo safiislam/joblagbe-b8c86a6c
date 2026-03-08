@@ -1,4 +1,4 @@
-import { MapPin, Clock, Banknote, Building2, ChevronRight, Briefcase } from "lucide-react";
+import { MapPin, Clock, Banknote, Building2, ChevronRight, Briefcase, Search, Filter, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -7,6 +7,13 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type JobRow = {
   id: string;
@@ -19,6 +26,7 @@ type JobRow = {
   description: string;
   requirements: string[] | null;
   created_at: string;
+  category_id: string | null;
   companies: { name: string; location: string | null } | null;
 };
 
@@ -29,20 +37,51 @@ const formatSalary = (min: number | null, max: number | null) => {
   return `Up to ৳${max!.toLocaleString()}`;
 };
 
+const JOB_TYPES = ["Full-time", "Part-time", "Contract", "Remote", "Internship"];
+
 const JobBoard = () => {
   const [selectedJob, setSelectedJob] = useState<JobRow | null>(null);
+  const [keyword, setKeyword] = useState("");
+  const [locationFilter, setLocationFilter] = useState("");
+  const [jobType, setJobType] = useState("all");
+  const [categoryId, setCategoryId] = useState("all");
+  const [showFilters, setShowFilters] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const { data: jobs, isLoading } = useQuery({
-    queryKey: ["jobs"],
+  const { data: categories } = useQuery({
+    queryKey: ["categories"],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await supabase.from("categories").select("*").order("name");
+      return data ?? [];
+    },
+  });
+
+  const { data: jobs, isLoading } = useQuery({
+    queryKey: ["jobs", keyword, locationFilter, jobType, categoryId],
+    queryFn: async () => {
+      let query = supabase
         .from("jobs")
         .select("*, companies(name, location)")
         .eq("is_active", true)
+        .eq("is_approved", true)
         .order("created_at", { ascending: false })
-        .limit(10);
+        .limit(20);
+
+      if (keyword.trim()) {
+        query = query.ilike("title", `%${keyword.trim()}%`);
+      }
+      if (locationFilter.trim()) {
+        query = query.ilike("location", `%${locationFilter.trim()}%`);
+      }
+      if (jobType !== "all") {
+        query = query.eq("job_type", jobType);
+      }
+      if (categoryId !== "all") {
+        query = query.eq("category_id", categoryId);
+      }
+
+      const { data } = await query;
       return (data as unknown as JobRow[]) ?? [];
     },
   });
@@ -62,18 +101,85 @@ const JobBoard = () => {
     }
   };
 
+  const hasActiveFilters = keyword || locationFilter || jobType !== "all" || categoryId !== "all";
+
+  const clearFilters = () => {
+    setKeyword("");
+    setLocationFilter("");
+    setJobType("all");
+    setCategoryId("all");
+  };
+
   return (
     <section className="py-16" id="jobs">
       <div className="container">
-        <div className="flex items-end justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 className="text-2xl font-bold md:text-3xl font-bangla">সর্বশেষ চাকরি</h2>
             <p className="mt-1 text-muted-foreground">Hand-picked opportunities updated daily</p>
           </div>
-          <Button variant="ghost" className="hidden gap-1 text-primary md:flex">
-            View all jobs <ChevronRight className="h-4 w-4" />
+          <Button
+            variant="outline"
+            className="gap-2 self-start sm:self-auto"
+            onClick={() => setShowFilters(!showFilters)}
+          >
+            <Filter className="h-4 w-4" />
+            {showFilters ? "Hide Filters" : "Filters"}
+            {hasActiveFilters && (
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-accent-foreground">!</span>
+            )}
           </Button>
         </div>
+
+        {/* Search & Filter bar */}
+        {showFilters && (
+          <div className="mt-6 rounded-2xl border bg-card p-4 shadow-card animate-fade-in" style={{ animationDuration: "0.2s" }}>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="flex items-center gap-2 rounded-xl bg-secondary px-3 py-2.5">
+                <Search className="h-4 w-4 text-muted-foreground shrink-0" />
+                <input
+                  type="text"
+                  value={keyword}
+                  onChange={(e) => setKeyword(e.target.value)}
+                  placeholder="Job title or keyword"
+                  className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+                />
+              </div>
+              <div className="flex items-center gap-2 rounded-xl bg-secondary px-3 py-2.5">
+                <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
+                <input
+                  type="text"
+                  value={locationFilter}
+                  onChange={(e) => setLocationFilter(e.target.value)}
+                  placeholder="Location"
+                  className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+                />
+              </div>
+              <Select value={jobType} onValueChange={setJobType}>
+                <SelectTrigger className="rounded-xl bg-secondary border-0"><SelectValue placeholder="Job Type" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Types</SelectItem>
+                  {JOB_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              <Select value={categoryId} onValueChange={setCategoryId}>
+                <SelectTrigger className="rounded-xl bg-secondary border-0"><SelectValue placeholder="Category" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  {categories?.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            {hasActiveFilters && (
+              <div className="mt-3 flex items-center gap-2">
+                <Button variant="ghost" size="sm" onClick={clearFilters} className="gap-1 text-destructive hover:text-destructive">
+                  <X className="h-3 w-3" /> Clear all filters
+                </Button>
+                <span className="text-xs text-muted-foreground">{jobs?.length ?? 0} results found</span>
+              </div>
+            )}
+          </div>
+        )}
 
         {isLoading ? (
           <div className="mt-8 grid gap-4 lg:grid-cols-5">
@@ -87,7 +193,7 @@ const JobBoard = () => {
         ) : (
           <div className="mt-8 grid gap-6 lg:grid-cols-5">
             {/* Job list */}
-            <div className="space-y-3 lg:col-span-2 max-h-[600px] overflow-y-auto pr-1 scrollbar-thin">
+            <div className="space-y-3 lg:col-span-2 max-h-[600px] overflow-y-auto pr-1">
               {jobs?.map((job) => (
                 <button
                   key={job.id}
@@ -121,7 +227,8 @@ const JobBoard = () => {
               {jobs?.length === 0 && (
                 <div className="flex flex-col items-center py-14 text-muted-foreground">
                   <Briefcase className="mb-3 h-10 w-10 opacity-30" />
-                  <p>No jobs found yet.</p>
+                  <p className="font-medium">No jobs found</p>
+                  <p className="mt-1 text-sm">Try adjusting your filters</p>
                 </div>
               )}
             </div>

@@ -117,6 +117,7 @@ export type Database = {
           description: string
           id: string
           is_active: boolean
+          is_approved: boolean
           job_type: string
           location: string
           requirements: string[] | null
@@ -133,6 +134,7 @@ export type Database = {
           description: string
           id?: string
           is_active?: boolean
+          is_approved?: boolean
           job_type?: string
           location: string
           requirements?: string[] | null
@@ -149,6 +151,7 @@ export type Database = {
           description?: string
           id?: string
           is_active?: boolean
+          is_approved?: boolean
           job_type?: string
           location?: string
           requirements?: string[] | null
