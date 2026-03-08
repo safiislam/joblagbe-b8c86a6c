@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Briefcase } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -30,8 +30,8 @@ const Login = () => {
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 px-4">
       <div className="w-full max-w-md rounded-xl border bg-card p-8 shadow-elevated">
         <div className="mb-6 text-center">
-          <Link to="/" className="inline-flex items-center gap-2 text-xl font-bold">
-            <Briefcase className="h-6 w-6 text-accent" /> Job Lagbe
+          <Link to="/">
+            <img src={logo} alt="Job Lagbe" className="h-12 w-auto" />
           </Link>
           <p className="mt-2 text-muted-foreground">Login to your account</p>
         </div>
