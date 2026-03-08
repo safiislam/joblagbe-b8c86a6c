@@ -41,6 +41,9 @@ const App = () => (
             <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/companies" element={<Companies />} />
             <Route path="/company/:id" element={<CompanyProfile />} />
+            <Route path="/jobs" element={<Jobs />} />
+            <Route path="/courses" element={<Courses />} />
+            <Route path="/ebooks" element={<Ebooks />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

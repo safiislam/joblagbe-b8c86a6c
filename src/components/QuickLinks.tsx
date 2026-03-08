@@ -56,7 +56,7 @@ const QuickLinks = () => {
               <span className="flex items-center gap-1 text-xs font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
                 দেখুন <ArrowRight className="h-3 w-3" />
               </span>
-            </a>
+            </Link>
           ))}
         </div>
       </div>
