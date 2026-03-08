@@ -3,11 +3,12 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
-import { Briefcase, Plus, Users, Clock, CheckCircle, Eye, Building2, MapPin } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { Briefcase, Plus, Users, Clock, CheckCircle, Eye, XCircle, UserCheck, FileText } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 type EmployerJob = {
   id: string;
@@ -24,11 +25,13 @@ type ApplicationRow = {
   status: string;
   created_at: string;
   cover_letter: string | null;
-  profiles: { full_name: string | null } | null;
+  user_id: string;
+  profiles: { full_name: string | null; resume_url: string | null } | null;
 };
 
 const EmployerDashboard = () => {
   const { user, profile, loading } = useAuth();
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
 
@@ -68,22 +71,38 @@ const EmployerDashboard = () => {
       
       if (!data || data.length === 0) return [];
       
-      // Fetch profiles for applicants
       const userIds = data.map(a => a.user_id);
       const { data: profiles } = await supabase
         .from("profiles")
-        .select("user_id, full_name")
+        .select("user_id, full_name, resume_url")
         .in("user_id", userIds);
       
-      const profileMap: Record<string, string | null> = {};
-      profiles?.forEach(p => { profileMap[p.user_id] = p.full_name; });
+      const profileMap: Record<string, { full_name: string | null; resume_url: string | null }> = {};
+      profiles?.forEach(p => { profileMap[p.user_id] = { full_name: p.full_name, resume_url: p.resume_url }; });
       
       return data.map(a => ({
         ...a,
-        profiles: { full_name: profileMap[a.user_id] || null }
+        profiles: profileMap[a.user_id] || { full_name: null, resume_url: null }
       })) as ApplicationRow[];
     },
     enabled: !!selectedJobId,
+  });
+
+  const updateStatus = useMutation({
+    mutationFn: async ({ appId, status }: { appId: string; status: string }) => {
+      const { error } = await supabase
+        .from("applications")
+        .update({ status })
+        .eq("id", appId);
+      if (error) throw error;
+    },
+    onSuccess: (_, { status }) => {
+      queryClient.invalidateQueries({ queryKey: ["job-applicants", selectedJobId] });
+      toast.success(`Application ${status}`);
+    },
+    onError: () => {
+      toast.error("Failed to update status");
+    },
   });
 
   if (loading || !user) return null;
@@ -178,24 +197,73 @@ const EmployerDashboard = () => {
                   applicants && applicants.length > 0 ? (
                     applicants.map((app) => (
                       <div key={app.id} className="p-4">
-                        <div className="flex items-center justify-between">
-                          <div>
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0 flex-1">
                             <p className="font-semibold">{app.profiles?.full_name || "Anonymous"}</p>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-xs text-muted-foreground">
                               Applied {formatDistanceToNow(new Date(app.created_at), { addSuffix: true })}
                             </p>
                           </div>
                           <Badge variant="outline" className={
                             app.status === "accepted" ? "border-success text-success" :
                             app.status === "rejected" ? "border-destructive text-destructive" :
+                            app.status === "shortlisted" ? "border-primary text-primary" :
                             "border-accent text-accent"
                           }>
                             {app.status}
                           </Badge>
                         </div>
+
                         {app.cover_letter && (
                           <p className="mt-2 text-sm text-muted-foreground bg-secondary/50 rounded-xl p-3">{app.cover_letter}</p>
                         )}
+
+                        {app.profiles?.resume_url && (
+                          <a
+                            href={supabase.storage.from("resumes").getPublicUrl(app.profiles.resume_url).data.publicUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-2 inline-flex items-center gap-1.5 text-xs text-primary hover:underline"
+                          >
+                            <FileText className="h-3.5 w-3.5" /> View Resume
+                          </a>
+                        )}
+
+                        {/* Action buttons */}
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {app.status !== "shortlisted" && app.status !== "accepted" && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="gap-1.5 text-primary border-primary hover:bg-primary hover:text-primary-foreground"
+                              disabled={updateStatus.isPending}
+                              onClick={() => updateStatus.mutate({ appId: app.id, status: "shortlisted" })}
+                            >
+                              <UserCheck className="h-3.5 w-3.5" /> Shortlist
+                            </Button>
+                          )}
+                          {app.status !== "accepted" && (
+                            <Button
+                              size="sm"
+                              className="gap-1.5 bg-success text-white hover:bg-success/90"
+                              disabled={updateStatus.isPending}
+                              onClick={() => updateStatus.mutate({ appId: app.id, status: "accepted" })}
+                            >
+                              <CheckCircle className="h-3.5 w-3.5" /> Accept
+                            </Button>
+                          )}
+                          {app.status !== "rejected" && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="gap-1.5 text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
+                              disabled={updateStatus.isPending}
+                              onClick={() => updateStatus.mutate({ appId: app.id, status: "rejected" })}
+                            >
+                              <XCircle className="h-3.5 w-3.5" /> Reject
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     ))
                   ) : (
