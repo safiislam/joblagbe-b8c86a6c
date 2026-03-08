@@ -31,6 +31,7 @@ type ApplicationRow = {
 
 const EmployerDashboard = () => {
   const { user, profile, loading } = useAuth();
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
 
