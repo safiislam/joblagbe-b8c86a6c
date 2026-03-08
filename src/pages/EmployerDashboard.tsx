@@ -25,7 +25,8 @@ type ApplicationRow = {
   status: string;
   created_at: string;
   cover_letter: string | null;
-  profiles: { full_name: string | null } | null;
+  user_id: string;
+  profiles: { full_name: string | null; resume_url: string | null } | null;
 };
 
 const EmployerDashboard = () => {
