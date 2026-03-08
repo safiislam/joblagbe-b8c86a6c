@@ -10,7 +10,7 @@ const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 const AIChatWidget = () => {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([
-    { role: "assistant", content: "আসসালামু আলাইকুম! 👋 আমি Job Lagbe AI। চাকরি খোঁজা, আবেদন, বা ক্যারিয়ার নিয়ে যেকোনো প্রশ্ন করুন!" },
+    { role: "assistant", content: "আসসালামু আলাইকুম! 👋 আমি **Jobu** — আপনার ক্যারিয়ার সহায়ক। চাকরি খোঁজা, আবেদন, সার্কুলার, বা ক্যারিয়ার নিয়ে যেকোনো প্রশ্ন করুন!" },
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -119,8 +119,8 @@ const AIChatWidget = () => {
             <div className="flex items-center gap-2">
               <Bot className="h-5 w-5" />
               <div>
-                <p className="text-sm font-semibold">Job Lagbe AI</p>
-                <p className="text-[10px] opacity-80">Always ready to help</p>
+                <p className="text-sm font-semibold">Jobu</p>
+                <p className="text-[10px] opacity-80">আপনার ক্যারিয়ার সহায়ক</p>
               </div>
             </div>
             <button onClick={() => setOpen(false)} className="rounded-full p-1 hover:bg-primary-foreground/10">
@@ -145,8 +145,19 @@ const AIChatWidget = () => {
                   }`}
                 >
                   {m.role === "assistant" ? (
-                    <div className="prose prose-sm max-w-none [&_p]:mb-1 [&_p]:mt-0 [&_ul]:my-1 [&_li]:my-0">
-                      <ReactMarkdown>{m.content}</ReactMarkdown>
+                    <div className="prose prose-sm max-w-none [&_p]:mb-1 [&_p]:mt-0 [&_ul]:my-1 [&_li]:my-0 [&_img]:rounded-lg [&_img]:max-w-full [&_img]:my-2 [&_a]:text-primary [&_a]:underline">
+                      <ReactMarkdown
+                        components={{
+                          a: ({ href, children }) => (
+                            <a href={href} target="_blank" rel="noopener noreferrer" className="text-primary underline hover:opacity-80">
+                              {children}
+                            </a>
+                          ),
+                          img: ({ src, alt }) => (
+                            <img src={src} alt={alt || ""} className="rounded-lg max-w-full my-2 border" loading="lazy" />
+                          ),
+                        }}
+                      >{m.content}</ReactMarkdown>
                     </div>
                   ) : (
                     m.content
