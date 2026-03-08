@@ -119,8 +119,8 @@ const AIChatWidget = () => {
             <div className="flex items-center gap-2">
               <Bot className="h-5 w-5" />
               <div>
-                <p className="text-sm font-semibold">Job Lagbe AI</p>
-                <p className="text-[10px] opacity-80">Always ready to help</p>
+                <p className="text-sm font-semibold">Jobu</p>
+                <p className="text-[10px] opacity-80">আপনার ক্যারিয়ার সহায়ক</p>
               </div>
             </div>
             <button onClick={() => setOpen(false)} className="rounded-full p-1 hover:bg-primary-foreground/10">
