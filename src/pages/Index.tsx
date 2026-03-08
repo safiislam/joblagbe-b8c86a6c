@@ -7,6 +7,7 @@ import JobBoard from "@/components/JobBoard";
 import ServicesSection from "@/components/ServicesSection";
 import EmployerCTA from "@/components/EmployerCTA";
 import Footer from "@/components/Footer";
+import AIChatWidget from "@/components/AIChatWidget";
 
 const Index = () => {
   return (
@@ -20,6 +21,7 @@ const Index = () => {
       <ServicesSection />
       <EmployerCTA />
       <Footer />
+      <AIChatWidget />
     </div>
   );
 };
