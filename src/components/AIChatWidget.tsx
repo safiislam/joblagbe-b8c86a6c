@@ -145,8 +145,19 @@ const AIChatWidget = () => {
                   }`}
                 >
                   {m.role === "assistant" ? (
-                    <div className="prose prose-sm max-w-none [&_p]:mb-1 [&_p]:mt-0 [&_ul]:my-1 [&_li]:my-0">
-                      <ReactMarkdown>{m.content}</ReactMarkdown>
+                    <div className="prose prose-sm max-w-none [&_p]:mb-1 [&_p]:mt-0 [&_ul]:my-1 [&_li]:my-0 [&_img]:rounded-lg [&_img]:max-w-full [&_img]:my-2 [&_a]:text-primary [&_a]:underline">
+                      <ReactMarkdown
+                        components={{
+                          a: ({ href, children }) => (
+                            <a href={href} target="_blank" rel="noopener noreferrer" className="text-primary underline hover:opacity-80">
+                              {children}
+                            </a>
+                          ),
+                          img: ({ src, alt }) => (
+                            <img src={src} alt={alt || ""} className="rounded-lg max-w-full my-2 border" loading="lazy" />
+                          ),
+                        }}
+                      >{m.content}</ReactMarkdown>
                     </div>
                   ) : (
                     m.content
