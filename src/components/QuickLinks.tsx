@@ -43,9 +43,9 @@ const QuickLinks = () => {
 
         <div className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-4">
           {links.map((item) => (
-            <a
+            <Link
               key={item.title}
-              href={item.href}
+              to={item.href}
               className="group flex flex-col items-center gap-3 rounded-2xl border bg-card p-6 text-center shadow-card transition-all hover:-translate-y-1 hover:shadow-elevated"
             >
               <div className={`flex h-14 w-14 items-center justify-center rounded-xl ${item.color} text-primary-foreground transition-transform group-hover:scale-110`}>
