@@ -26,7 +26,7 @@ const SignUp = () => {
       email,
       password,
       options: {
-        data: { full_name: fullName },
+        data: { full_name: fullName, role },
         emailRedirectTo: window.location.origin,
       },
     });
@@ -34,11 +34,6 @@ const SignUp = () => {
       toast.error(error.message);
       setLoading(false);
       return;
-    }
-
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      await supabase.from("profiles").update({ role }).eq("user_id", user.id);
     }
 
     toast.success("Account created! Check your email to confirm.");
