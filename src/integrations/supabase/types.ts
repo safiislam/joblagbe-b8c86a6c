@@ -148,6 +148,90 @@ export type Database = {
         }
         Relationships: []
       }
+      courses: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          duration: string | null
+          id: string
+          is_free: boolean
+          link: string | null
+          price: number | null
+          provider: string | null
+          thumbnail_url: string | null
+          title: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          duration?: string | null
+          id?: string
+          is_free?: boolean
+          link?: string | null
+          price?: number | null
+          provider?: string | null
+          thumbnail_url?: string | null
+          title: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          duration?: string | null
+          id?: string
+          is_free?: boolean
+          link?: string | null
+          price?: number | null
+          provider?: string | null
+          thumbnail_url?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
+      ebooks: {
+        Row: {
+          author: string | null
+          category: string
+          cover_image_url: string | null
+          created_at: string
+          description: string | null
+          download_url: string | null
+          id: string
+          is_free: boolean
+          pages: number | null
+          price: number | null
+          title: string
+        }
+        Insert: {
+          author?: string | null
+          category?: string
+          cover_image_url?: string | null
+          created_at?: string
+          description?: string | null
+          download_url?: string | null
+          id?: string
+          is_free?: boolean
+          pages?: number | null
+          price?: number | null
+          title: string
+        }
+        Update: {
+          author?: string | null
+          category?: string
+          cover_image_url?: string | null
+          created_at?: string
+          description?: string | null
+          download_url?: string | null
+          id?: string
+          is_free?: boolean
+          pages?: number | null
+          price?: number | null
+          title?: string
+        }
+        Relationships: []
+      }
       jobs: {
         Row: {
           category_id: string | null

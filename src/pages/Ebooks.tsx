@@ -1,0 +1,132 @@
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Search, BookMarked, Download, FileText } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+const Ebooks = () => {
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("all");
+  const [priceFilter, setPriceFilter] = useState("all");
+
+  const { data: ebooks, isLoading } = useQuery({
+    queryKey: ["all-ebooks"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("ebooks")
+        .select("*")
+        .order("created_at", { ascending: false });
+      return data ?? [];
+    },
+  });
+
+  const categories = [...new Set(ebooks?.map((e) => e.category) ?? [])];
+
+  const filtered = ebooks?.filter((e) => {
+    const matchSearch = !search || e.title.toLowerCase().includes(search.toLowerCase());
+    const matchCat = category === "all" || e.category === category;
+    const matchPrice = priceFilter === "all" || (priceFilter === "free" ? e.is_free : !e.is_free);
+    return matchSearch && matchCat && matchPrice;
+  });
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Header />
+      <div className="container py-10">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold font-bangla">ই-বই সংগ্রহ</h1>
+          <p className="mt-2 text-muted-foreground">চাকরি প্রস্তুতি ও দক্ষতা বৃদ্ধির ই-বই</p>
+        </div>
+
+        <div className="mb-8 flex flex-col gap-3 sm:flex-row">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input placeholder="ই-বই খুঁজুন..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10" />
+          </div>
+          <Select value={category} onValueChange={setCategory}>
+            <SelectTrigger className="w-full sm:w-44">
+              <SelectValue placeholder="ক্যাটাগরি" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">সকল ক্যাটাগরি</SelectItem>
+              {categories.map((c) => (
+                <SelectItem key={c} value={c}>{c}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={priceFilter} onValueChange={setPriceFilter}>
+            <SelectTrigger className="w-full sm:w-36">
+              <SelectValue placeholder="মূল্য" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">সকল</SelectItem>
+              <SelectItem value="free">ফ্রি</SelectItem>
+              <SelectItem value="paid">পেইড</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <p className="mb-4 text-sm text-muted-foreground">{filtered?.length ?? 0} টি ই-বই পাওয়া গেছে</p>
+
+        {isLoading ? (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-56 animate-pulse rounded-2xl bg-muted" />
+            ))}
+          </div>
+        ) : filtered && filtered.length > 0 ? (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {filtered.map((ebook) => (
+              <div key={ebook.id} className="group flex flex-col rounded-2xl border bg-card shadow-card overflow-hidden transition-all hover:-translate-y-1 hover:shadow-elevated">
+                <div className="flex h-36 items-center justify-center bg-success/10">
+                  {ebook.cover_image_url ? (
+                    <img src={ebook.cover_image_url} alt={ebook.title} className="h-full w-full object-cover" />
+                  ) : (
+                    <BookMarked className="h-12 w-12 text-success/40" />
+                  )}
+                </div>
+                <div className="flex flex-1 flex-col p-5">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge variant="secondary" className="text-xs">{ebook.category}</Badge>
+                    <Badge variant={ebook.is_free ? "default" : "outline"} className="text-xs">
+                      {ebook.is_free ? "ফ্রি" : `৳${ebook.price}`}
+                    </Badge>
+                  </div>
+                  <h3 className="font-bold text-lg font-bangla group-hover:text-primary transition-colors">{ebook.title}</h3>
+                  {ebook.description && <p className="mt-2 text-sm text-muted-foreground font-bangla line-clamp-2">{ebook.description}</p>}
+                  <div className="mt-auto pt-4 flex items-center justify-between">
+                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <FileText className="h-3 w-3" /> {ebook.author ?? "—"} {ebook.pages ? `· ${ebook.pages} পৃষ্ঠা` : ""}
+                    </span>
+                    {ebook.download_url ? (
+                      <Button size="sm" variant="outline" className="gap-1" asChild>
+                        <a href={ebook.download_url} target="_blank" rel="noopener noreferrer">
+                          ডাউনলোড <Download className="h-3 w-3" />
+                        </a>
+                      </Button>
+                    ) : (
+                      <Button size="sm" variant="outline" disabled>শীঘ্রই আসছে</Button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center py-20 text-muted-foreground">
+            <BookMarked className="mb-3 h-12 w-12 opacity-30" />
+            <p className="text-lg font-medium font-bangla">কোনো ই-বই পাওয়া যায়নি</p>
+          </div>
+        )}
+      </div>
+      <Footer />
+    </div>
+  );
+};
+
+export default Ebooks;
