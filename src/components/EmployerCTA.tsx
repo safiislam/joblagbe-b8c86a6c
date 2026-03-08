@@ -1,5 +1,6 @@
 import { Building2, Users, BarChart3, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const features = [
   { icon: Building2, title: "Post Jobs", desc: "Reach thousands of qualified candidates" },
@@ -17,8 +18,8 @@ const EmployerCTA = () => {
             <p className="mt-3 text-primary-foreground/80 md:text-lg">
               Post your open positions and find the best talent in Bangladesh. Our platform connects you with thousands of job seekers every day.
             </p>
-            <Button className="mt-6 bg-accent text-accent-foreground hover:bg-accent/90 gap-2 px-6 font-semibold">
-              Post a Job <ArrowRight className="h-4 w-4" />
+            <Button className="mt-6 bg-accent text-accent-foreground hover:bg-accent/90 gap-2 px-6 font-semibold" asChild>
+              <Link to="/post-job">Post a Job <ArrowRight className="h-4 w-4" /></Link>
             </Button>
           </div>
           <div className="grid gap-4 sm:grid-cols-3">
