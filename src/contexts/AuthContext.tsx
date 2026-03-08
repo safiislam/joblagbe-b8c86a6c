@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 type AuthContextType = {
   session: Session | null;
   user: User | null;
-  profile: { full_name: string | null; role: string } | null;
+  profile: { full_name: string | null; role: string; resume_url?: string | null } | null;
   isAdmin: boolean;
   loading: boolean;
   signOut: () => Promise<void>;
