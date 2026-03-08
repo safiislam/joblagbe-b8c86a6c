@@ -2,17 +2,19 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Briefcase, Search, Clock, Building2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { allDistricts, bangladeshLocations } from "@/data/bangladeshLocations";
 
 const Jobs = () => {
   const [search, setSearch] = useState("");
   const [jobType, setJobType] = useState("all");
-  const [location, setLocation] = useState("all");
+  const [district, setDistrict] = useState("all");
+  const [upazila, setUpazila] = useState("all");
 
   const { data: jobs, isLoading } = useQuery({
     queryKey: ["all-jobs"],
@@ -27,8 +29,12 @@ const Jobs = () => {
     },
   });
 
-  const locations = [...new Set(jobs?.map((j) => j.location) ?? [])];
   const jobTypes = [...new Set(jobs?.map((j) => j.job_type) ?? [])];
+
+  const upazilas = useMemo(() => {
+    if (district === "all") return [];
+    return bangladeshLocations[district as keyof typeof bangladeshLocations] ?? [];
+  }, [district]);
 
   const filtered = jobs?.filter((job) => {
     const matchSearch =
@@ -36,7 +42,11 @@ const Jobs = () => {
       job.title.toLowerCase().includes(search.toLowerCase()) ||
       (job.companies as any)?.name?.toLowerCase().includes(search.toLowerCase());
     const matchType = jobType === "all" || job.job_type === jobType;
-    const matchLoc = location === "all" || job.location === location;
+    const loc = job.location?.toLowerCase() ?? "";
+    const matchLoc =
+      district === "all" ||
+      loc.includes(district.toLowerCase()) ||
+      (upazila !== "all" && loc.includes(upazila.toLowerCase()));
     return matchSearch && matchType && matchLoc;
   });
 
@@ -50,8 +60,8 @@ const Jobs = () => {
         </div>
 
         {/* Filters */}
-        <div className="mb-8 flex flex-col gap-3 sm:flex-row">
-          <div className="relative flex-1">
+        <div className="mb-8 flex flex-col gap-3 sm:flex-row flex-wrap">
+          <div className="relative flex-1 min-w-[200px]">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="চাকরি বা প্রতিষ্ঠানের নাম খুঁজুন..."
@@ -61,7 +71,7 @@ const Jobs = () => {
             />
           </div>
           <Select value={jobType} onValueChange={setJobType}>
-            <SelectTrigger className="w-full sm:w-44">
+            <SelectTrigger className="w-full sm:w-40">
               <SelectValue placeholder="চাকরির ধরন" />
             </SelectTrigger>
             <SelectContent>
@@ -71,17 +81,30 @@ const Jobs = () => {
               ))}
             </SelectContent>
           </Select>
-          <Select value={location} onValueChange={setLocation}>
+          <Select value={district} onValueChange={(v) => { setDistrict(v); setUpazila("all"); }}>
             <SelectTrigger className="w-full sm:w-44">
-              <SelectValue placeholder="লোকেশন" />
+              <SelectValue placeholder="জেলা" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">সকল লোকেশন</SelectItem>
-              {locations.map((l) => (
-                <SelectItem key={l} value={l}>{l}</SelectItem>
+              <SelectItem value="all">সকল জেলা</SelectItem>
+              {allDistricts.map((d) => (
+                <SelectItem key={d} value={d}>{d}</SelectItem>
               ))}
             </SelectContent>
           </Select>
+          {district !== "all" && upazilas.length > 0 && (
+            <Select value={upazila} onValueChange={setUpazila}>
+              <SelectTrigger className="w-full sm:w-44">
+                <SelectValue placeholder="উপজেলা" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">সকল উপজেলা</SelectItem>
+                {upazilas.map((u) => (
+                  <SelectItem key={u} value={u}>{u}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
         </div>
 
         <p className="mb-4 text-sm text-muted-foreground">{filtered?.length ?? 0} টি চাকরি পাওয়া গেছে</p>
