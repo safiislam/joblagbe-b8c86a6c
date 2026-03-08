@@ -5,7 +5,7 @@ import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import {
   Shield, Users, Briefcase, Building2, BarChart3, Check, X, Clock,
-  FileText, Eye, BookOpen, Plus, RefreshCw, TrendingUp
+  FileText, Eye, BookOpen, Plus, RefreshCw, TrendingUp, BookMarked, GraduationCap, Trash2, Edit
 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,6 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 
 type AdminJob = {
   id: string; title: string; location: string; job_type: string;
@@ -26,6 +27,8 @@ type CompanyRow = { id: string; name: string; location: string | null; website: 
 type ProfileRow = { id: string; full_name: string | null; role: string; phone: string | null; user_id: string; created_at: string; };
 type ApplicationRow = { id: string; status: string; created_at: string; user_id: string; jobs: { title: string; companies: { name: string } | null } | null; };
 type BlogRow = { id: string; title: string; slug: string; is_published: boolean; created_at: string; author_name: string; };
+type CourseRow = { id: string; title: string; category: string; provider: string | null; duration: string | null; is_free: boolean; price: number | null; link: string | null; description: string | null; };
+type EbookRow = { id: string; title: string; category: string; author: string | null; pages: number | null; is_free: boolean; price: number | null; download_url: string | null; description: string | null; };
 
 const Admin = () => {
   const { user, isAdmin, loading } = useAuth();
@@ -35,6 +38,12 @@ const Admin = () => {
   const [expandedJob, setExpandedJob] = useState<string | null>(null);
   const [showBlogForm, setShowBlogForm] = useState(false);
   const [blogForm, setBlogForm] = useState({ title: "", slug: "", content: "", excerpt: "", author_name: "Job Lagbe Team" });
+  const [showCourseForm, setShowCourseForm] = useState(false);
+  const [courseForm, setCourseForm] = useState({ title: "", description: "", category: "", provider: "", duration: "", is_free: true, price: 0, link: "" });
+  const [editingCourseId, setEditingCourseId] = useState<string | null>(null);
+  const [showEbookForm, setShowEbookForm] = useState(false);
+  const [ebookForm, setEbookForm] = useState({ title: "", description: "", category: "", author: "", pages: 0, is_free: true, price: 0, download_url: "" });
+  const [editingEbookId, setEditingEbookId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && (!user || !isAdmin)) navigate("/");
@@ -71,9 +80,11 @@ const Admin = () => {
   const { data: profiles } = useQuery({ queryKey: ["admin-profiles"], queryFn: async () => { const { data } = await supabase.from("profiles").select("id, full_name, role, phone, user_id, created_at").order("created_at", { ascending: false }).limit(50); return (data as ProfileRow[]) ?? []; }, enabled: isAdmin });
   const { data: recentApps } = useQuery({ queryKey: ["admin-applications"], queryFn: async () => { const { data } = await supabase.from("applications").select("id, status, created_at, user_id, jobs(title, companies(name))").order("created_at", { ascending: false }).limit(20); return (data as unknown as ApplicationRow[]) ?? []; }, enabled: isAdmin });
   const { data: blogPosts } = useQuery({ queryKey: ["admin-blogs"], queryFn: async () => { const { data } = await supabase.from("blog_posts").select("id, title, slug, is_published, created_at, author_name").order("created_at", { ascending: false }); return (data as BlogRow[]) ?? []; }, enabled: isAdmin });
+  const { data: courses } = useQuery({ queryKey: ["admin-courses"], queryFn: async () => { const { data } = await supabase.from("courses").select("*").order("created_at", { ascending: false }); return (data as CourseRow[]) ?? []; }, enabled: isAdmin });
+  const { data: ebooks } = useQuery({ queryKey: ["admin-ebooks"], queryFn: async () => { const { data } = await supabase.from("ebooks").select("*").order("created_at", { ascending: false }); return (data as EbookRow[]) ?? []; }, enabled: isAdmin });
 
   const refreshAll = () => {
-    ["admin-stats", "admin-jobs", "admin-companies", "admin-profiles", "admin-applications", "admin-blogs", "jobs"].forEach(k => queryClient.invalidateQueries({ queryKey: [k] }));
+    ["admin-stats", "admin-jobs", "admin-companies", "admin-profiles", "admin-applications", "admin-blogs", "admin-courses", "admin-ebooks", "jobs", "all-courses", "all-ebooks"].forEach(k => queryClient.invalidateQueries({ queryKey: [k] }));
   };
 
   const handleApprove = async (jobId: string) => {
@@ -101,6 +112,68 @@ const Admin = () => {
   const toggleBlogPublish = async (id: string, current: boolean) => {
     await supabase.from("blog_posts").update({ is_published: !current }).eq("id", id);
     refreshAll();
+  };
+
+  // Course CRUD
+  const handleSaveCourse = async () => {
+    if (!courseForm.title || !courseForm.category) { toast.error("Title and category are required"); return; }
+    const payload = { ...courseForm, price: courseForm.is_free ? 0 : courseForm.price };
+    if (editingCourseId) {
+      const { error } = await supabase.from("courses").update(payload).eq("id", editingCourseId);
+      if (error) { toast.error(error.message); return; }
+      toast.success("Course updated!");
+    } else {
+      const { error } = await supabase.from("courses").insert(payload);
+      if (error) { toast.error(error.message); return; }
+      toast.success("Course created!");
+    }
+    setShowCourseForm(false);
+    setEditingCourseId(null);
+    setCourseForm({ title: "", description: "", category: "", provider: "", duration: "", is_free: true, price: 0, link: "" });
+    refreshAll();
+  };
+
+  const handleEditCourse = (c: CourseRow) => {
+    setCourseForm({ title: c.title, description: c.description ?? "", category: c.category, provider: c.provider ?? "", duration: c.duration ?? "", is_free: c.is_free, price: c.price ?? 0, link: c.link ?? "" });
+    setEditingCourseId(c.id);
+    setShowCourseForm(true);
+  };
+
+  const handleDeleteCourse = async (id: string) => {
+    const { error } = await supabase.from("courses").delete().eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Course deleted"); refreshAll();
+  };
+
+  // Ebook CRUD
+  const handleSaveEbook = async () => {
+    if (!ebookForm.title || !ebookForm.category) { toast.error("Title and category are required"); return; }
+    const payload = { ...ebookForm, price: ebookForm.is_free ? 0 : ebookForm.price, pages: ebookForm.pages || null };
+    if (editingEbookId) {
+      const { error } = await supabase.from("ebooks").update(payload).eq("id", editingEbookId);
+      if (error) { toast.error(error.message); return; }
+      toast.success("Ebook updated!");
+    } else {
+      const { error } = await supabase.from("ebooks").insert(payload);
+      if (error) { toast.error(error.message); return; }
+      toast.success("Ebook created!");
+    }
+    setShowEbookForm(false);
+    setEditingEbookId(null);
+    setEbookForm({ title: "", description: "", category: "", author: "", pages: 0, is_free: true, price: 0, download_url: "" });
+    refreshAll();
+  };
+
+  const handleEditEbook = (e: EbookRow) => {
+    setEbookForm({ title: e.title, description: e.description ?? "", category: e.category, author: e.author ?? "", pages: e.pages ?? 0, is_free: e.is_free, price: e.price ?? 0, download_url: e.download_url ?? "" });
+    setEditingEbookId(e.id);
+    setShowEbookForm(true);
+  };
+
+  const handleDeleteEbook = async (id: string) => {
+    const { error } = await supabase.from("ebooks").delete().eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Ebook deleted"); refreshAll();
   };
 
   if (loading || !isAdmin) return null;
@@ -158,6 +231,8 @@ const Admin = () => {
             <TabsTrigger value="users" className="gap-1.5"><Users className="h-3.5 w-3.5" /> Users</TabsTrigger>
             <TabsTrigger value="applications" className="gap-1.5"><FileText className="h-3.5 w-3.5" /> Applications</TabsTrigger>
             <TabsTrigger value="blog" className="gap-1.5"><BookOpen className="h-3.5 w-3.5" /> Blog</TabsTrigger>
+            <TabsTrigger value="courses" className="gap-1.5"><GraduationCap className="h-3.5 w-3.5" /> Courses</TabsTrigger>
+            <TabsTrigger value="ebooks" className="gap-1.5"><BookMarked className="h-3.5 w-3.5" /> E-Books</TabsTrigger>
             <TabsTrigger value="analytics" className="gap-1.5"><TrendingUp className="h-3.5 w-3.5" /> Analytics</TabsTrigger>
           </TabsList>
 
@@ -304,6 +379,118 @@ const Admin = () => {
             </div>
           </TabsContent>
 
+          {/* COURSES TAB */}
+          <TabsContent value="courses">
+            <div className="rounded-2xl border bg-card shadow-card">
+              <div className="flex items-center justify-between border-b p-4">
+                <h2 className="font-bold">Courses ({courses?.length ?? 0})</h2>
+                <Button size="sm" onClick={() => { setShowCourseForm(!showCourseForm); setEditingCourseId(null); setCourseForm({ title: "", description: "", category: "", provider: "", duration: "", is_free: true, price: 0, link: "" }); }} className="gap-1 bg-accent text-accent-foreground">
+                  <Plus className="h-3.5 w-3.5" /> New Course
+                </Button>
+              </div>
+              {showCourseForm && (
+                <div className="border-b p-4 space-y-3 bg-secondary/30">
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <div><Label>Title *</Label><Input value={courseForm.title} onChange={(e) => setCourseForm({ ...courseForm, title: e.target.value })} className="mt-1 rounded-xl" placeholder="কোর্সের নাম" /></div>
+                    <div><Label>Category *</Label><Input value={courseForm.category} onChange={(e) => setCourseForm({ ...courseForm, category: e.target.value })} className="mt-1 rounded-xl" placeholder="আইটি, ডিজাইন, ব্যবসা..." /></div>
+                  </div>
+                  <div className="grid gap-3 md:grid-cols-3">
+                    <div><Label>Provider</Label><Input value={courseForm.provider} onChange={(e) => setCourseForm({ ...courseForm, provider: e.target.value })} className="mt-1 rounded-xl" placeholder="JobLagbe Academy" /></div>
+                    <div><Label>Duration</Label><Input value={courseForm.duration} onChange={(e) => setCourseForm({ ...courseForm, duration: e.target.value })} className="mt-1 rounded-xl" placeholder="৪ সপ্তাহ" /></div>
+                    <div><Label>Link</Label><Input value={courseForm.link} onChange={(e) => setCourseForm({ ...courseForm, link: e.target.value })} className="mt-1 rounded-xl" placeholder="https://..." /></div>
+                  </div>
+                  <div><Label>Description</Label><Textarea value={courseForm.description} onChange={(e) => setCourseForm({ ...courseForm, description: e.target.value })} rows={3} className="mt-1 rounded-xl" placeholder="কোর্সের বিবরণ..." /></div>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <Switch checked={courseForm.is_free} onCheckedChange={(v) => setCourseForm({ ...courseForm, is_free: v })} />
+                      <Label>ফ্রি</Label>
+                    </div>
+                    {!courseForm.is_free && (
+                      <div><Label>Price (৳)</Label><Input type="number" value={courseForm.price} onChange={(e) => setCourseForm({ ...courseForm, price: Number(e.target.value) })} className="mt-1 w-32 rounded-xl" /></div>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <Button onClick={handleSaveCourse} className="bg-success text-success-foreground">{editingCourseId ? "Update" : "Create"}</Button>
+                    <Button variant="ghost" onClick={() => { setShowCourseForm(false); setEditingCourseId(null); }}>Cancel</Button>
+                  </div>
+                </div>
+              )}
+              <div className="divide-y">
+                {courses && courses.length > 0 ? courses.map((c) => (
+                  <div key={c.id} className="flex items-center justify-between p-4">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <p className="font-semibold text-sm">{c.title}</p>
+                        <Badge variant={c.is_free ? "default" : "outline"} className="text-[10px]">{c.is_free ? "ফ্রি" : `৳${c.price}`}</Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground">{c.category} · {c.provider ?? "—"} · {c.duration ?? "—"}</p>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Button variant="ghost" size="sm" onClick={() => handleEditCourse(c)} className="text-xs gap-1"><Edit className="h-3 w-3" /> Edit</Button>
+                      <Button variant="ghost" size="sm" onClick={() => handleDeleteCourse(c.id)} className="text-xs gap-1 text-destructive"><Trash2 className="h-3 w-3" /> Delete</Button>
+                    </div>
+                  </div>
+                )) : <div className="p-8 text-center text-muted-foreground">No courses yet</div>}
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* EBOOKS TAB */}
+          <TabsContent value="ebooks">
+            <div className="rounded-2xl border bg-card shadow-card">
+              <div className="flex items-center justify-between border-b p-4">
+                <h2 className="font-bold">E-Books ({ebooks?.length ?? 0})</h2>
+                <Button size="sm" onClick={() => { setShowEbookForm(!showEbookForm); setEditingEbookId(null); setEbookForm({ title: "", description: "", category: "", author: "", pages: 0, is_free: true, price: 0, download_url: "" }); }} className="gap-1 bg-accent text-accent-foreground">
+                  <Plus className="h-3.5 w-3.5" /> New E-Book
+                </Button>
+              </div>
+              {showEbookForm && (
+                <div className="border-b p-4 space-y-3 bg-secondary/30">
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <div><Label>Title *</Label><Input value={ebookForm.title} onChange={(e) => setEbookForm({ ...ebookForm, title: e.target.value })} className="mt-1 rounded-xl" placeholder="ই-বইয়ের নাম" /></div>
+                    <div><Label>Category *</Label><Input value={ebookForm.category} onChange={(e) => setEbookForm({ ...ebookForm, category: e.target.value })} className="mt-1 rounded-xl" placeholder="চাকরি প্রস্তুতি, ফ্রিল্যান্সিং..." /></div>
+                  </div>
+                  <div className="grid gap-3 md:grid-cols-3">
+                    <div><Label>Author</Label><Input value={ebookForm.author} onChange={(e) => setEbookForm({ ...ebookForm, author: e.target.value })} className="mt-1 rounded-xl" placeholder="JobLagbe Team" /></div>
+                    <div><Label>Pages</Label><Input type="number" value={ebookForm.pages || ""} onChange={(e) => setEbookForm({ ...ebookForm, pages: Number(e.target.value) })} className="mt-1 rounded-xl" placeholder="120" /></div>
+                    <div><Label>Download URL</Label><Input value={ebookForm.download_url} onChange={(e) => setEbookForm({ ...ebookForm, download_url: e.target.value })} className="mt-1 rounded-xl" placeholder="https://..." /></div>
+                  </div>
+                  <div><Label>Description</Label><Textarea value={ebookForm.description} onChange={(e) => setEbookForm({ ...ebookForm, description: e.target.value })} rows={3} className="mt-1 rounded-xl" placeholder="ই-বইয়ের বিবরণ..." /></div>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <Switch checked={ebookForm.is_free} onCheckedChange={(v) => setEbookForm({ ...ebookForm, is_free: v })} />
+                      <Label>ফ্রি</Label>
+                    </div>
+                    {!ebookForm.is_free && (
+                      <div><Label>Price (৳)</Label><Input type="number" value={ebookForm.price} onChange={(e) => setEbookForm({ ...ebookForm, price: Number(e.target.value) })} className="mt-1 w-32 rounded-xl" /></div>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <Button onClick={handleSaveEbook} className="bg-success text-success-foreground">{editingEbookId ? "Update" : "Create"}</Button>
+                    <Button variant="ghost" onClick={() => { setShowEbookForm(false); setEditingEbookId(null); }}>Cancel</Button>
+                  </div>
+                </div>
+              )}
+              <div className="divide-y">
+                {ebooks && ebooks.length > 0 ? ebooks.map((e) => (
+                  <div key={e.id} className="flex items-center justify-between p-4">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <p className="font-semibold text-sm">{e.title}</p>
+                        <Badge variant={e.is_free ? "default" : "outline"} className="text-[10px]">{e.is_free ? "ফ্রি" : `৳${e.price}`}</Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground">{e.category} · {e.author ?? "—"} · {e.pages ? `${e.pages} পৃষ্ঠা` : "—"}</p>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Button variant="ghost" size="sm" onClick={() => handleEditEbook(e)} className="text-xs gap-1"><Edit className="h-3 w-3" /> Edit</Button>
+                      <Button variant="ghost" size="sm" onClick={() => handleDeleteEbook(e.id)} className="text-xs gap-1 text-destructive"><Trash2 className="h-3 w-3" /> Delete</Button>
+                    </div>
+                  </div>
+                )) : <div className="p-8 text-center text-muted-foreground">No ebooks yet</div>}
+              </div>
+            </div>
+          </TabsContent>
+
           {/* ANALYTICS TAB */}
           <TabsContent value="analytics">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -324,10 +511,10 @@ const Admin = () => {
                 </div>
               </div>
               <div className="rounded-2xl border bg-card p-6 shadow-card">
-                <h3 className="text-sm font-medium text-muted-foreground">Engagement</h3>
+                <h3 className="text-sm font-medium text-muted-foreground">Content</h3>
                 <div className="mt-4 space-y-3">
-                  <div className="flex items-center justify-between"><span className="text-sm">Applications</span><span className="font-bold text-primary">{stats?.applications ?? 0}</span></div>
-                  <div className="flex items-center justify-between"><span className="text-sm">Companies</span><span className="font-bold text-success">{stats?.companies ?? 0}</span></div>
+                  <div className="flex items-center justify-between"><span className="text-sm">Courses</span><span className="font-bold text-primary">{courses?.length ?? 0}</span></div>
+                  <div className="flex items-center justify-between"><span className="text-sm">E-Books</span><span className="font-bold text-success">{ebooks?.length ?? 0}</span></div>
                   <div className="flex items-center justify-between"><span className="text-sm">Blog Posts</span><span className="font-bold">{blogPosts?.length ?? 0}</span></div>
                 </div>
               </div>
