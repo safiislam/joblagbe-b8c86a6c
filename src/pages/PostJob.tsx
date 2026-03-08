@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import Header from "@/components/Header";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Clock, AlertTriangle } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -21,6 +23,7 @@ const PostJob = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({
     title: "",
     location: "",
@@ -33,7 +36,6 @@ const PostJob = () => {
     tag: "",
   });
 
-  // Fetch or create company for current user
   const { data: company } = useQuery({
     queryKey: ["my-company", user?.id],
     queryFn: async () => {
@@ -92,14 +94,14 @@ const PostJob = () => {
       tag: form.tag || null,
       description: form.description,
       requirements: form.requirements.split("\n").filter(Boolean),
+      is_approved: false,
     });
 
     setLoading(false);
     if (error) {
       toast.error(error.message);
     } else {
-      toast.success("Job posted successfully!");
-      navigate("/");
+      setSubmitted(true);
     }
   };
 
@@ -116,35 +118,66 @@ const PostJob = () => {
     );
   }
 
+  if (submitted) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container flex flex-col items-center justify-center py-20 text-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent/10 mb-4">
+            <Clock className="h-8 w-8 text-accent" />
+          </div>
+          <h2 className="text-2xl font-bold">Job Submitted for Review!</h2>
+          <p className="mt-2 max-w-md text-muted-foreground">
+            Your job posting has been submitted and is pending admin approval. 
+            You'll be notified once it's live on the platform.
+          </p>
+          <div className="mt-6 flex gap-3">
+            <Button onClick={() => navigate("/employer-dashboard")} variant="outline">Go to Dashboard</Button>
+            <Button onClick={() => { setSubmitted(false); setForm({ title: "", location: "", salaryMin: "", salaryMax: "", jobType: "Full-time", categoryId: "", description: "", requirements: "", tag: "" }); }} className="bg-accent text-accent-foreground">
+              Post Another Job
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <div className="container max-w-2xl py-10">
+      <div className="container max-w-2xl py-8">
         <h1 className="text-2xl font-bold md:text-3xl">Post a Job</h1>
         <p className="mt-1 text-muted-foreground">Fill in the details to publish your job listing</p>
 
+        <Alert className="mt-4 border-accent/30 bg-accent/5">
+          <AlertTriangle className="h-4 w-4 text-accent" />
+          <AlertDescription className="text-sm">
+            All job postings are reviewed by our admin team before going live. This helps maintain quality and protect job seekers.
+          </AlertDescription>
+        </Alert>
+
         {!company && !showCompanyForm && (
-          <div className="mt-6 rounded-xl border bg-secondary/50 p-6">
+          <div className="mt-6 rounded-2xl border bg-secondary/50 p-6">
             <h3 className="font-semibold">First, create your company profile</h3>
             <p className="text-sm text-muted-foreground">You need a company profile to post jobs.</p>
-            <Button onClick={() => setShowCompanyForm(true)} className="mt-3 bg-primary text-primary-foreground">Create Company</Button>
+            <Button onClick={() => setShowCompanyForm(true)} className="mt-3 bg-primary text-primary-foreground rounded-xl">Create Company</Button>
           </div>
         )}
 
         {showCompanyForm && !company && (
-          <div className="mt-6 space-y-4 rounded-xl border p-6">
+          <div className="mt-6 space-y-4 rounded-2xl border p-6">
             <h3 className="font-semibold">Company Details</h3>
             <div>
               <Label>Company Name</Label>
-              <Input value={companyForm.name} onChange={(e) => setCompanyForm({ ...companyForm, name: e.target.value })} required />
+              <Input value={companyForm.name} onChange={(e) => setCompanyForm({ ...companyForm, name: e.target.value })} required className="mt-1.5 rounded-xl" />
             </div>
             <div>
               <Label>Location</Label>
-              <Input value={companyForm.location} onChange={(e) => setCompanyForm({ ...companyForm, location: e.target.value })} />
+              <Input value={companyForm.location} onChange={(e) => setCompanyForm({ ...companyForm, location: e.target.value })} className="mt-1.5 rounded-xl" />
             </div>
             <div>
               <Label>Description</Label>
-              <Textarea value={companyForm.description} onChange={(e) => setCompanyForm({ ...companyForm, description: e.target.value })} />
+              <Textarea value={companyForm.description} onChange={(e) => setCompanyForm({ ...companyForm, description: e.target.value })} className="mt-1.5 rounded-xl" />
             </div>
           </div>
         )}
@@ -153,26 +186,26 @@ const PostJob = () => {
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <Label>Job Title</Label>
-              <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required placeholder="e.g. Software Engineer" />
+              <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required placeholder="e.g. Software Engineer" className="mt-1.5 rounded-xl" />
             </div>
             <div>
               <Label>Location</Label>
-              <Input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} required placeholder="e.g. Dhaka" />
+              <Input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} required placeholder="e.g. Dhaka" className="mt-1.5 rounded-xl" />
             </div>
           </div>
           <div className="grid gap-4 md:grid-cols-3">
             <div>
               <Label>Min Salary (৳)</Label>
-              <Input type="number" value={form.salaryMin} onChange={(e) => setForm({ ...form, salaryMin: e.target.value })} placeholder="40000" />
+              <Input type="number" value={form.salaryMin} onChange={(e) => setForm({ ...form, salaryMin: e.target.value })} placeholder="40000" className="mt-1.5 rounded-xl" />
             </div>
             <div>
               <Label>Max Salary (৳)</Label>
-              <Input type="number" value={form.salaryMax} onChange={(e) => setForm({ ...form, salaryMax: e.target.value })} placeholder="80000" />
+              <Input type="number" value={form.salaryMax} onChange={(e) => setForm({ ...form, salaryMax: e.target.value })} placeholder="80000" className="mt-1.5 rounded-xl" />
             </div>
             <div>
               <Label>Job Type</Label>
               <Select value={form.jobType} onValueChange={(v) => setForm({ ...form, jobType: v })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger className="mt-1.5 rounded-xl"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {["Full-time", "Part-time", "Contract", "Remote", "Internship"].map((t) => (
                     <SelectItem key={t} value={t}>{t}</SelectItem>
@@ -185,7 +218,7 @@ const PostJob = () => {
             <div>
               <Label>Category</Label>
               <Select value={form.categoryId} onValueChange={(v) => setForm({ ...form, categoryId: v })}>
-                <SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger>
+                <SelectTrigger className="mt-1.5 rounded-xl"><SelectValue placeholder="Select category" /></SelectTrigger>
                 <SelectContent>
                   {categories?.map((c) => (
                     <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
@@ -196,7 +229,7 @@ const PostJob = () => {
             <div>
               <Label>Tag (optional)</Label>
               <Select value={form.tag} onValueChange={(v) => setForm({ ...form, tag: v })}>
-                <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
+                <SelectTrigger className="mt-1.5 rounded-xl"><SelectValue placeholder="None" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="New">New</SelectItem>
                   <SelectItem value="Urgent">Urgent</SelectItem>
@@ -206,14 +239,14 @@ const PostJob = () => {
           </div>
           <div>
             <Label>Description</Label>
-            <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} required rows={5} placeholder="Describe the role and responsibilities..." />
+            <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} required rows={5} placeholder="Describe the role and responsibilities..." className="mt-1.5 rounded-xl" />
           </div>
           <div>
             <Label>Requirements (one per line)</Label>
-            <Textarea value={form.requirements} onChange={(e) => setForm({ ...form, requirements: e.target.value })} rows={4} placeholder="Bachelor's degree in CS&#10;3+ years experience&#10;..." />
+            <Textarea value={form.requirements} onChange={(e) => setForm({ ...form, requirements: e.target.value })} rows={4} placeholder="Bachelor's degree in CS&#10;3+ years experience&#10;..." className="mt-1.5 rounded-xl" />
           </div>
-          <Button type="submit" disabled={loading || (!company && !showCompanyForm)} className="bg-accent text-accent-foreground hover:bg-accent/90 px-8 font-semibold">
-            {loading ? "Posting..." : "Post Job"}
+          <Button type="submit" disabled={loading || (!company && !showCompanyForm)} className="bg-accent text-accent-foreground hover:bg-accent/90 px-8 font-semibold rounded-xl">
+            {loading ? "Submitting..." : "Submit for Review"}
           </Button>
         </form>
       </div>

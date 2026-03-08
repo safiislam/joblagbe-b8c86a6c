@@ -1,4 +1,4 @@
-import { Search, Menu, X, LogOut, User, Shield } from "lucide-react";
+import { Search, Menu, X, LogOut, User, Shield, LayoutDashboard } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -15,15 +15,17 @@ const Header = () => {
     navigate("/");
   };
 
+  const dashboardLink = profile?.role === "employer" ? "/employer-dashboard" : "/my-applications";
+
   return (
     <header className="sticky top-0 z-50 border-b bg-card/90 backdrop-blur-xl">
-      <div className="container flex h-16 items-center justify-between gap-4">
-        <Link to="/" className="flex shrink-0 items-center gap-2">
-          <img src={logo} alt="Job Lagbe" className="h-9 w-auto" />
+      <div className="container flex h-14 items-center justify-between gap-3 md:h-16">
+        <Link to="/" className="shrink-0">
+          <img src={logo} alt="Job Lagbe" className="h-8 w-auto md:h-9" />
         </Link>
 
         {/* Desktop search */}
-        <div className="hidden flex-1 items-center gap-2 rounded-xl border bg-secondary px-3 py-1.5 md:flex max-w-md">
+        <div className="hidden flex-1 items-center gap-2 rounded-xl border bg-secondary px-3 py-1.5 md:flex max-w-sm lg:max-w-md">
           <Search className="h-4 w-4 text-muted-foreground" />
           <input
             type="text"
@@ -32,8 +34,13 @@ const Header = () => {
           />
         </div>
 
-        <nav className="hidden items-center gap-2 md:flex">
+        <nav className="hidden items-center gap-1.5 md:flex">
           <Button variant="ghost" size="sm" asChild><Link to="/">Jobs</Link></Button>
+          {user && (
+            <Button variant="ghost" size="sm" className="gap-1" asChild>
+              <Link to={dashboardLink}><LayoutDashboard className="h-3.5 w-3.5" /> Dashboard</Link>
+            </Button>
+          )}
           {user && profile?.role === "employer" && (
             <Button variant="ghost" size="sm" asChild><Link to="/post-job">Post Job</Link></Button>
           )}
@@ -44,11 +51,11 @@ const Header = () => {
           )}
           {user ? (
             <>
-              <span className="flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-sm font-medium">
-                <User className="h-3.5 w-3.5" />
-                {profile?.full_name || user.email}
+              <span className="flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-xs font-medium">
+                <User className="h-3 w-3" />
+                <span className="max-w-[100px] truncate">{profile?.full_name || user.email}</span>
               </span>
-              <Button variant="ghost" size="icon" onClick={handleSignOut} className="h-9 w-9">
+              <Button variant="ghost" size="icon" onClick={handleSignOut} className="h-8 w-8">
                 <LogOut className="h-4 w-4" />
               </Button>
             </>
@@ -64,15 +71,15 @@ const Header = () => {
           )}
         </nav>
 
-        <button className="md:hidden" onClick={() => setMobileOpen(!mobileOpen)}>
-          {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        <button className="md:hidden p-1" onClick={() => setMobileOpen(!mobileOpen)}>
+          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
 
       {/* Mobile menu */}
       {mobileOpen && (
         <div className="border-t bg-card p-4 md:hidden animate-fade-in" style={{ animationDuration: "0.2s" }}>
-          <div className="mb-4 flex items-center gap-2 rounded-xl border bg-secondary px-3 py-2.5">
+          <div className="mb-3 flex items-center gap-2 rounded-xl border bg-secondary px-3 py-2.5">
             <Search className="h-4 w-4 text-muted-foreground" />
             <input type="text" placeholder="Search jobs..." className="flex-1 bg-transparent text-sm outline-none" />
           </div>
@@ -80,6 +87,11 @@ const Header = () => {
             <Button variant="ghost" className="justify-start" asChild onClick={() => setMobileOpen(false)}>
               <Link to="/">Jobs</Link>
             </Button>
+            {user && (
+              <Button variant="ghost" className="justify-start gap-2" asChild onClick={() => setMobileOpen(false)}>
+                <Link to={dashboardLink}><LayoutDashboard className="h-4 w-4" /> Dashboard</Link>
+              </Button>
+            )}
             {user && profile?.role === "employer" && (
               <Button variant="ghost" className="justify-start" asChild onClick={() => setMobileOpen(false)}>
                 <Link to="/post-job">Post Job</Link>
@@ -92,7 +104,7 @@ const Header = () => {
             )}
             {user ? (
               <>
-                <div className="flex items-center gap-2 px-4 py-2.5 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground">
                   <User className="h-4 w-4" /> {profile?.full_name || user.email}
                 </div>
                 <Button variant="ghost" className="justify-start text-destructive" onClick={handleSignOut}>
