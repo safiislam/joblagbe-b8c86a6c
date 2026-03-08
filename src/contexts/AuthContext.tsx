@@ -36,6 +36,37 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       .eq("user_id", userId)
       .single();
     setProfile(data);
+    return data;
+  };
+
+  const syncPendingSignupRole = async (userId: string, currentRole?: string | null) => {
+    const url = new URL(window.location.href);
+    const roleFromUrl = url.searchParams.get("role");
+    const roleFromStorage = localStorage.getItem("pending_signup_role");
+    const selectedRole = roleFromUrl === "employer" || roleFromUrl === "seeker"
+      ? roleFromUrl
+      : roleFromStorage === "employer" || roleFromStorage === "seeker"
+        ? roleFromStorage
+        : null;
+
+    if (!selectedRole) return;
+
+    if (currentRole !== selectedRole) {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ role: selectedRole })
+        .eq("user_id", userId);
+
+      if (!error) {
+        setProfile((prev) => (prev ? { ...prev, role: selectedRole } : prev));
+      }
+    }
+
+    localStorage.removeItem("pending_signup_role");
+    if (roleFromUrl) {
+      url.searchParams.delete("role");
+      window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+    }
   };
 
   const checkAdmin = async (userId: string) => {
