@@ -1,4 +1,4 @@
-import { Briefcase } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 const Footer = () => {
   return (
@@ -6,9 +6,8 @@ const Footer = () => {
       <div className="container">
         <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-4">
           <div>
-            <div className="flex items-center gap-2 font-bold text-lg">
-              <Briefcase className="h-5 w-5 text-accent" />
-              Job Lagbe
+            <div className="flex items-center gap-2">
+              <img src={logo} alt="Job Lagbe" className="h-10 w-auto" />
             </div>
             <p className="mt-3 text-sm text-muted-foreground">
               Bangladesh's trusted job portal connecting talent with opportunity since 2024.
