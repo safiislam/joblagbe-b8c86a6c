@@ -35,6 +35,7 @@ const Admin = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [jobTab, setJobTab] = useState<"pending" | "approved" | "all">("pending");
+  const [courseTab, setCourseTab] = useState<"pending" | "approved" | "all">("all");
   const [expandedJob, setExpandedJob] = useState<string | null>(null);
   const [showBlogForm, setShowBlogForm] = useState(false);
   const [blogForm, setBlogForm] = useState({ title: "", slug: "", content: "", excerpt: "", author_name: "Job Lagbe Team" });
