@@ -1,11 +1,6 @@
 import { Search, MapPin, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const stats = [
-  { value: "১০,০০০+", label: "চাকরির বিজ্ঞপ্তি" },
-  { value: "৫,০০০+", label: "কোম্পানি" },
-  { value: "১ লক্ষ+", label: "চাকরিপ্রার্থী" },
-];
 
 const HeroSection = () => {
   return (
