@@ -136,15 +136,39 @@ const Admin = () => {
   };
 
   // Course CRUD
+  const handleApproveCourse = async (courseId: string) => {
+    const course = courses?.find(c => c.id === courseId);
+    const { error } = await supabase.from("courses").update({ is_approved: true }).eq("id", courseId);
+    if (error) { toast.error(error.message); return; }
+    
+    if (course?.user_id) {
+      await sendNotification(course.user_id, "course_approved", courseId, "✅ Course Approved!", `Your course "${course.title}" has been approved and is now published.`);
+    }
+    
+    toast.success("Course approved!"); refreshAll();
+  };
+
+  const handleRejectCourse = async (courseId: string) => {
+    const course = courses?.find(c => c.id === courseId);
+    const { error } = await supabase.from("courses").update({ is_approved: false }).eq("id", courseId);
+    if (error) { toast.error(error.message); return; }
+    
+    if (course?.user_id) {
+      await sendNotification(course.user_id, "course_rejected", courseId, "❌ Course Not Approved", `Your course "${course.title}" was not approved. Please review and resubmit.`);
+    }
+    
+    toast.success("Course rejected"); refreshAll();
+  };
+
   const handleSaveCourse = async () => {
     if (!courseForm.title || !courseForm.category) { toast.error("Title and category are required"); return; }
-    const payload = { ...courseForm, price: courseForm.is_free ? 0 : courseForm.price };
+    const payload = { ...courseForm, price: courseForm.is_free ? 0 : courseForm.price, is_approved: true };
     if (editingCourseId) {
       const { error } = await supabase.from("courses").update(payload).eq("id", editingCourseId);
       if (error) { toast.error(error.message); return; }
       toast.success("Course updated!");
     } else {
-      const { error } = await supabase.from("courses").insert(payload);
+      const { error } = await supabase.from("courses").insert(payload as any);
       if (error) { toast.error(error.message); return; }
       toast.success("Course created!");
     }
