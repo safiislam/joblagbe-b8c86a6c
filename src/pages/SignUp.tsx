@@ -15,6 +15,7 @@ const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
   const [role, setRole] = useState<"seeker" | "employer">("seeker");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -22,11 +23,11 @@ const SignUp = () => {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: { full_name: fullName, role },
+        data: { full_name: fullName, role, phone },
         emailRedirectTo: window.location.origin,
       },
     });
@@ -34,6 +35,11 @@ const SignUp = () => {
       toast.error(error.message);
       setLoading(false);
       return;
+    }
+
+    // Update phone in profile if signup succeeded
+    if (data?.user && phone) {
+      await supabase.from("profiles").update({ phone }).eq("user_id", data.user.id);
     }
 
     toast.success("Account created! Check your email to confirm.");
@@ -95,6 +101,10 @@ const SignUp = () => {
           <div>
             <Label htmlFor="email">Email</Label>
             <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" className="mt-1.5 rounded-xl" />
+          </div>
+          <div>
+            <Label htmlFor="phone">Phone Number</Label>
+            <Input id="phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="01XXXXXXXXX" className="mt-1.5 rounded-xl" />
           </div>
           <div>
             <Label htmlFor="password">Password</Label>
