@@ -27,7 +27,7 @@ type CompanyRow = { id: string; name: string; location: string | null; website: 
 type ProfileRow = { id: string; full_name: string | null; role: string; phone: string | null; user_id: string; created_at: string; };
 type ApplicationRow = { id: string; status: string; created_at: string; user_id: string; jobs: { title: string; companies: { name: string } | null } | null; };
 type BlogRow = { id: string; title: string; slug: string; is_published: boolean; created_at: string; author_name: string; };
-type CourseRow = { id: string; title: string; category: string; provider: string | null; duration: string | null; is_free: boolean; price: number | null; link: string | null; description: string | null; };
+type CourseRow = { id: string; title: string; category: string; provider: string | null; duration: string | null; is_free: boolean; price: number | null; link: string | null; description: string | null; is_approved?: boolean; user_id?: string | null; };
 type EbookRow = { id: string; title: string; category: string; author: string | null; pages: number | null; is_free: boolean; price: number | null; download_url: string | null; description: string | null; };
 
 const Admin = () => {
