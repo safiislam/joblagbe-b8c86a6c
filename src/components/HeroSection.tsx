@@ -62,15 +62,6 @@ const HeroSection = () => {
           ))}
         </div>
 
-        {/* Stats */}
-        <div className="mt-10 flex justify-center gap-8 md:gap-16 animate-fade-in" style={{ animationDelay: "0.4s" }}>
-          {stats.map((s) => (
-            <div key={s.label} className="text-center">
-              <p className="text-2xl font-bold text-primary md:text-3xl font-bangla">{s.value}</p>
-              <p className="mt-1 text-xs text-muted-foreground font-bangla md:text-sm">{s.label}</p>
-            </div>
-          ))}
-        </div>
       </div>
     </section>
   );

@@ -71,9 +71,21 @@ const Header = () => {
           )}
         </nav>
 
-        <button className="md:hidden p-1" onClick={() => setMobileOpen(!mobileOpen)}>
-          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+        <div className="flex items-center gap-2 md:hidden">
+          {!user && (
+            <>
+              <Button variant="outline" size="sm" className="h-8 text-xs border-primary text-primary" asChild>
+                <Link to="/login">Login</Link>
+              </Button>
+              <Button size="sm" className="h-8 text-xs bg-accent text-accent-foreground font-semibold" asChild>
+                <Link to="/signup">Sign Up</Link>
+              </Button>
+            </>
+          )}
+          <button className="p-1" onClick={() => setMobileOpen(!mobileOpen)}>
+            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
