@@ -57,7 +57,7 @@ const AIChatWidget = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({ messages: allMessages.map((m) => ({ role: m.role, content: m.content })) }),
+        body: JSON.stringify({ messages: allMessages.map((m) => ({ role: m.role, content: m.content })), session_id: sessionId }),
       });
 
       if (!resp.ok || !resp.body) {
