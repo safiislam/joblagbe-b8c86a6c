@@ -27,7 +27,7 @@ type CompanyRow = { id: string; name: string; location: string | null; website: 
 type ProfileRow = { id: string; full_name: string | null; role: string; phone: string | null; user_id: string; created_at: string; };
 type ApplicationRow = { id: string; status: string; created_at: string; user_id: string; jobs: { title: string; companies: { name: string } | null } | null; };
 type BlogRow = { id: string; title: string; slug: string; is_published: boolean; created_at: string; author_name: string; };
-type CourseRow = { id: string; title: string; category: string; provider: string | null; duration: string | null; is_free: boolean; price: number | null; link: string | null; description: string | null; };
+type CourseRow = { id: string; title: string; category: string; provider: string | null; duration: string | null; is_free: boolean; price: number | null; link: string | null; description: string | null; is_approved?: boolean; user_id?: string | null; };
 type EbookRow = { id: string; title: string; category: string; author: string | null; pages: number | null; is_free: boolean; price: number | null; download_url: string | null; description: string | null; };
 
 const Admin = () => {
@@ -35,6 +35,7 @@ const Admin = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [jobTab, setJobTab] = useState<"pending" | "approved" | "all">("pending");
+  const [courseTab, setCourseTab] = useState<"pending" | "approved" | "all">("all");
   const [expandedJob, setExpandedJob] = useState<string | null>(null);
   const [showBlogForm, setShowBlogForm] = useState(false);
   const [blogForm, setBlogForm] = useState({ title: "", slug: "", content: "", excerpt: "", author_name: "Job Lagbe Team" });
@@ -87,9 +88,29 @@ const Admin = () => {
     ["admin-stats", "admin-jobs", "admin-companies", "admin-profiles", "admin-applications", "admin-blogs", "admin-courses", "admin-ebooks", "jobs", "all-courses", "all-ebooks"].forEach(k => queryClient.invalidateQueries({ queryKey: [k] }));
   };
 
+  const sendNotification = async (userId: string, type: string, resourceId: string, title: string, message: string) => {
+    try {
+      await supabase.functions.invoke("notify", {
+        body: { type, resource_id: resourceId, user_id: userId, title, message },
+      });
+    } catch (err) {
+      console.error("Notification failed:", err);
+    }
+  };
+
   const handleApprove = async (jobId: string) => {
     const { error } = await supabase.from("jobs").update({ is_approved: true }).eq("id", jobId);
     if (error) { toast.error(error.message); return; }
+    
+    // Find the job's company owner to notify
+    const job = adminJobs?.find(j => j.id === jobId);
+    if (job) {
+      const { data: comp } = await supabase.from("companies").select("user_id, name").eq("name", job.companies?.name ?? "").maybeSingle();
+      if (comp?.user_id) {
+        await sendNotification(comp.user_id, "job_approved", jobId, "✅ Job Approved!", `Your job "${job.title}" has been approved and is now live.`);
+      }
+    }
+    
     toast.success("Job approved!"); refreshAll();
   };
 
@@ -115,15 +136,39 @@ const Admin = () => {
   };
 
   // Course CRUD
+  const handleApproveCourse = async (courseId: string) => {
+    const course = courses?.find(c => c.id === courseId);
+    const { error } = await supabase.from("courses").update({ is_approved: true }).eq("id", courseId);
+    if (error) { toast.error(error.message); return; }
+    
+    if (course?.user_id) {
+      await sendNotification(course.user_id, "course_approved", courseId, "✅ Course Approved!", `Your course "${course.title}" has been approved and is now published.`);
+    }
+    
+    toast.success("Course approved!"); refreshAll();
+  };
+
+  const handleRejectCourse = async (courseId: string) => {
+    const course = courses?.find(c => c.id === courseId);
+    const { error } = await supabase.from("courses").update({ is_approved: false }).eq("id", courseId);
+    if (error) { toast.error(error.message); return; }
+    
+    if (course?.user_id) {
+      await sendNotification(course.user_id, "course_rejected", courseId, "❌ Course Not Approved", `Your course "${course.title}" was not approved. Please review and resubmit.`);
+    }
+    
+    toast.success("Course rejected"); refreshAll();
+  };
+
   const handleSaveCourse = async () => {
     if (!courseForm.title || !courseForm.category) { toast.error("Title and category are required"); return; }
-    const payload = { ...courseForm, price: courseForm.is_free ? 0 : courseForm.price };
+    const payload = { ...courseForm, price: courseForm.is_free ? 0 : courseForm.price, is_approved: true };
     if (editingCourseId) {
       const { error } = await supabase.from("courses").update(payload).eq("id", editingCourseId);
       if (error) { toast.error(error.message); return; }
       toast.success("Course updated!");
     } else {
-      const { error } = await supabase.from("courses").insert(payload);
+      const { error } = await supabase.from("courses").insert(payload as any);
       if (error) { toast.error(error.message); return; }
       toast.success("Course created!");
     }
@@ -383,7 +428,18 @@ const Admin = () => {
           <TabsContent value="courses">
             <div className="rounded-2xl border bg-card shadow-card">
               <div className="flex items-center justify-between border-b p-4">
-                <h2 className="font-bold">Courses ({courses?.length ?? 0})</h2>
+                <div className="flex items-center gap-2">
+                  <h2 className="font-bold">Courses ({courses?.length ?? 0})</h2>
+                  <div className="flex gap-1 ml-2">
+                    {(["all", "pending", "approved"] as const).map((t) => (
+                      <Button key={t} variant={courseTab === t ? "default" : "ghost"} size="sm" onClick={() => setCourseTab(t)} className="capitalize text-xs h-7">
+                        {t} {t === "pending" && (courses?.filter((c: any) => !c.is_approved).length ?? 0) > 0 && (
+                          <Badge variant="secondary" className="ml-1 text-[10px] px-1.5 py-0">{courses?.filter((c: any) => !c.is_approved).length}</Badge>
+                        )}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
                 <Button size="sm" onClick={() => { setShowCourseForm(!showCourseForm); setEditingCourseId(null); setCourseForm({ title: "", description: "", category: "", provider: "", duration: "", is_free: true, price: 0, link: "" }); }} className="gap-1 bg-accent text-accent-foreground">
                   <Plus className="h-3.5 w-3.5" /> New Course
                 </Button>
@@ -401,13 +457,8 @@ const Admin = () => {
                   </div>
                   <div><Label>Description</Label><Textarea value={courseForm.description} onChange={(e) => setCourseForm({ ...courseForm, description: e.target.value })} rows={3} className="mt-1 rounded-xl" placeholder="কোর্সের বিবরণ..." /></div>
                   <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2">
-                      <Switch checked={courseForm.is_free} onCheckedChange={(v) => setCourseForm({ ...courseForm, is_free: v })} />
-                      <Label>ফ্রি</Label>
-                    </div>
-                    {!courseForm.is_free && (
-                      <div><Label>Price (৳)</Label><Input type="number" value={courseForm.price} onChange={(e) => setCourseForm({ ...courseForm, price: Number(e.target.value) })} className="mt-1 w-32 rounded-xl" /></div>
-                    )}
+                    <div className="flex items-center gap-2"><Switch checked={courseForm.is_free} onCheckedChange={(v) => setCourseForm({ ...courseForm, is_free: v })} /><Label>ফ্রি</Label></div>
+                    {!courseForm.is_free && <div><Label>Price (৳)</Label><Input type="number" value={courseForm.price} onChange={(e) => setCourseForm({ ...courseForm, price: Number(e.target.value) })} className="mt-1 w-32 rounded-xl" /></div>}
                   </div>
                   <div className="flex gap-2">
                     <Button onClick={handleSaveCourse} className="bg-success text-success-foreground">{editingCourseId ? "Update" : "Create"}</Button>
@@ -416,21 +467,35 @@ const Admin = () => {
                 </div>
               )}
               <div className="divide-y">
-                {courses && courses.length > 0 ? courses.map((c) => (
-                  <div key={c.id} className="flex items-center justify-between p-4">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <p className="font-semibold text-sm">{c.title}</p>
-                        <Badge variant={c.is_free ? "default" : "outline"} className="text-[10px]">{c.is_free ? "ফ্রি" : `৳${c.price}`}</Badge>
+                {(() => {
+                  const filtered = courses?.filter((c: any) => 
+                    courseTab === "all" ? true : courseTab === "pending" ? !c.is_approved : c.is_approved
+                  );
+                  return filtered && filtered.length > 0 ? filtered.map((c: any) => (
+                    <div key={c.id} className="flex items-center justify-between p-4">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="font-semibold text-sm">{c.title}</p>
+                          <Badge variant={c.is_free ? "default" : "outline"} className="text-[10px]">{c.is_free ? "ফ্রি" : `৳${c.price}`}</Badge>
+                          <Badge variant="outline" className={c.is_approved ? "border-success text-success text-[10px]" : "border-accent text-accent text-[10px]"}>
+                            {c.is_approved ? "Approved" : "Pending"}
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground">{c.category} · {c.provider ?? "—"} · {c.duration ?? "—"}</p>
                       </div>
-                      <p className="text-xs text-muted-foreground">{c.category} · {c.provider ?? "—"} · {c.duration ?? "—"}</p>
+                      <div className="flex items-center gap-1">
+                        {!c.is_approved && (
+                          <Button size="sm" onClick={() => handleApproveCourse(c.id)} className="gap-1 bg-success text-success-foreground hover:bg-success/90 text-xs"><Check className="h-3 w-3" /> Approve</Button>
+                        )}
+                        {c.is_approved && (
+                          <Button size="sm" variant="ghost" onClick={() => handleRejectCourse(c.id)} className="gap-1 text-destructive text-xs"><X className="h-3 w-3" /> Unapprove</Button>
+                        )}
+                        <Button variant="ghost" size="sm" onClick={() => handleEditCourse(c)} className="text-xs gap-1"><Edit className="h-3 w-3" /> Edit</Button>
+                        <Button variant="ghost" size="sm" onClick={() => handleDeleteCourse(c.id)} className="text-xs gap-1 text-destructive"><Trash2 className="h-3 w-3" /> Delete</Button>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Button variant="ghost" size="sm" onClick={() => handleEditCourse(c)} className="text-xs gap-1"><Edit className="h-3 w-3" /> Edit</Button>
-                      <Button variant="ghost" size="sm" onClick={() => handleDeleteCourse(c.id)} className="text-xs gap-1 text-destructive"><Trash2 className="h-3 w-3" /> Delete</Button>
-                    </div>
-                  </div>
-                )) : <div className="p-8 text-center text-muted-foreground">No courses yet</div>}
+                  )) : <div className="p-8 text-center text-muted-foreground">{courseTab === "pending" ? "No pending courses 🎉" : "No courses yet"}</div>;
+                })()}
               </div>
             </div>
           </TabsContent>

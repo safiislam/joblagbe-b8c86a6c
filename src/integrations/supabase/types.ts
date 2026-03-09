@@ -112,6 +112,33 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_logs: {
+        Row: {
+          created_at: string
+          id: string
+          messages: Json
+          session_id: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          messages?: Json
+          session_id: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          messages?: Json
+          session_id?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       companies: {
         Row: {
           created_at: string
@@ -148,6 +175,39 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_submissions: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          message: string
+          name: string
+          phone: string | null
+          subject: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          message: string
+          name: string
+          phone?: string | null
+          subject?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          message?: string
+          name?: string
+          phone?: string | null
+          subject?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       courses: {
         Row: {
           category: string
@@ -155,12 +215,14 @@ export type Database = {
           description: string | null
           duration: string | null
           id: string
+          is_approved: boolean
           is_free: boolean
           link: string | null
           price: number | null
           provider: string | null
           thumbnail_url: string | null
           title: string
+          user_id: string | null
         }
         Insert: {
           category?: string
@@ -168,12 +230,14 @@ export type Database = {
           description?: string | null
           duration?: string | null
           id?: string
+          is_approved?: boolean
           is_free?: boolean
           link?: string | null
           price?: number | null
           provider?: string | null
           thumbnail_url?: string | null
           title: string
+          user_id?: string | null
         }
         Update: {
           category?: string
@@ -181,12 +245,14 @@ export type Database = {
           description?: string | null
           duration?: string | null
           id?: string
+          is_approved?: boolean
           is_free?: boolean
           link?: string | null
           price?: number | null
           provider?: string | null
           thumbnail_url?: string | null
           title?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -301,6 +367,39 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          link: string | null
+          message: string
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          link?: string | null
+          message: string
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          link?: string | null
+          message?: string
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -365,6 +464,75 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      service_orders: {
+        Row: {
+          created_at: string
+          details: string | null
+          email: string | null
+          id: string
+          name: string
+          phone: string | null
+          service_type: string
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          details?: string | null
+          email?: string | null
+          id?: string
+          name: string
+          phone?: string | null
+          service_type: string
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          details?: string | null
+          email?: string | null
+          id?: string
+          name?: string
+          phone?: string | null
+          service_type?: string
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      user_activity: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          ip_address: string | null
+          metadata: Json | null
+          resource_id: string | null
+          resource_type: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          resource_id?: string | null
+          resource_type?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          resource_id?: string | null
+          resource_type?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {

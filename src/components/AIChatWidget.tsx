@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from "react";
-import { MessageCircle, X, Send, Bot, User, Minimize2 } from "lucide-react";
+import { useState, useRef, useEffect, useMemo } from "react";
+import { MessageCircle, X, Send, Bot, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
 
@@ -7,15 +7,18 @@ type Msg = { role: "user" | "assistant"; content: string };
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 
+const generateSessionId = () => `chat_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+
 const AIChatWidget = () => {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([
-    { role: "assistant", content: "আসসালামু আলাইকুম! 👋 আমি **Jobu** — আপনার ক্যারিয়ার সহায়ক। চাকরি খোঁজা, আবেদন, সার্কুলার, বা ক্যারিয়ার নিয়ে যেকোনো প্রশ্ন করুন!" },
+    { role: "assistant", content: "হ্যালো! 👋 আমি **Jobu** — আপনার ক্যারিয়ার সহায়ক। চাকরি খোঁজা, আবেদন, বা ক্যারিয়ার নিয়ে প্রশ্ন করুন!" },
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const sessionId = useMemo(() => generateSessionId(), []);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -54,7 +57,7 @@ const AIChatWidget = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({ messages: allMessages.map((m) => ({ role: m.role, content: m.content })) }),
+        body: JSON.stringify({ messages: allMessages.map((m) => ({ role: m.role, content: m.content })), session_id: sessionId }),
       });
 
       if (!resp.ok || !resp.body) {

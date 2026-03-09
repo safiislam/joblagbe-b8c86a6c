@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import NotificationBell from "@/components/NotificationBell";
 import logo from "@/assets/logo.png";
 
 const Header = () => {
@@ -51,6 +52,7 @@ const Header = () => {
           )}
           {user ? (
             <>
+              <NotificationBell />
               <span className="flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-xs font-medium">
                 <User className="h-3 w-3" />
                 <span className="max-w-[100px] truncate">{profile?.full_name || user.email}</span>
