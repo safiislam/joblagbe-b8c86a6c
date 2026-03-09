@@ -12,12 +12,13 @@ const generateSessionId = () => `chat_${Date.now()}_${Math.random().toString(36)
 const AIChatWidget = () => {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([
-    { role: "assistant", content: "আসসালামু আলাইকুম! 👋 আমি **Jobu** — আপনার ক্যারিয়ার সহায়ক। চাকরি খোঁজা, আবেদন, সার্কুলার, বা ক্যারিয়ার নিয়ে যেকোনো প্রশ্ন করুন!" },
+    { role: "assistant", content: "হ্যালো! 👋 আমি **Jobu** — আপনার ক্যারিয়ার সহায়ক। চাকরি খোঁজা, আবেদন, বা ক্যারিয়ার নিয়ে প্রশ্ন করুন!" },
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const sessionId = useMemo(() => generateSessionId(), []);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
