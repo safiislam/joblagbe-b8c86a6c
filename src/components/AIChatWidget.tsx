@@ -1,11 +1,13 @@
-import { useState, useRef, useEffect } from "react";
-import { MessageCircle, X, Send, Bot, User, Minimize2 } from "lucide-react";
+import { useState, useRef, useEffect, useMemo } from "react";
+import { MessageCircle, X, Send, Bot, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
+
+const generateSessionId = () => `chat_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
 
 const AIChatWidget = () => {
   const [open, setOpen] = useState(false);
