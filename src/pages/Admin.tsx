@@ -88,9 +88,29 @@ const Admin = () => {
     ["admin-stats", "admin-jobs", "admin-companies", "admin-profiles", "admin-applications", "admin-blogs", "admin-courses", "admin-ebooks", "jobs", "all-courses", "all-ebooks"].forEach(k => queryClient.invalidateQueries({ queryKey: [k] }));
   };
 
+  const sendNotification = async (userId: string, type: string, resourceId: string, title: string, message: string) => {
+    try {
+      await supabase.functions.invoke("notify", {
+        body: { type, resource_id: resourceId, user_id: userId, title, message },
+      });
+    } catch (err) {
+      console.error("Notification failed:", err);
+    }
+  };
+
   const handleApprove = async (jobId: string) => {
     const { error } = await supabase.from("jobs").update({ is_approved: true }).eq("id", jobId);
     if (error) { toast.error(error.message); return; }
+    
+    // Find the job's company owner to notify
+    const job = adminJobs?.find(j => j.id === jobId);
+    if (job) {
+      const { data: comp } = await supabase.from("companies").select("user_id, name").eq("name", job.companies?.name ?? "").maybeSingle();
+      if (comp?.user_id) {
+        await sendNotification(comp.user_id, "job_approved", jobId, "✅ Job Approved!", `Your job "${job.title}" has been approved and is now live.`);
+      }
+    }
+    
     toast.success("Job approved!"); refreshAll();
   };
 
