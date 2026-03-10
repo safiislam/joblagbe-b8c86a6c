@@ -113,7 +113,7 @@ const Header = () => {
             )}
             {isAdmin && (
               <Button variant="ghost" className="justify-start gap-2 text-accent" asChild onClick={() => setMobileOpen(false)}>
-                <Link to="/admin"><Shield className="h-4 w-4" /> Admin Panel</Link>
+                <Link to="/dashboard"><Shield className="h-4 w-4" /> Admin Panel</Link>
               </Button>
             )}
             {user ? (
