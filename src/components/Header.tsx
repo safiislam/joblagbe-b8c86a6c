@@ -47,7 +47,7 @@ const Header = () => {
           )}
           {isAdmin && (
             <Button variant="ghost" size="sm" className="gap-1 text-accent" asChild>
-              <Link to="/admin"><Shield className="h-3.5 w-3.5" /> Admin</Link>
+              <Link to="/dashboard"><Shield className="h-3.5 w-3.5" /> Admin</Link>
             </Button>
           )}
           {user ? (
@@ -113,7 +113,7 @@ const Header = () => {
             )}
             {isAdmin && (
               <Button variant="ghost" className="justify-start gap-2 text-accent" asChild onClick={() => setMobileOpen(false)}>
-                <Link to="/admin"><Shield className="h-4 w-4" /> Admin Panel</Link>
+                <Link to="/dashboard"><Shield className="h-4 w-4" /> Admin Panel</Link>
               </Button>
             )}
             {user ? (
