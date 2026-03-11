@@ -218,7 +218,7 @@ const EmployerDashboard = () => {
                           )}
                           <div className="mt-3 flex flex-wrap gap-2">
                             {app.status !== "shortlisted" && app.status !== "accepted" && (
-                              <Button size="sm" variant="outline" className="gap-1.5 text-primary border-primary hover:bg-primary hover:text-primary-foreground" disabled={updateStatus.isPending} onClick={() => updateStatus.mutate({ appId: app.id, status: "shortlisted" })}><UserCheck className="h-3.5 w-3.5" /> Shortlist</Button>
+                              <Button size="sm" variant="outline" className="gap-1.5 text-primary border-primary hover:bg-primary hover:text-primary-foreground" disabled={updateStatus.isPending} onClick={() => updateStatus.mutate({ appId: app.id, status: "shortlisted", seekerUserId: app.user_id })}><UserCheck className="h-3.5 w-3.5" /> Shortlist</Button>
                             )}
                             {app.status !== "accepted" && (
                               <Button size="sm" className="gap-1.5 bg-success text-white hover:bg-success/90" disabled={updateStatus.isPending} onClick={() => updateStatus.mutate({ appId: app.id, status: "accepted" })}><CheckCircle className="h-3.5 w-3.5" /> Accept</Button>
