@@ -98,6 +98,22 @@ const JobBoard = () => {
       else toast.error(error.message);
     } else {
       toast.success("Application submitted!");
+      // Notify the employer
+      const job = jobs?.find(j => j.id === jobId);
+      if (job) {
+        const { data: comp } = await supabase.from("companies").select("user_id").eq("id", job.company_id).maybeSingle();
+        if (comp?.user_id) {
+          supabase.functions.invoke("notify", {
+            body: {
+              type: "new_application",
+              resource_id: jobId,
+              user_id: comp.user_id,
+              title: "📩 New Application!",
+              message: `Someone applied to your job "${job.title}".`,
+            },
+          }).catch(console.error);
+        }
+      }
     }
   };
 

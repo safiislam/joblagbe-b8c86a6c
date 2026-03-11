@@ -90,9 +90,22 @@ const EmployerDashboard = () => {
   });
 
   const updateStatus = useMutation({
-    mutationFn: async ({ appId, status }: { appId: string; status: string }) => {
+    mutationFn: async ({ appId, status, seekerUserId }: { appId: string; status: string; seekerUserId: string }) => {
       const { error } = await supabase.from("applications").update({ status }).eq("id", appId);
       if (error) throw error;
+      // Notify the seeker about status change
+      const jobTitle = myJobs?.find(j => j.id === selectedJobId)?.title ?? "a job";
+      const statusMessages: Record<string, { title: string; message: string }> = {
+        shortlisted: { title: "⭐ You've been shortlisted!", message: `You were shortlisted for "${jobTitle}".` },
+        accepted: { title: "🎉 Application Accepted!", message: `Congratulations! Your application for "${jobTitle}" has been accepted.` },
+        rejected: { title: "Application Update", message: `Your application for "${jobTitle}" was not selected. Keep trying!` },
+      };
+      const notif = statusMessages[status];
+      if (notif) {
+        supabase.functions.invoke("notify", {
+          body: { type: `application_${status}`, resource_id: appId, user_id: seekerUserId, ...notif },
+        }).catch(console.error);
+      }
     },
     onSuccess: (_, { status }) => {
       queryClient.invalidateQueries({ queryKey: ["job-applicants", selectedJobId] });
