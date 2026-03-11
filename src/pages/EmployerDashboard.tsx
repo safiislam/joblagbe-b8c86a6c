@@ -90,9 +90,22 @@ const EmployerDashboard = () => {
   });
 
   const updateStatus = useMutation({
-    mutationFn: async ({ appId, status }: { appId: string; status: string }) => {
+    mutationFn: async ({ appId, status, seekerUserId }: { appId: string; status: string; seekerUserId: string }) => {
       const { error } = await supabase.from("applications").update({ status }).eq("id", appId);
       if (error) throw error;
+      // Notify the seeker about status change
+      const jobTitle = myJobs?.find(j => j.id === selectedJobId)?.title ?? "a job";
+      const statusMessages: Record<string, { title: string; message: string }> = {
+        shortlisted: { title: "⭐ You've been shortlisted!", message: `You were shortlisted for "${jobTitle}".` },
+        accepted: { title: "🎉 Application Accepted!", message: `Congratulations! Your application for "${jobTitle}" has been accepted.` },
+        rejected: { title: "Application Update", message: `Your application for "${jobTitle}" was not selected. Keep trying!` },
+      };
+      const notif = statusMessages[status];
+      if (notif) {
+        supabase.functions.invoke("notify", {
+          body: { type: `application_${status}`, resource_id: appId, user_id: seekerUserId, ...notif },
+        }).catch(console.error);
+      }
     },
     onSuccess: (_, { status }) => {
       queryClient.invalidateQueries({ queryKey: ["job-applicants", selectedJobId] });
@@ -205,13 +218,13 @@ const EmployerDashboard = () => {
                           )}
                           <div className="mt-3 flex flex-wrap gap-2">
                             {app.status !== "shortlisted" && app.status !== "accepted" && (
-                              <Button size="sm" variant="outline" className="gap-1.5 text-primary border-primary hover:bg-primary hover:text-primary-foreground" disabled={updateStatus.isPending} onClick={() => updateStatus.mutate({ appId: app.id, status: "shortlisted" })}><UserCheck className="h-3.5 w-3.5" /> Shortlist</Button>
+                              <Button size="sm" variant="outline" className="gap-1.5 text-primary border-primary hover:bg-primary hover:text-primary-foreground" disabled={updateStatus.isPending} onClick={() => updateStatus.mutate({ appId: app.id, status: "shortlisted", seekerUserId: app.user_id })}><UserCheck className="h-3.5 w-3.5" /> Shortlist</Button>
                             )}
                             {app.status !== "accepted" && (
-                              <Button size="sm" className="gap-1.5 bg-success text-white hover:bg-success/90" disabled={updateStatus.isPending} onClick={() => updateStatus.mutate({ appId: app.id, status: "accepted" })}><CheckCircle className="h-3.5 w-3.5" /> Accept</Button>
+                              <Button size="sm" className="gap-1.5 bg-success text-white hover:bg-success/90" disabled={updateStatus.isPending} onClick={() => updateStatus.mutate({ appId: app.id, status: "accepted", seekerUserId: app.user_id })}><CheckCircle className="h-3.5 w-3.5" /> Accept</Button>
                             )}
                             {app.status !== "rejected" && (
-                              <Button size="sm" variant="outline" className="gap-1.5 text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground" disabled={updateStatus.isPending} onClick={() => updateStatus.mutate({ appId: app.id, status: "rejected" })}><XCircle className="h-3.5 w-3.5" /> Reject</Button>
+                              <Button size="sm" variant="outline" className="gap-1.5 text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground" disabled={updateStatus.isPending} onClick={() => updateStatus.mutate({ appId: app.id, status: "rejected", seekerUserId: app.user_id })}><XCircle className="h-3.5 w-3.5" /> Reject</Button>
                             )}
                           </div>
                         </div>
