@@ -224,7 +224,7 @@ const EmployerDashboard = () => {
                               <Button size="sm" className="gap-1.5 bg-success text-white hover:bg-success/90" disabled={updateStatus.isPending} onClick={() => updateStatus.mutate({ appId: app.id, status: "accepted", seekerUserId: app.user_id })}><CheckCircle className="h-3.5 w-3.5" /> Accept</Button>
                             )}
                             {app.status !== "rejected" && (
-                              <Button size="sm" variant="outline" className="gap-1.5 text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground" disabled={updateStatus.isPending} onClick={() => updateStatus.mutate({ appId: app.id, status: "rejected" })}><XCircle className="h-3.5 w-3.5" /> Reject</Button>
+                              <Button size="sm" variant="outline" className="gap-1.5 text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground" disabled={updateStatus.isPending} onClick={() => updateStatus.mutate({ appId: app.id, status: "rejected", seekerUserId: app.user_id })}><XCircle className="h-3.5 w-3.5" /> Reject</Button>
                             )}
                           </div>
                         </div>
