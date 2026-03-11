@@ -4,23 +4,25 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { lazy, Suspense } from "react";
 import Index from "./pages/Index";
-import Login from "./pages/Login";
-import SignUp from "./pages/SignUp";
-import PostJob from "./pages/PostJob";
-import Admin from "./pages/Admin";
-import Dashboard from "./pages/Dashboard";
-import SeekerDashboard from "./pages/SeekerDashboard";
-import EmployerDashboard from "./pages/EmployerDashboard";
-import Blog from "./pages/Blog";
-import BlogPost from "./pages/BlogPost";
-import Companies from "./pages/Companies";
-import CompanyProfile from "./pages/CompanyProfile";
-import Jobs from "./pages/Jobs";
-import Courses from "./pages/Courses";
-import Ebooks from "./pages/Ebooks";
-import ResetPassword from "./pages/ResetPassword";
-import NotFound from "./pages/NotFound";
+
+const Login = lazy(() => import("./pages/Login"));
+const SignUp = lazy(() => import("./pages/SignUp"));
+const PostJob = lazy(() => import("./pages/PostJob"));
+const Admin = lazy(() => import("./pages/Admin"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const SeekerDashboard = lazy(() => import("./pages/SeekerDashboard"));
+const EmployerDashboard = lazy(() => import("./pages/EmployerDashboard"));
+const Blog = lazy(() => import("./pages/Blog"));
+const BlogPost = lazy(() => import("./pages/BlogPost"));
+const Companies = lazy(() => import("./pages/Companies"));
+const CompanyProfile = lazy(() => import("./pages/CompanyProfile"));
+const Jobs = lazy(() => import("./pages/Jobs"));
+const Courses = lazy(() => import("./pages/Courses"));
+const Ebooks = lazy(() => import("./pages/Ebooks"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
 
@@ -31,25 +33,27 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="/post-job" element={<PostJob />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/dashboard/*" element={<Dashboard />} />
-            <Route path="/my-applications" element={<SeekerDashboard />} />
-            <Route path="/employer-dashboard" element={<EmployerDashboard />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/blog/:slug" element={<BlogPost />} />
-            <Route path="/companies" element={<Companies />} />
-            <Route path="/company/:id" element={<CompanyProfile />} />
-            <Route path="/jobs" element={<Jobs />} />
-            <Route path="/courses" element={<Courses />} />
-            <Route path="/ebooks" element={<Ebooks />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <Suspense fallback={<div className="min-h-screen bg-background" />}>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/post-job" element={<PostJob />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/dashboard/*" element={<Dashboard />} />
+              <Route path="/my-applications" element={<SeekerDashboard />} />
+              <Route path="/employer-dashboard" element={<EmployerDashboard />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:slug" element={<BlogPost />} />
+              <Route path="/companies" element={<Companies />} />
+              <Route path="/company/:id" element={<CompanyProfile />} />
+              <Route path="/jobs" element={<Jobs />} />
+              <Route path="/courses" element={<Courses />} />
+              <Route path="/ebooks" element={<Ebooks />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
