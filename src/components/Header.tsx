@@ -22,7 +22,7 @@ const Header = () => {
     <header className="sticky top-0 z-50 border-b bg-card/90 backdrop-blur-xl">
       <div className="container flex h-14 items-center justify-between gap-3 md:h-16">
         <Link to="/" className="shrink-0">
-          <img src={logo} alt="Job Lagbe" className="h-8 w-auto md:h-9" />
+          <img src={logo} alt="Job Lagbe" width={36} height={36} className="h-8 w-auto md:h-9" />
         </Link>
 
         {/* Desktop search */}
