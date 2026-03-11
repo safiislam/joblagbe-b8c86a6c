@@ -56,7 +56,7 @@ const ResetPassword = () => {
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-primary/5 to-background px-4">
         <div className="w-full max-w-md rounded-2xl border bg-card p-8 shadow-elevated text-center">
           <Link to="/">
-            <img src={logo} alt="Job Lagbe" className="mx-auto h-10 w-auto" />
+            <img src={logo} alt="Job Lagbe" width={40} height={40} className="mx-auto h-10 w-auto" />
           </Link>
           <h2 className="mt-6 text-xl font-bold">Invalid Reset Link</h2>
           <p className="mt-2 text-sm text-muted-foreground">This link is invalid or expired. Please request a new password reset.</p>
@@ -73,7 +73,7 @@ const ResetPassword = () => {
       <div className="w-full max-w-md rounded-2xl border bg-card p-8 shadow-elevated">
         <div className="mb-8 flex flex-col items-center text-center">
           <Link to="/">
-            <img src={logo} alt="Job Lagbe" className="h-10 w-auto" />
+            <img src={logo} alt="Job Lagbe" width={40} height={40} className="h-10 w-auto" />
           </Link>
           <h2 className="mt-4 text-xl font-bold">Set New Password</h2>
           <p className="mt-1 text-sm text-muted-foreground">Enter your new password below</p>
