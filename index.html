@@ -10,6 +10,11 @@
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'" />
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" /></noscript>
+    <style>
+      /* Critical inline CSS to prevent FOIT and improve LCP */
+      body { font-family: 'Inter', 'Hind Siliguri', sans-serif; margin: 0; }
+      #root { min-height: 100vh; }
+    </style>
     <title>Job লাগবে?</title>
     <meta name="description" content="Bangladesh&#39;s trusted job portal. Find your dream career from thousands of jobs.">
     <meta name="author" content="Job Lagbe" />
