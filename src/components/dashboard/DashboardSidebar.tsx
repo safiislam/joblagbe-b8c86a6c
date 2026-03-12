@@ -1,7 +1,7 @@
 import {
   BarChart3, Briefcase, Building2, Users, FileText, BookOpen,
   GraduationCap, BookMarked, MessageSquare, ShoppingCart, Activity,
-  Mail, Home, Settings, Shield
+  Mail, Home, Settings, Shield, PenSquare
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -32,6 +32,10 @@ const trackingItems = [
   { title: "Contact Leads", url: "/dashboard/contacts", icon: Mail },
   { title: "User Activity", url: "/dashboard/activity", icon: Activity },
   { title: "Chat Logs", url: "/dashboard/chat-logs", icon: MessageSquare },
+];
+
+const settingsItems = [
+  { title: "Site Content", url: "/dashboard/site-content", icon: PenSquare },
 ];
 
 interface DashboardSidebarProps {
@@ -105,6 +109,13 @@ export function DashboardSidebar({ pendingJobs = 0, pendingCourses = 0 }: Dashbo
           <SidebarGroupLabel>Tracking & Leads</SidebarGroupLabel>
           <SidebarGroupContent>
             {renderItems(trackingItems)}
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Settings</SidebarGroupLabel>
+          <SidebarGroupContent>
+            {renderItems(settingsItems)}
           </SidebarGroupContent>
         </SidebarGroup>
 
