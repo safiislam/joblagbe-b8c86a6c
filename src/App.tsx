@@ -10,7 +10,7 @@ import Index from "./pages/Index";
 const Login = lazy(() => import("./pages/Login"));
 const SignUp = lazy(() => import("./pages/SignUp"));
 const PostJob = lazy(() => import("./pages/PostJob"));
-const Admin = lazy(() => import("./pages/Admin"));
+
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const SeekerDashboard = lazy(() => import("./pages/SeekerDashboard"));
 const EmployerDashboard = lazy(() => import("./pages/EmployerDashboard"));
