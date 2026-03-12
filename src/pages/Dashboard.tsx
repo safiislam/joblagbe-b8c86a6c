@@ -82,6 +82,7 @@ const Dashboard = () => {
               <Route path="contacts" element={<DashboardContacts />} />
               <Route path="activity" element={<DashboardActivity />} />
               <Route path="chat-logs" element={<DashboardChatLogs />} />
+              <Route path="site-content" element={<DashboardSiteContent />} />
             </Routes>
           </main>
         </div>

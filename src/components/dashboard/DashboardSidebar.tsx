@@ -112,6 +112,13 @@ export function DashboardSidebar({ pendingJobs = 0, pendingCourses = 0 }: Dashbo
           </SidebarGroupContent>
         </SidebarGroup>
 
+        <SidebarGroup>
+          <SidebarGroupLabel>Settings</SidebarGroupLabel>
+          <SidebarGroupContent>
+            {renderItems(settingsItems)}
+          </SidebarGroupContent>
+        </SidebarGroup>
+
         <div className="mt-auto px-4 py-4">
           {!collapsed && (
             <NavLink to="/" className="flex items-center gap-2 text-xs text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors">
