@@ -34,6 +34,10 @@ const trackingItems = [
   { title: "Chat Logs", url: "/dashboard/chat-logs", icon: MessageSquare },
 ];
 
+const settingsItems = [
+  { title: "Site Content", url: "/dashboard/site-content", icon: PenSquare },
+];
+
 interface DashboardSidebarProps {
   pendingJobs?: number;
   pendingCourses?: number;
