@@ -42,11 +42,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const fetchProfile = async (userId: string) => {
     const { data } = await supabase
       .from("profiles")
-      .select("full_name, role, resume_url")
+      .select("full_name, role, resume_url, avatar_url, phone")
       .eq("user_id", userId)
       .single();
     setProfile(data);
     return data;
+  };
+
+  const refreshProfile = async () => {
+    if (user) await fetchProfile(user.id);
   };
 
   const syncPendingSignupRole = async (userId: string, currentRole?: string | null) => {
