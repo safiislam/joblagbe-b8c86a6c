@@ -1,13 +1,18 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
-import { Briefcase, Clock, CheckCircle, XCircle, FileText, MapPin, Building2, Bookmark } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import {
+  Briefcase, Clock, CheckCircle, XCircle, FileText, MapPin,
+  Building2, Bookmark, Mail, Phone, User, Pencil,
+} from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
-import { Badge } from "@/components/ui/badge";
 import ResumeUpload from "@/components/ResumeUpload";
 import SaveJobButton from "@/components/SaveJobButton";
 
@@ -37,9 +42,9 @@ type SavedJobRow = {
 };
 
 const statusConfig: Record<string, { icon: typeof Clock; label: string; color: string }> = {
-  pending: { icon: Clock, label: "Pending", color: "border-accent text-accent" },
-  accepted: { icon: CheckCircle, label: "Accepted", color: "border-success text-success" },
-  rejected: { icon: XCircle, label: "Rejected", color: "border-destructive text-destructive" },
+  pending: { icon: Clock, label: "Pending", color: "bg-accent/10 text-accent border-accent/30" },
+  accepted: { icon: CheckCircle, label: "Accepted", color: "bg-green-500/10 text-green-600 border-green-500/30" },
+  rejected: { icon: XCircle, label: "Rejected", color: "bg-destructive/10 text-destructive border-destructive/30" },
 };
 
 const SeekerDashboard = () => {
@@ -82,104 +87,161 @@ const SeekerDashboard = () => {
     total: applications?.length ?? 0,
     pending: applications?.filter((a) => a.status === "pending").length ?? 0,
     accepted: applications?.filter((a) => a.status === "accepted").length ?? 0,
+    saved: savedJobs?.length ?? 0,
   };
+
+  const initials = profile?.full_name
+    ? profile.full_name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
+    : "U";
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <div className="container py-8">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold font-bangla">আমার ড্যাশবোর্ড</h1>
-          <p className="mt-1 text-muted-foreground">Manage your applications, saved jobs, and resume</p>
-        </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
-          {[
-            { label: "Total", value: counts.total, color: "text-primary" },
-            { label: "Pending", value: counts.pending, color: "text-accent" },
-            { label: "Accepted", value: counts.accepted, color: "text-success" },
-          ].map((s) => (
-            <div key={s.label} className="rounded-2xl border bg-card p-4 shadow-card text-center">
-              <p className={`text-xl font-bold ${s.color}`}>{s.value}</p>
-              <p className="mt-0.5 text-xs text-muted-foreground">{s.label}</p>
+      <div className="container max-w-2xl py-8">
+        {/* Profile Card */}
+        <div className="rounded-2xl border bg-card shadow-card overflow-hidden">
+          {/* Cover gradient */}
+          <div className="h-24 bg-gradient-to-r from-primary/80 to-accent/60" />
+
+          <div className="px-6 pb-6">
+            {/* Avatar overlapping cover */}
+            <div className="-mt-12 flex items-end justify-between">
+              <Avatar className="h-20 w-20 border-4 border-card shadow-lg">
+                <AvatarImage src="" />
+                <AvatarFallback className="bg-primary text-primary-foreground text-xl font-bold">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+              <Button variant="outline" size="sm" className="mt-4 gap-1.5">
+                <Pencil className="h-3.5 w-3.5" /> Edit Profile
+              </Button>
             </div>
-          ))}
-        </div>
 
-        <div className="grid gap-6 lg:grid-cols-3">
-          {/* Left column: Resume + Saved */}
-          <div className="space-y-6">
-            <ResumeUpload />
-
-            {/* Saved Jobs */}
-            <div className="rounded-2xl border bg-card shadow-card">
-              <div className="border-b p-4">
-                <h3 className="font-bold flex items-center gap-2"><Bookmark className="h-4 w-4 text-accent" /> Saved Jobs ({savedJobs?.length ?? 0})</h3>
-              </div>
-              <div className="divide-y max-h-[300px] overflow-y-auto">
-                {savedJobs && savedJobs.length > 0 ? (
-                  savedJobs.map((s) => (
-                    <div key={s.id} className="flex items-center justify-between p-3">
-                      <div className="min-w-0">
-                        <p className="font-medium text-sm truncate">{s.jobs?.title}</p>
-                        <p className="text-xs text-muted-foreground">{s.jobs?.companies?.name}</p>
-                      </div>
-                      <SaveJobButton jobId={s.job_id} saved onToggle={() => refetchSaved()} size="icon" />
-                    </div>
-                  ))
-                ) : (
-                  <div className="p-6 text-center text-sm text-muted-foreground">No saved jobs</div>
+            {/* Name & Info */}
+            <div className="mt-3">
+              <h1 className="text-xl font-bold">{profile?.full_name || "Job Seeker"}</h1>
+              <div className="mt-1.5 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                {user?.email && (
+                  <span className="flex items-center gap-1">
+                    <Mail className="h-3.5 w-3.5" /> {user.email}
+                  </span>
                 )}
               </div>
             </div>
-          </div>
 
-          {/* Applications list */}
-          <div className="lg:col-span-2">
-            <div className="rounded-2xl border bg-card shadow-card">
-              <div className="border-b p-4">
-                <h2 className="font-bold text-lg">Applications</h2>
-              </div>
-              <div className="divide-y">
-                {isLoading ? (
-                  <div className="p-8 text-center text-muted-foreground">Loading...</div>
-                ) : applications && applications.length > 0 ? (
-                  applications.map((app) => {
-                    const config = statusConfig[app.status] || statusConfig.pending;
-                    const StatusIcon = config.icon;
-                    return (
-                      <div key={app.id} className="flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:justify-between">
-                        <div className="flex-1 min-w-0">
+            {/* Stats Row */}
+            <div className="mt-5 flex gap-3">
+              {[
+                { label: "Applied", value: counts.total, color: "bg-primary/10 text-primary" },
+                { label: "Pending", value: counts.pending, color: "bg-accent/10 text-accent" },
+                { label: "Accepted", value: counts.accepted, color: "bg-green-500/10 text-green-600" },
+                { label: "Saved", value: counts.saved, color: "bg-secondary text-secondary-foreground" },
+              ].map((s) => (
+                <div key={s.label} className={`flex-1 rounded-xl px-3 py-2.5 text-center ${s.color}`}>
+                  <p className="text-lg font-bold leading-none">{s.value}</p>
+                  <p className="mt-1 text-[11px] font-medium opacity-80">{s.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <Tabs defaultValue="applications" className="mt-6">
+          <TabsList className="w-full grid grid-cols-3 h-11">
+            <TabsTrigger value="applications" className="gap-1.5 text-xs sm:text-sm">
+              <Briefcase className="h-3.5 w-3.5" /> Applications
+            </TabsTrigger>
+            <TabsTrigger value="saved" className="gap-1.5 text-xs sm:text-sm">
+              <Bookmark className="h-3.5 w-3.5" /> Saved Jobs
+            </TabsTrigger>
+            <TabsTrigger value="resume" className="gap-1.5 text-xs sm:text-sm">
+              <FileText className="h-3.5 w-3.5" /> Resume
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Applications Tab */}
+          <TabsContent value="applications" className="mt-4">
+            <div className="rounded-2xl border bg-card shadow-card divide-y">
+              {isLoading ? (
+                <div className="p-8 text-center text-muted-foreground">Loading...</div>
+              ) : applications && applications.length > 0 ? (
+                applications.map((app) => {
+                  const config = statusConfig[app.status] || statusConfig.pending;
+                  const StatusIcon = config.icon;
+                  return (
+                    <div key={app.id} className="p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <h3 className="font-semibold">{app.jobs?.title ?? "Unknown Job"}</h3>
-                            <Badge variant="outline" className={`text-[10px] ${config.color}`}>
+                            <h3 className="font-semibold text-sm">{app.jobs?.title ?? "Unknown Job"}</h3>
+                            <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${config.color}`}>
                               <StatusIcon className="mr-1 h-3 w-3" /> {config.label}
                             </Badge>
                           </div>
-                          <p className="mt-0.5 text-sm text-muted-foreground flex items-center gap-3 flex-wrap">
-                            <span className="flex items-center gap-1"><Building2 className="h-3 w-3" />{app.jobs?.companies?.name}</span>
-                            <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{app.jobs?.location}</span>
+                          <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
+                            <span className="flex items-center gap-1">
+                              <Building2 className="h-3 w-3" />{app.jobs?.companies?.name}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <MapPin className="h-3 w-3" />{app.jobs?.location}
+                            </span>
                             <span>{formatDistanceToNow(new Date(app.created_at), { addSuffix: true })}</span>
-                          </p>
+                          </div>
                         </div>
                       </div>
-                    );
-                  })
-                ) : (
-                  <div className="flex flex-col items-center py-14 text-muted-foreground">
-                    <FileText className="mb-3 h-10 w-10 opacity-30" />
-                    <p className="font-medium">No applications yet</p>
-                    <p className="mt-1 text-sm">Browse jobs and apply to get started!</p>
-                    <Button className="mt-4 bg-accent text-accent-foreground" asChild>
-                      <Link to="/#jobs">Browse Jobs</Link>
-                    </Button>
-                  </div>
-                )}
-              </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="flex flex-col items-center py-14 text-muted-foreground">
+                  <FileText className="mb-3 h-10 w-10 opacity-30" />
+                  <p className="font-medium">No applications yet</p>
+                  <p className="mt-1 text-sm">Browse jobs and apply to get started!</p>
+                  <Button className="mt-4" asChild>
+                    <Link to="/#jobs">Browse Jobs</Link>
+                  </Button>
+                </div>
+              )}
             </div>
-          </div>
-        </div>
+          </TabsContent>
+
+          {/* Saved Jobs Tab */}
+          <TabsContent value="saved" className="mt-4">
+            <div className="rounded-2xl border bg-card shadow-card divide-y">
+              {savedJobs && savedJobs.length > 0 ? (
+                savedJobs.map((s) => (
+                  <div key={s.id} className="flex items-center justify-between p-4">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-semibold text-sm truncate">{s.jobs?.title}</p>
+                      <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <Building2 className="h-3 w-3" />{s.jobs?.companies?.name}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <MapPin className="h-3 w-3" />{s.jobs?.location}
+                        </span>
+                      </div>
+                    </div>
+                    <SaveJobButton jobId={s.job_id} saved onToggle={() => refetchSaved()} size="icon" />
+                  </div>
+                ))
+              ) : (
+                <div className="flex flex-col items-center py-14 text-muted-foreground">
+                  <Bookmark className="mb-3 h-10 w-10 opacity-30" />
+                  <p className="font-medium">No saved jobs</p>
+                  <p className="mt-1 text-sm">Save jobs you're interested in!</p>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+
+          {/* Resume Tab */}
+          <TabsContent value="resume" className="mt-4">
+            <ResumeUpload />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
