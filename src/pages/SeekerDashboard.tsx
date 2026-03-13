@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import Header from "@/components/Header";
+import EditProfileDialog from "@/components/EditProfileDialog";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
   Briefcase, Clock, CheckCircle, XCircle, FileText, MapPin,
-  Building2, Bookmark, Mail, Phone, User, Pencil,
+  Building2, Bookmark, Mail, Phone, Pencil,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -50,6 +51,7 @@ const statusConfig: Record<string, { icon: typeof Clock; label: string; color: s
 const SeekerDashboard = () => {
   const { user, profile, loading } = useAuth();
   const navigate = useNavigate();
+  const [editOpen, setEditOpen] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) navigate("/login");
@@ -101,24 +103,21 @@ const SeekerDashboard = () => {
       <div className="container max-w-2xl py-8">
         {/* Profile Card */}
         <div className="rounded-2xl border bg-card shadow-card overflow-hidden">
-          {/* Cover gradient */}
           <div className="h-24 bg-gradient-to-r from-primary/80 to-accent/60" />
 
           <div className="px-6 pb-6">
-            {/* Avatar overlapping cover */}
             <div className="-mt-12 flex items-end justify-between">
               <Avatar className="h-20 w-20 border-4 border-card shadow-lg">
-                <AvatarImage src="" />
+                <AvatarImage src={profile?.avatar_url || ""} />
                 <AvatarFallback className="bg-primary text-primary-foreground text-xl font-bold">
                   {initials}
                 </AvatarFallback>
               </Avatar>
-              <Button variant="outline" size="sm" className="mt-4 gap-1.5">
+              <Button variant="outline" size="sm" className="mt-4 gap-1.5" onClick={() => setEditOpen(true)}>
                 <Pencil className="h-3.5 w-3.5" /> Edit Profile
               </Button>
             </div>
 
-            {/* Name & Info */}
             <div className="mt-3">
               <h1 className="text-xl font-bold">{profile?.full_name || "Job Seeker"}</h1>
               <div className="mt-1.5 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
@@ -127,10 +126,14 @@ const SeekerDashboard = () => {
                     <Mail className="h-3.5 w-3.5" /> {user.email}
                   </span>
                 )}
+                {profile?.phone && (
+                  <span className="flex items-center gap-1">
+                    <Phone className="h-3.5 w-3.5" /> {profile.phone}
+                  </span>
+                )}
               </div>
             </div>
 
-            {/* Stats Row */}
             <div className="mt-5 flex gap-3">
               {[
                 { label: "Applied", value: counts.total, color: "bg-primary/10 text-primary" },
@@ -161,7 +164,6 @@ const SeekerDashboard = () => {
             </TabsTrigger>
           </TabsList>
 
-          {/* Applications Tab */}
           <TabsContent value="applications" className="mt-4">
             <div className="rounded-2xl border bg-card shadow-card divide-y">
               {isLoading ? (
@@ -207,7 +209,6 @@ const SeekerDashboard = () => {
             </div>
           </TabsContent>
 
-          {/* Saved Jobs Tab */}
           <TabsContent value="saved" className="mt-4">
             <div className="rounded-2xl border bg-card shadow-card divide-y">
               {savedJobs && savedJobs.length > 0 ? (
@@ -237,12 +238,13 @@ const SeekerDashboard = () => {
             </div>
           </TabsContent>
 
-          {/* Resume Tab */}
           <TabsContent value="resume" className="mt-4">
             <ResumeUpload />
           </TabsContent>
         </Tabs>
       </div>
+
+      <EditProfileDialog open={editOpen} onOpenChange={setEditOpen} />
     </div>
   );
 };

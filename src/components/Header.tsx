@@ -1,7 +1,8 @@
-import { Search, Menu, X, LogOut, User, Shield, LayoutDashboard } from "lucide-react";
+import { Search, Menu, X, LogOut, Shield } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
 import NotificationBell from "@/components/NotificationBell";
 import logo from "@/assets/logo.png";
@@ -16,7 +17,11 @@ const Header = () => {
     navigate("/");
   };
 
-  const dashboardLink = profile?.role === "employer" ? "/employer-dashboard" : "/my-applications";
+  const profileLink = profile?.role === "employer" ? "/employer-dashboard" : "/my-applications";
+
+  const initials = profile?.full_name
+    ? profile.full_name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
+    : "U";
 
   return (
     <header className="sticky top-0 z-50 border-b bg-card/90 backdrop-blur-xl">
@@ -37,11 +42,6 @@ const Header = () => {
 
         <nav className="hidden items-center gap-1.5 md:flex">
           <Button variant="ghost" size="sm" asChild><Link to="/">Jobs</Link></Button>
-          {user && (
-            <Button variant="ghost" size="sm" className="gap-1" asChild>
-              <Link to={dashboardLink}><LayoutDashboard className="h-3.5 w-3.5" /> Dashboard</Link>
-            </Button>
-          )}
           {user && profile?.role === "employer" && (
             <Button variant="ghost" size="sm" asChild><Link to="/post-job">Post Job</Link></Button>
           )}
@@ -53,10 +53,15 @@ const Header = () => {
           {user ? (
             <>
               <NotificationBell />
-              <span className="flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-xs font-medium">
-                <User className="h-3 w-3" />
-                <span className="max-w-[100px] truncate">{profile?.full_name || user.email}</span>
-              </span>
+              <Link to={profileLink} className="flex items-center gap-2 rounded-full bg-secondary px-2 py-1 hover:bg-secondary/80 transition-colors">
+                <Avatar className="h-7 w-7">
+                  <AvatarImage src={profile?.avatar_url || ""} />
+                  <AvatarFallback className="bg-primary text-primary-foreground text-xs font-bold">
+                    {initials}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="max-w-[100px] truncate text-xs font-medium">{profile?.full_name || "Profile"}</span>
+              </Link>
               <Button variant="ghost" size="icon" onClick={handleSignOut} className="h-8 w-8">
                 <LogOut className="h-4 w-4" />
               </Button>
@@ -74,7 +79,16 @@ const Header = () => {
         </nav>
 
         <div className="flex items-center gap-2 md:hidden">
-          {!user && (
+          {user ? (
+            <Link to={profileLink}>
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={profile?.avatar_url || ""} />
+                <AvatarFallback className="bg-primary text-primary-foreground text-xs font-bold">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+            </Link>
+          ) : (
             <>
               <Button variant="outline" size="sm" className="h-8 text-xs border-primary text-primary" asChild>
                 <Link to="/login">Login</Link>
@@ -101,11 +115,6 @@ const Header = () => {
             <Button variant="ghost" className="justify-start" asChild onClick={() => setMobileOpen(false)}>
               <Link to="/">Jobs</Link>
             </Button>
-            {user && (
-              <Button variant="ghost" className="justify-start gap-2" asChild onClick={() => setMobileOpen(false)}>
-                <Link to={dashboardLink}><LayoutDashboard className="h-4 w-4" /> Dashboard</Link>
-              </Button>
-            )}
             {user && profile?.role === "employer" && (
               <Button variant="ghost" className="justify-start" asChild onClick={() => setMobileOpen(false)}>
                 <Link to="/post-job">Post Job</Link>
@@ -117,14 +126,9 @@ const Header = () => {
               </Button>
             )}
             {user ? (
-              <>
-                <div className="flex items-center gap-2 px-4 py-2 text-sm text-muted-foreground">
-                  <User className="h-4 w-4" /> {profile?.full_name || user.email}
-                </div>
-                <Button variant="ghost" className="justify-start text-destructive" onClick={handleSignOut}>
-                  <LogOut className="mr-2 h-4 w-4" /> Sign Out
-                </Button>
-              </>
+              <Button variant="ghost" className="justify-start text-destructive" onClick={handleSignOut}>
+                <LogOut className="mr-2 h-4 w-4" /> Sign Out
+              </Button>
             ) : (
               <div className="mt-2 flex flex-col gap-2">
                 <Button variant="outline" className="border-primary text-primary" asChild onClick={() => setMobileOpen(false)}>
