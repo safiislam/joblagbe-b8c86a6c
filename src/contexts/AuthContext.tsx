@@ -2,13 +2,22 @@ import { createContext, useContext, useEffect, useState, ReactNode } from "react
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
+type ProfileData = {
+  full_name: string | null;
+  role: string;
+  resume_url?: string | null;
+  avatar_url?: string | null;
+  phone?: string | null;
+};
+
 type AuthContextType = {
   session: Session | null;
   user: User | null;
-  profile: { full_name: string | null; role: string; resume_url?: string | null } | null;
+  profile: ProfileData | null;
   isAdmin: boolean;
   loading: boolean;
   signOut: () => Promise<void>;
+  refreshProfile: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -18,6 +27,7 @@ const AuthContext = createContext<AuthContextType>({
   isAdmin: false,
   loading: true,
   signOut: async () => {},
+  refreshProfile: async () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -25,18 +35,22 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<{ full_name: string | null; role: string; resume_url?: string | null } | null>(null);
+  const [profile, setProfile] = useState<ProfileData | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const fetchProfile = async (userId: string) => {
     const { data } = await supabase
       .from("profiles")
-      .select("full_name, role, resume_url")
+      .select("full_name, role, resume_url, avatar_url, phone")
       .eq("user_id", userId)
       .single();
     setProfile(data);
     return data;
+  };
+
+  const refreshProfile = async () => {
+    if (user) await fetchProfile(user.id);
   };
 
   const syncPendingSignupRole = async (userId: string, currentRole?: string | null) => {
@@ -115,7 +129,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ session, user, profile, isAdmin, loading, signOut }}>
+    <AuthContext.Provider value={{ session, user, profile, isAdmin, loading, signOut, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   );
