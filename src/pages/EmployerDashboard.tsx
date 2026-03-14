@@ -144,8 +144,9 @@ const EmployerDashboard = () => {
   if (loading || !user) return null;
 
   const totalJobs = myJobs?.length ?? 0;
-  const pendingJobs = myJobs?.filter(j => !j.is_approved).length ?? 0;
-  const approvedJobs = myJobs?.filter(j => j.is_approved).length ?? 0;
+  const endedJobs = myJobs?.filter(j => !j.is_active).length ?? 0;
+  const pendingJobs = myJobs?.filter(j => j.is_active && !j.is_approved).length ?? 0;
+  const approvedJobs = myJobs?.filter(j => j.is_active && j.is_approved).length ?? 0;
 
   return (
     <div className="min-h-screen bg-background">
