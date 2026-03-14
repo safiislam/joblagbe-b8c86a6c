@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Briefcase, Search, Clock, Building2 } from "lucide-react";
+import VerifiedBadge from "@/components/VerifiedBadge";
 import { formatDistanceToNow } from "date-fns";
 import { Link, useSearchParams } from "react-router-dom";
 
