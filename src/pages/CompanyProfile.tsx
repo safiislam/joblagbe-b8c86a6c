@@ -61,6 +61,11 @@ const CompanyProfile = () => {
                     {company.location && (
                       <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{company.location}</span>
                     )}
+                    {company.phone && (
+                      <a href={`tel:${company.phone}`} className="flex items-center gap-1 text-primary hover:underline">
+                        <Phone className="h-3.5 w-3.5" />{company.phone}
+                      </a>
+                    )}
                     {company.website && (
                       <a href={company.website} target="_blank" rel="noopener" className="flex items-center gap-1 text-primary hover:underline">
                         <Globe className="h-3.5 w-3.5" />{company.website}
