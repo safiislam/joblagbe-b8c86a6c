@@ -2,18 +2,25 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Briefcase, Search, Clock, Building2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 const Jobs = () => {
-  const [search, setSearch] = useState("");
+  const [searchParams] = useSearchParams();
+  const [search, setSearch] = useState(searchParams.get("q") || "");
   const [jobType, setJobType] = useState("all");
-  const [location, setLocation] = useState("all");
+  const [location, setLocation] = useState(searchParams.get("location") || "all");
+
+  useEffect(() => {
+    setSearch(searchParams.get("q") || "");
+    const loc = searchParams.get("location");
+    if (loc) setLocation(loc);
+  }, [searchParams]);
 
   const { data: jobs, isLoading } = useQuery({
     queryKey: ["all-jobs"],
@@ -40,7 +47,7 @@ const Jobs = () => {
       job.title.toLowerCase().includes(search.toLowerCase()) ||
       (job.companies as any)?.name?.toLowerCase().includes(search.toLowerCase());
     const matchType = jobType === "all" || job.job_type === jobType;
-    const matchLoc = location === "all" || job.location?.toLowerCase() === location.toLowerCase();
+    const matchLoc = location === "all" || job.location?.toLowerCase().includes(location.toLowerCase());
     return matchSearch && matchType && matchLoc;
   });
 

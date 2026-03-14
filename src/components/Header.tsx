@@ -1,5 +1,5 @@
 import { Search, Menu, X, LogOut, Shield } from "lucide-react";
-import { useState } from "react";
+import { useState, FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -9,8 +9,18 @@ import logo from "@/assets/logo.png";
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [headerSearch, setHeaderSearch] = useState("");
   const { user, profile, isAdmin, signOut } = useAuth();
   const navigate = useNavigate();
+
+  const handleHeaderSearch = (e: FormEvent) => {
+    e.preventDefault();
+    if (headerSearch.trim()) {
+      navigate(`/jobs?q=${encodeURIComponent(headerSearch.trim())}`);
+      setHeaderSearch("");
+      setMobileOpen(false);
+    }
+  };
 
   const handleSignOut = async () => {
     await signOut();
@@ -31,14 +41,16 @@ const Header = () => {
         </Link>
 
         {/* Desktop search */}
-        <div className="hidden flex-1 items-center gap-2 rounded-xl border bg-secondary px-3 py-1.5 md:flex max-w-sm lg:max-w-md">
+        <form onSubmit={handleHeaderSearch} className="hidden flex-1 items-center gap-2 rounded-xl border bg-secondary px-3 py-1.5 md:flex max-w-sm lg:max-w-md">
           <Search className="h-4 w-4 text-muted-foreground" />
           <input
             type="text"
             placeholder="Search jobs, companies..."
+            value={headerSearch}
+            onChange={(e) => setHeaderSearch(e.target.value)}
             className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
           />
-        </div>
+        </form>
 
         <nav className="hidden items-center gap-1.5 md:flex">
           <Button variant="ghost" size="sm" asChild><Link to="/">Jobs</Link></Button>
@@ -107,10 +119,10 @@ const Header = () => {
       {/* Mobile menu */}
       {mobileOpen && (
         <div className="border-t bg-card p-4 md:hidden animate-fade-in" style={{ animationDuration: "0.2s" }}>
-          <div className="mb-3 flex items-center gap-2 rounded-xl border bg-secondary px-3 py-2.5">
+          <form onSubmit={handleHeaderSearch} className="mb-3 flex items-center gap-2 rounded-xl border bg-secondary px-3 py-2.5">
             <Search className="h-4 w-4 text-muted-foreground" />
-            <input type="text" placeholder="Search jobs..." className="flex-1 bg-transparent text-sm outline-none" />
-          </div>
+            <input type="text" placeholder="Search jobs..." value={headerSearch} onChange={(e) => setHeaderSearch(e.target.value)} className="flex-1 bg-transparent text-sm outline-none" />
+          </form>
           <div className="flex flex-col gap-1">
             <Button variant="ghost" className="justify-start" asChild onClick={() => setMobileOpen(false)}>
               <Link to="/">Jobs</Link>
