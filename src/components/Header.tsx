@@ -69,7 +69,7 @@ const Header = () => {
           )}
           {user ? (
             <>
-              <NotificationBell />
+              <Suspense fallback={null}><NotificationBell /></Suspense>
               <Link to={profileLink} className="flex items-center gap-2 rounded-full bg-secondary px-2 py-1 hover:bg-secondary/80 transition-colors">
                 <Avatar className="h-7 w-7">
                   <AvatarImage src={profile?.avatar_url || ""} />
