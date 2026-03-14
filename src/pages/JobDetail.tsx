@@ -1,11 +1,11 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +13,7 @@ import SaveJobButton from "@/components/SaveJobButton";
 import ShareJobButton from "@/components/ShareJobButton";
 import {
   MapPin, Briefcase, Clock, Banknote, Building2, Phone, Globe,
-  ArrowLeft, CheckCircle2, FileText, Loader2
+  ArrowLeft, CheckCircle2, FileText, Loader2, Upload, File
 } from "lucide-react";
 import { formatDistanceToNow, format } from "date-fns";
 
@@ -28,9 +28,13 @@ const JobDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [coverLetter, setCoverLetter] = useState("");
   const [applying, setApplying] = useState(false);
   const [showApplyForm, setShowApplyForm] = useState(false);
+  const [selectedDocId, setSelectedDocId] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: job, isLoading } = useQuery({
     queryKey: ["job-detail", id],
@@ -69,6 +73,71 @@ const JobDetail = () => {
     enabled: !!user,
   });
 
+  // Fetch user's uploaded resumes
+  const { data: userDocuments } = useQuery({
+    queryKey: ["seeker-documents", user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("seeker_documents")
+        .select("*")
+        .eq("user_id", user!.id)
+        .eq("file_type", "resume")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user && showApplyForm,
+  });
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    const allowedTypes = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("শুধুমাত্র PDF বা DOC/DOCX ফাইল আপলোড করুন");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("ফাইল সাইজ ৫MB এর বেশি হতে পারবে না");
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const fileExt = file.name.split(".").pop();
+      const filePath = `${user.id}/${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("resumes")
+        .upload(filePath, file);
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage.from("resumes").getPublicUrl(filePath);
+
+      const { data: doc, error: dbError } = await supabase
+        .from("seeker_documents")
+        .insert({
+          user_id: user.id,
+          file_name: file.name,
+          file_type: "resume",
+          file_url: urlData.publicUrl,
+        })
+        .select()
+        .single();
+      if (dbError) throw dbError;
+
+      setSelectedDocId(doc.id);
+      queryClient.invalidateQueries({ queryKey: ["seeker-documents", user.id] });
+      toast.success("সিভি আপলোড সফল হয়েছে!");
+    } catch (err: any) {
+      toast.error(err.message || "আপলোড ব্যর্থ হয়েছে");
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
   const handleApply = async () => {
     if (!user) {
       toast.error("আবেদন করতে লগইন করুন");
@@ -78,10 +147,13 @@ const JobDetail = () => {
 
     setApplying(true);
     try {
+      const selectedDoc = userDocuments?.find(d => d.id === selectedDocId);
+      const resumeInfo = selectedDoc ? `\n\n[সংযুক্ত সিভি: ${selectedDoc.file_name}]\n${selectedDoc.file_url}` : "";
+
       const { error } = await supabase.from("applications").insert({
         job_id: id!,
         user_id: user.id,
-        cover_letter: coverLetter.trim() || null,
+        cover_letter: (coverLetter.trim() + resumeInfo) || null,
       });
 
       if (error) {
@@ -90,8 +162,8 @@ const JobDetail = () => {
       } else {
         toast.success("আবেদন সফলভাবে জমা হয়েছে!");
         setShowApplyForm(false);
+        queryClient.invalidateQueries({ queryKey: ["application-check", id, user.id] });
 
-        // Notify employer
         const company = job?.companies as any;
         if (company?.user_id) {
           supabase.functions.invoke("notify", {
@@ -147,7 +219,6 @@ const JobDetail = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <div className="container py-8">
-        {/* Back button */}
         <Button onClick={() => navigate("/jobs")} variant="ghost" size="sm" className="mb-6 gap-1.5 text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4" /> সকল চাকরি
         </Button>
@@ -155,7 +226,6 @@ const JobDetail = () => {
         <div className="grid gap-6 lg:grid-cols-3">
           {/* Main content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Job header */}
             <div className="rounded-2xl border bg-card p-6 shadow-card">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-4">
@@ -208,7 +278,6 @@ const JobDetail = () => {
               </p>
             </div>
 
-            {/* Job Description */}
             <div className="rounded-2xl border bg-card p-6 shadow-card">
               <h2 className="text-lg font-bold font-bangla mb-4">বিস্তারিত বিবরণ</h2>
               <div className="prose prose-sm max-w-none text-muted-foreground leading-relaxed whitespace-pre-wrap">
@@ -216,7 +285,6 @@ const JobDetail = () => {
               </div>
             </div>
 
-            {/* Requirements */}
             {job.requirements && job.requirements.length > 0 && (
               <div className="rounded-2xl border bg-card p-6 shadow-card">
                 <h2 className="text-lg font-bold font-bangla mb-4">যোগ্যতা ও অভিজ্ঞতা</h2>
@@ -234,7 +302,6 @@ const JobDetail = () => {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Apply Card */}
             <div className="rounded-2xl border bg-card p-6 shadow-card sticky top-20">
               {existingApplication ? (
                 <div className="text-center">
@@ -254,16 +321,81 @@ const JobDetail = () => {
 
                   {showApplyForm ? (
                     <div className="space-y-4">
+                      {/* CV Selection */}
+                      <div>
+                        <label className="text-sm font-medium mb-2 block">সিভি নির্বাচন করুন</label>
+                        
+                        {userDocuments && userDocuments.length > 0 ? (
+                          <div className="space-y-2 mb-3 max-h-48 overflow-y-auto">
+                            {userDocuments.map((doc) => (
+                              <label
+                                key={doc.id}
+                                className={`flex items-center gap-3 rounded-xl border p-3 cursor-pointer transition-colors ${
+                                  selectedDocId === doc.id
+                                    ? "border-primary bg-primary/5"
+                                    : "border-border hover:border-muted-foreground/30"
+                                }`}
+                              >
+                                <input
+                                  type="radio"
+                                  name="cv-select"
+                                  checked={selectedDocId === doc.id}
+                                  onChange={() => setSelectedDocId(doc.id)}
+                                  className="accent-primary"
+                                />
+                                <File className="h-4 w-4 text-muted-foreground shrink-0" />
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm font-medium truncate">{doc.file_name}</p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {format(new Date(doc.created_at), "dd MMM yyyy")}
+                                  </p>
+                                </div>
+                                {selectedDocId === doc.id && (
+                                  <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
+                                )}
+                              </label>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-xs text-muted-foreground mb-2">কোনো সিভি আপলোড করা হয়নি</p>
+                        )}
+
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept=".pdf,.doc,.docx"
+                          onChange={handleFileUpload}
+                          className="hidden"
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => fileInputRef.current?.click()}
+                          disabled={uploading}
+                          className="w-full gap-2 rounded-xl"
+                        >
+                          {uploading ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Upload className="h-4 w-4" />
+                          )}
+                          {uploading ? "আপলোড হচ্ছে..." : "নতুন সিভি আপলোড করুন"}
+                        </Button>
+                      </div>
+
+                      {/* Cover letter */}
                       <div>
                         <label className="text-sm font-medium mb-1.5 block">কভার লেটার (ঐচ্ছিক)</label>
                         <Textarea
                           value={coverLetter}
                           onChange={(e) => setCoverLetter(e.target.value)}
                           placeholder="আপনার আবেদনের সাথে একটি কভার লেটার যোগ করুন..."
-                          rows={5}
+                          rows={4}
                           className="resize-none"
                         />
                       </div>
+
                       <div className="flex gap-2">
                         <Button
                           onClick={handleApply}
@@ -273,7 +405,7 @@ const JobDetail = () => {
                           {applying ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <FileText className="h-4 w-4 mr-2" />}
                           {applying ? "জমা হচ্ছে..." : "আবেদন জমা দিন"}
                         </Button>
-                        <Button variant="outline" onClick={() => setShowApplyForm(false)} className="rounded-xl">
+                        <Button variant="outline" onClick={() => { setShowApplyForm(false); setSelectedDocId(null); }} className="rounded-xl">
                           বাতিল
                         </Button>
                       </div>
@@ -293,7 +425,6 @@ const JobDetail = () => {
               )}
             </div>
 
-            {/* Company Info */}
             <div className="rounded-2xl border bg-card p-6 shadow-card">
               <h3 className="font-bold font-bangla text-lg mb-4">প্রতিষ্ঠানের তথ্য</h3>
               <Link to={`/company/${job.company_id}`} className="flex items-center gap-3 mb-4 group">
