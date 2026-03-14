@@ -105,9 +105,10 @@ const JobCard = ({
         <Link
           to={`/company/${job.company_id}`}
           onClick={(e) => e.stopPropagation()}
-          className="mt-0.5 inline-block text-sm text-muted-foreground hover:text-primary transition-colors"
+          className="mt-0.5 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors"
         >
           {job.companies?.name}
+          {job.companies?.is_verified && <VerifiedBadge className="h-3.5 w-3.5" />}
         </Link>
 
         <div className="mt-2 flex flex-wrap items-center gap-2">
