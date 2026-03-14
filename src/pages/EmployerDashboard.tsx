@@ -498,6 +498,15 @@ const EmployerDashboard = () => {
               </div>
             </div>
           </TabsContent>
+
+          {/* COMPANY TAB */}
+          <TabsContent value="company">
+            {company ? <CompanyEditForm company={company} queryClient={queryClient} /> : (
+              <div className="rounded-2xl border bg-card p-8 text-center text-muted-foreground">
+                No company found. Post a job to create your company profile.
+              </div>
+            )}
+          </TabsContent>
         </Tabs>
       </div>
     </div>
