@@ -30,7 +30,7 @@ type JobRow = {
   created_at: string;
   category_id: string | null;
   company_id: string;
-  companies: { name: string; location: string | null } | null;
+  companies: { name: string; location: string | null; logo_url: string | null } | null;
 };
 
 const formatSalary = (min: number | null, max: number | null) => {
@@ -74,7 +74,7 @@ const JobBoard = () => {
     queryFn: async () => {
       let query = supabase
         .from("jobs")
-        .select("*, companies(name, location)")
+        .select("*, companies(name, location, logo_url)")
         .eq("is_active", true)
         .eq("is_approved", true)
         .order("created_at", { ascending: false })
@@ -205,8 +205,13 @@ const JobBoard = () => {
                     </div>
                   </div>
                   <p className="mt-1.5 flex items-center gap-1.5 text-sm text-muted-foreground">
-                    <Link to={`/company/${job.company_id}`} onClick={(e) => e.stopPropagation()} className="flex items-center gap-1 hover:text-primary">
-                      <Building2 className="h-3.5 w-3.5" /> {job.companies?.name}
+                    <Link to={`/company/${job.company_id}`} onClick={(e) => e.stopPropagation()} className="flex items-center gap-1.5 hover:text-primary">
+                      {job.companies?.logo_url ? (
+                        <img src={job.companies.logo_url} alt="" className="h-5 w-5 rounded object-cover shrink-0" />
+                      ) : (
+                        <Building2 className="h-3.5 w-3.5" />
+                      )}
+                      {job.companies?.name}
                     </Link>
                   </p>
                   <div className="mt-2.5 flex flex-wrap gap-3 text-xs text-muted-foreground">
@@ -232,7 +237,10 @@ const JobBoard = () => {
                   <div className="flex items-start justify-between">
                     <div>
                       <h3 className="text-xl font-bold">{selectedJob.title}</h3>
-                      <p className="mt-1 text-muted-foreground">
+                      <p className="mt-1 flex items-center gap-2 text-muted-foreground">
+                        {selectedJob.companies?.logo_url && (
+                          <img src={selectedJob.companies.logo_url} alt="" className="h-8 w-8 rounded-lg object-cover" />
+                        )}
                         <Link to={`/company/${selectedJob.company_id}`} className="hover:text-primary">{selectedJob.companies?.name}</Link> · {selectedJob.location}
                       </p>
                     </div>

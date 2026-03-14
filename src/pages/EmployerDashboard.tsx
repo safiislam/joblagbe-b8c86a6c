@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
-import { Briefcase, Plus, Users, Clock, CheckCircle, Eye, XCircle, UserCheck, FileText, GraduationCap } from "lucide-react";
+import { Briefcase, Plus, Users, Clock, CheckCircle, Eye, XCircle, UserCheck, FileText, GraduationCap, Upload, Building2 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
@@ -140,9 +140,45 @@ const EmployerDashboard = () => {
       <Header />
       <div className="container py-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
-          <div>
-            <h1 className="text-2xl font-bold">Employer Dashboard</h1>
-            <p className="mt-1 text-sm text-muted-foreground">{company?.name || "Set up your company to start posting"}</p>
+          <div className="flex items-center gap-4">
+            <div className="relative group">
+              <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-primary/10 shrink-0 overflow-hidden">
+                {company?.logo_url ? (
+                  <img src={company.logo_url} alt={company.name} className="h-full w-full object-cover" />
+                ) : (
+                  <Building2 className="h-8 w-8 text-primary" />
+                )}
+              </div>
+              <button
+                onClick={async () => {
+                  if (!company) return;
+                  const input = document.createElement("input");
+                  input.type = "file";
+                  input.accept = "image/*";
+                  input.onchange = async (e) => {
+                    const file = (e.target as HTMLInputElement).files?.[0];
+                    if (!file) return;
+                    if (file.size > 2 * 1024 * 1024) { toast.error("Logo must be under 2MB"); return; }
+                    const ext = file.name.split(".").pop();
+                    const path = `${company.id}/logo.${ext}`;
+                    const { error } = await supabase.storage.from("company-logos").upload(path, file, { upsert: true });
+                    if (error) { toast.error("Upload failed"); return; }
+                    const publicUrl = supabase.storage.from("company-logos").getPublicUrl(path).data.publicUrl;
+                    await supabase.from("companies").update({ logo_url: publicUrl + "?t=" + Date.now() }).eq("id", company.id);
+                    queryClient.invalidateQueries({ queryKey: ["my-company"] });
+                    toast.success("Logo updated!");
+                  };
+                  input.click();
+                }}
+                className="absolute inset-0 flex items-center justify-center rounded-xl bg-foreground/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+              >
+                <Upload className="h-5 w-5 text-white" />
+              </button>
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold">Employer Dashboard</h1>
+              <p className="mt-1 text-sm text-muted-foreground">{company?.name || "Set up your company to start posting"}</p>
+            </div>
           </div>
           <Button className="bg-accent text-accent-foreground hover:bg-accent/90 gap-2 font-semibold self-start" asChild>
             <Link to="/post-job"><Plus className="h-4 w-4" /> Post New Job</Link>

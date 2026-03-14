@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import Header from "@/components/Header";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Clock, AlertTriangle } from "lucide-react";
+import { Clock, AlertTriangle, Upload, Building2 } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -56,6 +56,26 @@ const PostJob = () => {
 
   const [companyForm, setCompanyForm] = useState({ name: "", location: "", description: "" });
   const [showCompanyForm, setShowCompanyForm] = useState(false);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
+
+  const handleLogoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) { toast.error("Logo must be under 2MB"); return; }
+    setLogoFile(file);
+    setLogoPreview(URL.createObjectURL(file));
+  };
+
+  const uploadLogo = async (companyId: string): Promise<string | null> => {
+    if (!logoFile) return null;
+    const ext = logoFile.name.split(".").pop();
+    const path = `${companyId}/logo.${ext}`;
+    const { error } = await supabase.storage.from("company-logos").upload(path, logoFile, { upsert: true });
+    if (error) { console.error(error); return null; }
+    return path;
+  };
 
   const createCompany = async () => {
     if (!user) return null;
@@ -65,6 +85,16 @@ const PostJob = () => {
       .select()
       .single();
     if (error) { toast.error(error.message); return null; }
+
+    // Upload logo if selected
+    if (logoFile && data) {
+      const logoPath = await uploadLogo(data.id);
+      if (logoPath) {
+        const publicUrl = supabase.storage.from("company-logos").getPublicUrl(logoPath).data.publicUrl;
+        await supabase.from("companies").update({ logo_url: publicUrl }).eq("id", data.id);
+      }
+    }
+
     toast.success("Company created!");
     setShowCompanyForm(false);
     return data;
@@ -167,6 +197,25 @@ const PostJob = () => {
         {showCompanyForm && !company && (
           <div className="mt-6 space-y-4 rounded-2xl border p-6">
             <h3 className="font-semibold">Company Details</h3>
+            <div>
+              <Label>Company Logo</Label>
+              <div className="mt-1.5 flex items-center gap-4">
+                <div className="flex h-16 w-16 items-center justify-center rounded-xl border-2 border-dashed border-muted-foreground/30 bg-secondary overflow-hidden shrink-0">
+                  {logoPreview ? (
+                    <img src={logoPreview} alt="Logo preview" className="h-full w-full object-cover" />
+                  ) : (
+                    <Building2 className="h-6 w-6 text-muted-foreground" />
+                  )}
+                </div>
+                <div>
+                  <Button type="button" variant="outline" size="sm" className="gap-1.5 rounded-xl" onClick={() => logoInputRef.current?.click()}>
+                    <Upload className="h-3.5 w-3.5" /> {logoFile ? "Change Logo" : "Upload Logo"}
+                  </Button>
+                  <p className="mt-1 text-xs text-muted-foreground">PNG, JPG up to 2MB</p>
+                  <input ref={logoInputRef} type="file" accept="image/*" className="hidden" onChange={handleLogoSelect} />
+                </div>
+              </div>
+            </div>
             <div>
               <Label>Company Name</Label>
               <Input value={companyForm.name} onChange={(e) => setCompanyForm({ ...companyForm, name: e.target.value })} required className="mt-1.5 rounded-xl" />
