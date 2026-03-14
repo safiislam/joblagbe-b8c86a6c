@@ -15,11 +15,14 @@ const Jobs = () => {
   const [search, setSearch] = useState(searchParams.get("q") || "");
   const [jobType, setJobType] = useState("all");
   const [location, setLocation] = useState(searchParams.get("location") || "all");
+  const [categoryFilter, setCategoryFilter] = useState(searchParams.get("category") || "all");
 
   useEffect(() => {
     setSearch(searchParams.get("q") || "");
     const loc = searchParams.get("location");
     if (loc) setLocation(loc);
+    const cat = searchParams.get("category");
+    if (cat) setCategoryFilter(cat);
   }, [searchParams]);
 
   const { data: jobs, isLoading } = useQuery({
@@ -31,6 +34,14 @@ const Jobs = () => {
         .eq("is_active", true)
         .eq("is_approved", true)
         .order("created_at", { ascending: false });
+      return data ?? [];
+    },
+  });
+
+  const { data: categories } = useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      const { data } = await supabase.from("categories").select("*").order("name");
       return data ?? [];
     },
   });
@@ -48,7 +59,8 @@ const Jobs = () => {
       (job.companies as any)?.name?.toLowerCase().includes(search.toLowerCase());
     const matchType = jobType === "all" || job.job_type === jobType;
     const matchLoc = location === "all" || job.location?.toLowerCase().includes(location.toLowerCase());
-    return matchSearch && matchType && matchLoc;
+    const matchCat = categoryFilter === "all" || job.category_id === categoryFilter;
+    return matchSearch && matchType && matchLoc && matchCat;
   });
 
   return (
@@ -90,6 +102,17 @@ const Jobs = () => {
               <SelectItem value="all">সকল লোকেশন</SelectItem>
               {locations.map((loc) => (
                 <SelectItem key={loc} value={loc}>{loc}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+            <SelectTrigger className="w-full sm:w-44">
+              <SelectValue placeholder="ক্যাটাগরি" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">সকল ক্যাটাগরি</SelectItem>
+              {categories?.map((cat) => (
+                <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
               ))}
             </SelectContent>
           </Select>
