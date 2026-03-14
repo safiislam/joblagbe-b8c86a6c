@@ -1,15 +1,19 @@
+import { lazy, Suspense } from "react";
 import Header from "@/components/Header";
 import AnnouncementBanner from "@/components/AnnouncementBanner";
-
 import HeroSection from "@/components/HeroSection";
 import QuickLinks from "@/components/QuickLinks";
-import CategoryGrid from "@/components/CategoryGrid";
-import JobBoard from "@/components/JobBoard";
-import ServicesSection from "@/components/ServicesSection";
-import EmployerCTA from "@/components/EmployerCTA";
 import Footer from "@/components/Footer";
-import AIChatWidget from "@/components/AIChatWidget";
 import { useAllSiteContent } from "@/hooks/useSiteContent";
+
+// Lazy load below-the-fold sections to reduce initial JS bundle
+const CategoryGrid = lazy(() => import("@/components/CategoryGrid"));
+const JobBoard = lazy(() => import("@/components/JobBoard"));
+const ServicesSection = lazy(() => import("@/components/ServicesSection"));
+const EmployerCTA = lazy(() => import("@/components/EmployerCTA"));
+const AIChatWidget = lazy(() => import("@/components/AIChatWidget"));
+
+const SectionFallback = () => <div className="py-16" />;
 
 // Homepage
 const Index = () => {
@@ -24,12 +28,22 @@ const Index = () => {
       <Header />
       <HeroSection />
       <QuickLinks />
-      <CategoryGrid />
-      <JobBoard />
-      <ServicesSection />
-      <EmployerCTA />
+      <Suspense fallback={<SectionFallback />}>
+        <CategoryGrid />
+      </Suspense>
+      <Suspense fallback={<SectionFallback />}>
+        <JobBoard />
+      </Suspense>
+      <Suspense fallback={<SectionFallback />}>
+        <ServicesSection />
+      </Suspense>
+      <Suspense fallback={<SectionFallback />}>
+        <EmployerCTA />
+      </Suspense>
       <Footer />
-      <AIChatWidget />
+      <Suspense fallback={null}>
+        <AIChatWidget />
+      </Suspense>
     </div>
   );
 };
