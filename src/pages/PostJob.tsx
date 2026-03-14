@@ -54,7 +54,7 @@ const PostJob = () => {
     },
   });
 
-  const [companyForm, setCompanyForm] = useState({ name: "", location: "", description: "" });
+  const [companyForm, setCompanyForm] = useState({ name: "", location: "", description: "", phone: "", website: "" });
   const [showCompanyForm, setShowCompanyForm] = useState(false);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
@@ -81,7 +81,7 @@ const PostJob = () => {
     if (!user) return null;
     const { data, error } = await supabase
       .from("companies")
-      .insert({ user_id: user.id, name: companyForm.name, location: companyForm.location, description: companyForm.description })
+      .insert({ user_id: user.id, name: companyForm.name, location: companyForm.location, description: companyForm.description, phone: companyForm.phone, website: companyForm.website })
       .select()
       .single();
     if (error) { toast.error(error.message); return null; }
@@ -223,6 +223,14 @@ const PostJob = () => {
             <div>
               <Label>Location</Label>
               <Input value={companyForm.location} onChange={(e) => setCompanyForm({ ...companyForm, location: e.target.value })} className="mt-1.5 rounded-xl" />
+            </div>
+            <div>
+              <Label>Phone Number <span className="text-destructive">*</span></Label>
+              <Input value={companyForm.phone} onChange={(e) => setCompanyForm({ ...companyForm, phone: e.target.value })} required placeholder="e.g. +880 1XXX-XXXXXX" className="mt-1.5 rounded-xl" />
+            </div>
+            <div>
+              <Label>Website / Social Link <span className="text-destructive">*</span></Label>
+              <Input value={companyForm.website} onChange={(e) => setCompanyForm({ ...companyForm, website: e.target.value })} required placeholder="e.g. https://company.com or facebook.com/company" className="mt-1.5 rounded-xl" />
             </div>
             <div>
               <Label>Description</Label>
