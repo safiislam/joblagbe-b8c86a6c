@@ -15,6 +15,7 @@ const iconMap: Record<string, LucideIcon> = {
 };
 
 const CategoryGrid = () => {
+  const navigate = useNavigate();
   const { data: sectionData } = useSiteContent<{ title: string; subtitle: string }>("category_section");
   const title = sectionData?.title || "ক্যাটাগরি অনুযায়ী খুঁজুন";
   const subtitle = sectionData?.subtitle || "Explore opportunities in your field";
