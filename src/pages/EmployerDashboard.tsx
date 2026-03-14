@@ -25,7 +25,66 @@ type ApplicationRow = {
   profiles: { full_name: string | null; resume_url: string | null } | null;
 };
 
-const EmployerDashboard = () => {
+const CompanyEditForm = ({ company, queryClient }: { company: any; queryClient: any }) => {
+  const [form, setForm] = useState({
+    name: company.name || "",
+    phone: company.phone || "",
+    website: company.website || "",
+    location: company.location || "",
+    description: company.description || "",
+  });
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    if (!form.name.trim()) { toast.error("কোম্পানির নাম আবশ্যক"); return; }
+    setSaving(true);
+    const { error } = await supabase.from("companies").update({
+      name: form.name.trim(),
+      phone: form.phone.trim() || null,
+      website: form.website.trim() || null,
+      location: form.location.trim() || null,
+      description: form.description.trim() || null,
+    }).eq("id", company.id);
+    setSaving(false);
+    if (error) { toast.error("আপডেট করতে সমস্যা হয়েছে"); return; }
+    toast.success("কোম্পানি তথ্য আপডেট হয়েছে!");
+    queryClient.invalidateQueries({ queryKey: ["my-company"] });
+  };
+
+  return (
+    <div className="rounded-2xl border bg-card shadow-card p-6 max-w-2xl space-y-4">
+      <h2 className="font-bold text-lg flex items-center gap-2"><Building2 className="h-5 w-5 text-primary" /> কোম্পানি তথ্য সম্পাদনা</h2>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-1.5">
+          <Label htmlFor="co-name">কোম্পানির নাম *</Label>
+          <Input id="co-name" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="co-phone">ফোন নম্বর</Label>
+          <Input id="co-phone" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} placeholder="+880..." />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="co-website">ওয়েবসাইট</Label>
+          <Input id="co-website" value={form.website} onChange={e => setForm(f => ({ ...f, website: e.target.value }))} placeholder="https://..." />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="co-location">অবস্থান</Label>
+          <Input id="co-location" value={form.location} onChange={e => setForm(f => ({ ...f, location: e.target.value }))} placeholder="Dhaka, Bangladesh" />
+        </div>
+      </div>
+      <div className="space-y-1.5">
+        <Label htmlFor="co-desc">কোম্পানি বিবরণ</Label>
+        <Textarea id="co-desc" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={4} placeholder="আপনার কোম্পানি সম্পর্কে লিখুন..." />
+      </div>
+      <Button onClick={handleSave} disabled={saving} className="gap-2">
+        {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+        সংরক্ষণ করুন
+      </Button>
+    </div>
+  );
+};
+
+
   const { user, profile, loading } = useAuth();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
