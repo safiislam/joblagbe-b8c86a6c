@@ -261,32 +261,49 @@ const EmployerDashboard = () => {
         </div>
 
         {/* Verification Request */}
-        {company && !company.is_verified && (
-          <div className="mb-6 rounded-xl border bg-card p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <ShieldCheck className="h-5 w-5 text-primary shrink-0" />
-              <div>
-                <p className="font-semibold text-sm">কোম্পানি ভেরিফিকেশন</p>
-                <p className="text-xs text-muted-foreground">
-                  {verificationStatus?.status === "pending"
-                    ? "আপনার অনুরোধ পর্যালোচনা করা হচ্ছে"
-                    : verificationStatus?.status === "rejected"
-                    ? "আপনার অনুরোধ প্রত্যাখ্যান করা হয়েছে, পুনরায় চেষ্টা করুন"
-                    : "ভেরিফাই ব্যাজ পেতে আবেদন করুন"}
-                </p>
+        {company && !company.is_verified && (() => {
+          const missing: string[] = [];
+          if (!company.logo_url) missing.push("লোগো");
+          if (!company.website) missing.push("ওয়েবসাইট");
+          if (!company.phone) missing.push("ফোন নম্বর");
+          if (!company.description) missing.push("কোম্পানি বিবরণ");
+          if (!company.location) missing.push("অবস্থান");
+          const canApply = missing.length === 0;
+
+          return (
+            <div className="mb-6 rounded-xl border bg-card p-4 space-y-2">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <ShieldCheck className="h-5 w-5 text-primary shrink-0" />
+                  <div>
+                    <p className="font-semibold text-sm">কোম্পানি ভেরিফিকেশন</p>
+                    <p className="text-xs text-muted-foreground">
+                      {verificationStatus?.status === "pending"
+                        ? "আপনার অনুরোধ পর্যালোচনা করা হচ্ছে"
+                        : verificationStatus?.status === "rejected"
+                        ? "আপনার অনুরোধ প্রত্যাখ্যান করা হয়েছে, পুনরায় চেষ্টা করুন"
+                        : "ভেরিফাই ব্যাজ পেতে আবেদন করুন"}
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  size="sm"
+                  className="gap-1.5 shrink-0"
+                  disabled={requestingVerify || verificationStatus?.status === "pending" || !canApply}
+                  onClick={handleRequestVerification}
+                >
+                  {requestingVerify ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <BadgeCheck className="h-3.5 w-3.5" />}
+                  {verificationStatus?.status === "pending" ? "অপেক্ষমান" : "ভেরিফিকেশন আবেদন"}
+                </Button>
               </div>
+              {!canApply && verificationStatus?.status !== "pending" && (
+                <p className="text-xs text-destructive">
+                  ⚠️ আবেদনের জন্য আপনার প্রোফাইলে যোগ করুন: {missing.join(", ")}
+                </p>
+              )}
             </div>
-            <Button
-              size="sm"
-              className="gap-1.5 shrink-0"
-              disabled={requestingVerify || verificationStatus?.status === "pending"}
-              onClick={handleRequestVerification}
-            >
-              {requestingVerify ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <BadgeCheck className="h-3.5 w-3.5" />}
-              {verificationStatus?.status === "pending" ? "অপেক্ষমান" : "ভেরিফিকেশন আবেদন"}
-            </Button>
-          </div>
-        )}
+          );
+        })()}
 
         <Tabs defaultValue="jobs" className="space-y-4">
           <TabsList>
