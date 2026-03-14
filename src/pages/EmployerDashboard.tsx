@@ -31,7 +31,8 @@ const EmployerDashboard = () => {
   const navigate = useNavigate();
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [showCourseForm, setShowCourseForm] = useState(false);
-  const [courseForm, setCourseForm] = useState({ title: "", description: "", category: "", provider: "", duration: "", is_free: true, price: 0, link: "" });
+  const [courseForm, setCourseForm] = useState({ title: "", description: "", category: "", provider: "", duration: "", is_free: true, price: 0, discount_price: 0, link: "", thumbnail_url: "" });
+  const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
 
   useEffect(() => {
     if (!loading && (!user || profile?.role !== "employer")) navigate("/");
