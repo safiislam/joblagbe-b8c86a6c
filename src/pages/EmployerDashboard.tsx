@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
-import { Briefcase, Plus, Users, Clock, CheckCircle, Eye, XCircle, UserCheck, FileText, GraduationCap, Upload, Building2, Ban, ImagePlus, Loader2, BadgeCheck, ShieldCheck } from "lucide-react";
+import { Briefcase, Plus, Users, Clock, CheckCircle, Eye, XCircle, UserCheck, FileText, GraduationCap, Upload, Building2, Ban, ImagePlus, Loader2, BadgeCheck, ShieldCheck, Save } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
@@ -23,6 +23,65 @@ type EmployerJob = {
 type ApplicationRow = {
   id: string; status: string; created_at: string; cover_letter: string | null; user_id: string;
   profiles: { full_name: string | null; resume_url: string | null } | null;
+};
+
+const CompanyEditForm = ({ company, queryClient }: { company: any; queryClient: any }) => {
+  const [form, setForm] = useState({
+    name: company.name || "",
+    phone: company.phone || "",
+    website: company.website || "",
+    location: company.location || "",
+    description: company.description || "",
+  });
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    if (!form.name.trim()) { toast.error("কোম্পানির নাম আবশ্যক"); return; }
+    setSaving(true);
+    const { error } = await supabase.from("companies").update({
+      name: form.name.trim(),
+      phone: form.phone.trim() || null,
+      website: form.website.trim() || null,
+      location: form.location.trim() || null,
+      description: form.description.trim() || null,
+    }).eq("id", company.id);
+    setSaving(false);
+    if (error) { toast.error("আপডেট করতে সমস্যা হয়েছে"); return; }
+    toast.success("কোম্পানি তথ্য আপডেট হয়েছে!");
+    queryClient.invalidateQueries({ queryKey: ["my-company"] });
+  };
+
+  return (
+    <div className="rounded-2xl border bg-card shadow-card p-6 max-w-2xl space-y-4">
+      <h2 className="font-bold text-lg flex items-center gap-2"><Building2 className="h-5 w-5 text-primary" /> কোম্পানি তথ্য সম্পাদনা</h2>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-1.5">
+          <Label htmlFor="co-name">কোম্পানির নাম *</Label>
+          <Input id="co-name" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="co-phone">ফোন নম্বর</Label>
+          <Input id="co-phone" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} placeholder="+880..." />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="co-website">ওয়েবসাইট</Label>
+          <Input id="co-website" value={form.website} onChange={e => setForm(f => ({ ...f, website: e.target.value }))} placeholder="https://..." />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="co-location">অবস্থান</Label>
+          <Input id="co-location" value={form.location} onChange={e => setForm(f => ({ ...f, location: e.target.value }))} placeholder="Dhaka, Bangladesh" />
+        </div>
+      </div>
+      <div className="space-y-1.5">
+        <Label htmlFor="co-desc">কোম্পানি বিবরণ</Label>
+        <Textarea id="co-desc" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={4} placeholder="আপনার কোম্পানি সম্পর্কে লিখুন..." />
+      </div>
+      <Button onClick={handleSave} disabled={saving} className="gap-2">
+        {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+        সংরক্ষণ করুন
+      </Button>
+    </div>
+  );
 };
 
 const EmployerDashboard = () => {
@@ -309,6 +368,7 @@ const EmployerDashboard = () => {
           <TabsList>
             <TabsTrigger value="jobs" className="gap-1.5"><Briefcase className="h-3.5 w-3.5" /> Jobs</TabsTrigger>
             <TabsTrigger value="courses" className="gap-1.5"><GraduationCap className="h-3.5 w-3.5" /> Courses</TabsTrigger>
+            <TabsTrigger value="company" className="gap-1.5"><Building2 className="h-3.5 w-3.5" /> Company</TabsTrigger>
           </TabsList>
 
           {/* JOBS TAB */}
@@ -496,6 +556,15 @@ const EmployerDashboard = () => {
                 )) : <div className="p-8 text-center text-muted-foreground">No courses submitted yet</div>}
               </div>
             </div>
+          </TabsContent>
+
+          {/* COMPANY TAB */}
+          <TabsContent value="company">
+            {company ? <CompanyEditForm company={company} queryClient={queryClient} /> : (
+              <div className="rounded-2xl border bg-card p-8 text-center text-muted-foreground">
+                No company found. Post a job to create your company profile.
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       </div>
