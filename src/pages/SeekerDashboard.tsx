@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
 import ResumeUpload from "@/components/ResumeUpload";
 import SaveJobButton from "@/components/SaveJobButton";
+import VerifiedBadge from "@/components/VerifiedBadge";
 
 type ApplicationRow = {
   id: string;
