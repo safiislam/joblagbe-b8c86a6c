@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import Header from "@/components/Header";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Clock, AlertTriangle } from "lucide-react";
+import { Clock, AlertTriangle, Upload, Building2 } from "lucide-react";
 import {
   Select,
   SelectContent,
