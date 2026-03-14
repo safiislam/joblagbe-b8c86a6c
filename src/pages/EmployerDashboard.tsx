@@ -319,6 +319,55 @@ const EmployerDashboard = () => {
               </div>
               {showCourseForm && (
                 <div className="border-b p-4 space-y-3 bg-secondary/30">
+                  {/* Featured Image Upload */}
+                  <div>
+                    <Label>Featured Image</Label>
+                    <div className="mt-1 flex items-center gap-3">
+                      {courseForm.thumbnail_url ? (
+                        <img src={courseForm.thumbnail_url} alt="Thumbnail" className="h-20 w-32 rounded-xl object-cover border" />
+                      ) : (
+                        <div className="flex h-20 w-32 items-center justify-center rounded-xl border border-dashed border-muted-foreground/30 bg-secondary">
+                          <ImagePlus className="h-6 w-6 text-muted-foreground/50" />
+                        </div>
+                      )}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={uploadingThumbnail}
+                        className="gap-2 rounded-xl"
+                        onClick={() => {
+                          const input = document.createElement("input");
+                          input.type = "file";
+                          input.accept = "image/*";
+                          input.onchange = async (e) => {
+                            const file = (e.target as HTMLInputElement).files?.[0];
+                            if (!file || !user) return;
+                            if (file.size > 3 * 1024 * 1024) { toast.error("Image must be under 3MB"); return; }
+                            setUploadingThumbnail(true);
+                            try {
+                              const ext = file.name.split(".").pop();
+                              const path = `${user.id}/${Date.now()}.${ext}`;
+                              const { error } = await supabase.storage.from("course-images").upload(path, file);
+                              if (error) throw error;
+                              const publicUrl = supabase.storage.from("course-images").getPublicUrl(path).data.publicUrl;
+                              setCourseForm(prev => ({ ...prev, thumbnail_url: publicUrl }));
+                              toast.success("Image uploaded!");
+                            } catch (err: any) {
+                              toast.error(err.message || "Upload failed");
+                            } finally {
+                              setUploadingThumbnail(false);
+                            }
+                          };
+                          input.click();
+                        }}
+                      >
+                        {uploadingThumbnail ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                        {uploadingThumbnail ? "Uploading..." : "Upload Image"}
+                      </Button>
+                    </div>
+                  </div>
+
                   <div className="grid gap-3 md:grid-cols-2">
                     <div><Label>Title *</Label><Input value={courseForm.title} onChange={(e) => setCourseForm({ ...courseForm, title: e.target.value })} className="mt-1 rounded-xl" placeholder="Course title" /></div>
                     <div><Label>Category *</Label><Input value={courseForm.category} onChange={(e) => setCourseForm({ ...courseForm, category: e.target.value })} className="mt-1 rounded-xl" placeholder="IT, Design, Business..." /></div>
@@ -329,9 +378,14 @@ const EmployerDashboard = () => {
                     <div><Label>Link</Label><Input value={courseForm.link} onChange={(e) => setCourseForm({ ...courseForm, link: e.target.value })} className="mt-1 rounded-xl" placeholder="https://..." /></div>
                   </div>
                   <div><Label>Description</Label><Textarea value={courseForm.description} onChange={(e) => setCourseForm({ ...courseForm, description: e.target.value })} rows={3} className="mt-1 rounded-xl" /></div>
-                  <div className="flex items-center gap-4">
+                  <div className="flex flex-wrap items-center gap-4">
                     <div className="flex items-center gap-2"><Switch checked={courseForm.is_free} onCheckedChange={(v) => setCourseForm({ ...courseForm, is_free: v })} /><Label>Free</Label></div>
-                    {!courseForm.is_free && <div><Label>Price (৳)</Label><Input type="number" value={courseForm.price} onChange={(e) => setCourseForm({ ...courseForm, price: Number(e.target.value) })} className="mt-1 w-32 rounded-xl" /></div>}
+                    {!courseForm.is_free && (
+                      <>
+                        <div><Label>Price (৳)</Label><Input type="number" value={courseForm.price} onChange={(e) => setCourseForm({ ...courseForm, price: Number(e.target.value) })} className="mt-1 w-32 rounded-xl" /></div>
+                        <div><Label>Discount Price (৳)</Label><Input type="number" value={courseForm.discount_price} onChange={(e) => setCourseForm({ ...courseForm, discount_price: Number(e.target.value) })} className="mt-1 w-32 rounded-xl" placeholder="Optional" /></div>
+                      </>
+                    )}
                   </div>
                   <div className="flex gap-2">
                     <Button onClick={handleSubmitCourse} className="bg-success text-success-foreground">Submit for Approval</Button>
