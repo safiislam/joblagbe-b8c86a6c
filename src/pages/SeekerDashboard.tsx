@@ -186,6 +186,7 @@ const SeekerDashboard = () => {
                           <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
                             <span className="flex items-center gap-1">
                               <Building2 className="h-3 w-3" />{app.jobs?.companies?.name}
+                              {(app.jobs?.companies as any)?.is_verified && <VerifiedBadge className="h-3 w-3" />}
                             </span>
                             <span className="flex items-center gap-1">
                               <MapPin className="h-3 w-3" />{app.jobs?.location}
