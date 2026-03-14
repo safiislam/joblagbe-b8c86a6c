@@ -44,7 +44,10 @@ const Companies = () => {
                   )}
                 </div>
                 <div className="min-w-0">
-                  <h3 className="font-semibold group-hover:text-primary transition-colors">{c.name}</h3>
+                  <h3 className="font-semibold group-hover:text-primary transition-colors inline-flex items-center gap-1">
+                    {c.name}
+                    {c.is_verified && <VerifiedBadge className="h-4 w-4" />}
+                  </h3>
                   <div className="mt-1 flex flex-wrap gap-2 text-xs text-muted-foreground">
                     {c.location && <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{c.location}</span>}
                     {c.website && <span className="flex items-center gap-1"><Globe className="h-3 w-3" />Website</span>}

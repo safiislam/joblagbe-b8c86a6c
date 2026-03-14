@@ -242,6 +242,7 @@ const JobDetail = () => {
                     <Link to={`/company/${job.company_id}`} className="mt-1 inline-flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors">
                       <Building2 className="h-4 w-4" />
                       {company?.name}
+                      {company?.is_verified && <VerifiedBadge className="h-4 w-4" />}
                     </Link>
                   </div>
                 </div>

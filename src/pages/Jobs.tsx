@@ -145,7 +145,10 @@ const Jobs = () => {
                   </div>
                   <div>
                     <h3 className="font-bold text-lg group-hover:text-primary transition-colors">{job.title}</h3>
-                    <p className="text-sm text-muted-foreground">{(job.companies as any)?.name}</p>
+                    <p className="text-sm text-muted-foreground inline-flex items-center gap-1">
+                      {(job.companies as any)?.name}
+                      {(job.companies as any)?.is_verified && <VerifiedBadge className="h-3.5 w-3.5" />}
+                    </p>
                     <div className="mt-2 flex flex-wrap gap-2">
                       <Badge variant="secondary" className="gap-1 text-xs">
                         <MapPin className="h-3 w-3" /> {job.location}
