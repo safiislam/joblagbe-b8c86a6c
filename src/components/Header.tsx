@@ -1,11 +1,12 @@
 import { Search, Menu, X, LogOut, Shield, Home, Briefcase, Building2, BookOpen } from "lucide-react";
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, lazy, Suspense } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
-import NotificationBell from "@/components/NotificationBell";
 import logo from "@/assets/logo.png";
+
+const NotificationBell = lazy(() => import("@/components/NotificationBell"));
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -68,7 +69,7 @@ const Header = () => {
           )}
           {user ? (
             <>
-              <NotificationBell />
+              <Suspense fallback={null}><NotificationBell /></Suspense>
               <Link to={profileLink} className="flex items-center gap-2 rounded-full bg-secondary px-2 py-1 hover:bg-secondary/80 transition-colors">
                 <Avatar className="h-7 w-7">
                   <AvatarImage src={profile?.avatar_url || ""} />
