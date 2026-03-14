@@ -84,7 +84,7 @@ const CompanyEditForm = ({ company, queryClient }: { company: any; queryClient: 
   );
 };
 
-
+const EmployerDashboard = () => {
   const { user, profile, loading } = useAuth();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
