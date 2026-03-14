@@ -119,10 +119,10 @@ const Header = () => {
       {/* Mobile menu */}
       {mobileOpen && (
         <div className="border-t bg-card p-4 md:hidden animate-fade-in" style={{ animationDuration: "0.2s" }}>
-          <div className="mb-3 flex items-center gap-2 rounded-xl border bg-secondary px-3 py-2.5">
+          <form onSubmit={handleHeaderSearch} className="mb-3 flex items-center gap-2 rounded-xl border bg-secondary px-3 py-2.5">
             <Search className="h-4 w-4 text-muted-foreground" />
-            <input type="text" placeholder="Search jobs..." className="flex-1 bg-transparent text-sm outline-none" />
-          </div>
+            <input type="text" placeholder="Search jobs..." value={headerSearch} onChange={(e) => setHeaderSearch(e.target.value)} className="flex-1 bg-transparent text-sm outline-none" />
+          </form>
           <div className="flex flex-col gap-1">
             <Button variant="ghost" className="justify-start" asChild onClick={() => setMobileOpen(false)}>
               <Link to="/">Jobs</Link>
