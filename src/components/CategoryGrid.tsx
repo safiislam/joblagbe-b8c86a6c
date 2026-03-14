@@ -53,6 +53,7 @@ const CategoryGrid = () => {
             return (
               <button
                 key={cat.id}
+                onClick={() => navigate(`/jobs?category=${cat.id}`)}
                 className="group flex flex-col items-center gap-3 rounded-2xl border bg-card p-4 shadow-card transition-all hover:-translate-y-1 hover:shadow-elevated sm:p-5"
               >
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-all group-hover:bg-primary group-hover:text-primary-foreground group-hover:scale-110">
