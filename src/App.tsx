@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { lazy, Suspense } from "react";
+import { MobileBottomNav } from "@/components/Header";
 import Index from "./pages/Index";
 
 const Login = lazy(() => import("./pages/Login"));
