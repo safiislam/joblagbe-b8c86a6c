@@ -225,6 +225,14 @@ const PostJob = () => {
               <Input value={companyForm.location} onChange={(e) => setCompanyForm({ ...companyForm, location: e.target.value })} className="mt-1.5 rounded-xl" />
             </div>
             <div>
+              <Label>Phone Number <span className="text-destructive">*</span></Label>
+              <Input value={companyForm.phone} onChange={(e) => setCompanyForm({ ...companyForm, phone: e.target.value })} required placeholder="e.g. +880 1XXX-XXXXXX" className="mt-1.5 rounded-xl" />
+            </div>
+            <div>
+              <Label>Website / Social Link <span className="text-destructive">*</span></Label>
+              <Input value={companyForm.website} onChange={(e) => setCompanyForm({ ...companyForm, website: e.target.value })} required placeholder="e.g. https://company.com or facebook.com/company" className="mt-1.5 rounded-xl" />
+            </div>
+            <div>
               <Label>Description</Label>
               <Textarea value={companyForm.description} onChange={(e) => setCompanyForm({ ...companyForm, description: e.target.value })} className="mt-1.5 rounded-xl" />
             </div>
