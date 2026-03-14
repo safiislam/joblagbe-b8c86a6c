@@ -120,7 +120,7 @@ const JobCard = ({
                 ? "bg-destructive/10 text-destructive border border-destructive/20"
                 : "bg-accent/15 text-accent border border-accent/20"
             }`}>
-              {job.tag === "Urgent" ? "🔥 " : "⭐ "}{job.tag}
+              {job.tag}
             </span>
           )}
         </div>
