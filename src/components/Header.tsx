@@ -1,6 +1,6 @@
-import { Search, Menu, X, LogOut, Shield } from "lucide-react";
+import { Search, Menu, X, LogOut, Shield, Home, Briefcase, Building2, BookOpen } from "lucide-react";
 import { useState, FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
