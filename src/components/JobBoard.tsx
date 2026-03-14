@@ -209,11 +209,7 @@ const JobBoard = () => {
         {/* Section header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-accent" />
-              <span className="text-sm font-semibold uppercase tracking-wider text-accent">Latest Openings</span>
-            </div>
-            <h2 className="mt-1 text-2xl font-bold md:text-3xl font-bangla">সর্বশেষ চাকরি</h2>
+            <h2 className="text-2xl font-bold md:text-3xl font-bangla">সর্বশেষ চাকরি</h2>
             <p className="mt-1 text-muted-foreground">Hand-picked opportunities updated daily</p>
           </div>
           <Button
