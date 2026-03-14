@@ -419,7 +419,15 @@ const JobBoard = () => {
         {selectedJob && (
           <div className="fixed inset-0 z-50 flex items-end bg-foreground/40 backdrop-blur-sm lg:hidden" onClick={() => setSelectedJob(null)}>
             <div className="max-h-[85vh] w-full overflow-y-auto rounded-t-3xl bg-card p-6" onClick={(e) => e.stopPropagation()}>
-              <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-border" />
+              <div className="flex items-center justify-between mb-4">
+                <div className="mx-auto h-1 w-10 rounded-full bg-border" />
+                <button
+                  onClick={() => setSelectedJob(null)}
+                  className="absolute right-4 top-4 rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
               <div className="flex items-start gap-3">
                 {selectedJob.companies?.logo_url ? (
                   <img src={selectedJob.companies.logo_url} alt="" className="h-12 w-12 rounded-xl border object-cover" />
