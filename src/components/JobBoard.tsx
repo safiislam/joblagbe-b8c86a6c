@@ -329,8 +329,9 @@ const JobBoard = () => {
                         <div>
                           <h3 className="text-xl font-bold leading-tight">{selectedJob.title}</h3>
                           <p className="mt-1 flex items-center gap-2 text-muted-foreground">
-                            <Link to={`/company/${selectedJob.company_id}`} className="hover:text-primary font-medium transition-colors">
+                            <Link to={`/company/${selectedJob.company_id}`} className="hover:text-primary font-medium transition-colors inline-flex items-center gap-1">
                               {selectedJob.companies?.name}
+                              {selectedJob.companies?.is_verified && <VerifiedBadge />}
                             </Link>
                             <span className="text-border">•</span>
                             <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{selectedJob.location}</span>
