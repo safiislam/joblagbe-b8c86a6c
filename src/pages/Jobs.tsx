@@ -38,6 +38,14 @@ const Jobs = () => {
     },
   });
 
+  const { data: categories } = useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      const { data } = await supabase.from("categories").select("*").order("name");
+      return data ?? [];
+    },
+  });
+
   const jobTypes = [...new Set(jobs?.map((j) => j.job_type) ?? [])];
   const locations = useMemo(() => {
     const locs = jobs?.map((j) => j.location).filter(Boolean) ?? [];
@@ -51,7 +59,8 @@ const Jobs = () => {
       (job.companies as any)?.name?.toLowerCase().includes(search.toLowerCase());
     const matchType = jobType === "all" || job.job_type === jobType;
     const matchLoc = location === "all" || job.location?.toLowerCase().includes(location.toLowerCase());
-    return matchSearch && matchType && matchLoc;
+    const matchCat = categoryFilter === "all" || job.category_id === categoryFilter;
+    return matchSearch && matchType && matchLoc && matchCat;
   });
 
   return (
