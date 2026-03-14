@@ -10,6 +10,7 @@ import EmployerCTA from "@/components/EmployerCTA";
 import Footer from "@/components/Footer";
 import AIChatWidget from "@/components/AIChatWidget";
 
+// Homepage
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
