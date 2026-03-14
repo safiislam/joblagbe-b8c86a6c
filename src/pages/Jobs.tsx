@@ -8,14 +8,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Briefcase, Search, Clock, Building2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { allDistricts, bangladeshLocations } from "@/data/bangladeshLocations";
 import { Link } from "react-router-dom";
 
 const Jobs = () => {
   const [search, setSearch] = useState("");
   const [jobType, setJobType] = useState("all");
-  const [district, setDistrict] = useState("all");
-  const [upazila, setUpazila] = useState("all");
+  const [location, setLocation] = useState("all");
 
   const { data: jobs, isLoading } = useQuery({
     queryKey: ["all-jobs"],
