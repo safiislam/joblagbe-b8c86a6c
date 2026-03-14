@@ -357,7 +357,7 @@ const JobBoard = () => {
                             ? "bg-destructive/10 text-destructive"
                             : "bg-accent/15 text-accent"
                         }`}>
-                          {selectedJob.tag === "Urgent" ? "🔥 " : "⭐ "}{selectedJob.tag}
+                          {selectedJob.tag}
                         </span>
                       )}
                     </div>
