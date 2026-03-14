@@ -54,7 +54,7 @@ const PostJob = () => {
     },
   });
 
-  const [companyForm, setCompanyForm] = useState({ name: "", location: "", description: "" });
+  const [companyForm, setCompanyForm] = useState({ name: "", location: "", description: "", phone: "", website: "" });
   const [showCompanyForm, setShowCompanyForm] = useState(false);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
