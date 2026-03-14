@@ -232,7 +232,10 @@ const EmployerDashboard = () => {
               </button>
             </div>
             <div>
-              <h1 className="text-2xl font-bold">Employer Dashboard</h1>
+              <h1 className="text-2xl font-bold inline-flex items-center gap-2">
+                Employer Dashboard
+                {company?.is_verified && <BadgeCheck className="h-5 w-5 text-primary" />}
+              </h1>
               <p className="mt-1 text-sm text-muted-foreground">{company?.name || "Set up your company to start posting"}</p>
             </div>
           </div>
