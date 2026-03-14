@@ -73,7 +73,45 @@ const EmployerDashboard = () => {
     enabled: !!user,
   });
 
-  const { data: applicants } = useQuery({
+  const { data: verificationStatus } = useQuery({
+    queryKey: ["verification-status", company?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("verification_requests")
+        .select("status")
+        .eq("company_id", company!.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!company,
+  });
+
+  const handleRequestVerification = async () => {
+    if (!company || !user) return;
+    setRequestingVerify(true);
+    try {
+      const { error } = await supabase.from("verification_requests").insert({
+        company_id: company.id,
+        user_id: user.id,
+        message: `Verification request for ${company.name}`,
+      });
+      if (error) {
+        if (error.code === "23505") toast.info("ভেরিফিকেশন অনুরোধ আগেই পাঠানো হয়েছে");
+        else throw error;
+      } else {
+        toast.success("ভেরিফিকেশন অনুরোধ পাঠানো হয়েছে!");
+        queryClient.invalidateQueries({ queryKey: ["verification-status"] });
+      }
+    } catch (err: any) {
+      toast.error(err.message || "অনুরোধ পাঠাতে সমস্যা হয়েছে");
+    } finally {
+      setRequestingVerify(false);
+    }
+  };
+
+
     queryKey: ["job-applicants", selectedJobId],
     queryFn: async () => {
       const { data } = await supabase
