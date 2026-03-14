@@ -1,5 +1,5 @@
 import { Search, Menu, X, LogOut, Shield } from "lucide-react";
-import { useState } from "react";
+import { useState, FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
