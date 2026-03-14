@@ -76,7 +76,7 @@ const SeekerDashboard = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("saved_jobs")
-        .select("id, job_id, created_at, jobs(title, location, job_type, companies(name))")
+        .select("id, job_id, created_at, jobs(title, location, job_type, companies(name, is_verified))")
         .eq("user_id", user!.id)
         .order("created_at", { ascending: false });
       return (data as unknown as SavedJobRow[]) ?? [];
