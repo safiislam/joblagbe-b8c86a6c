@@ -284,11 +284,8 @@ const EmployerDashboard = () => {
                             <a href={supabase.storage.from("resumes").getPublicUrl(app.profiles.resume_url).data.publicUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex items-center gap-1.5 text-xs text-primary hover:underline"><FileText className="h-3.5 w-3.5" /> View Resume</a>
                           )}
                           <div className="mt-3 flex flex-wrap gap-2">
-                            {app.status !== "shortlisted" && app.status !== "accepted" && (
+                            {app.status !== "shortlisted" && (
                               <Button size="sm" variant="outline" className="gap-1.5 text-primary border-primary hover:bg-primary hover:text-primary-foreground" disabled={updateStatus.isPending} onClick={() => updateStatus.mutate({ appId: app.id, status: "shortlisted", seekerUserId: app.user_id })}><UserCheck className="h-3.5 w-3.5" /> Shortlist</Button>
-                            )}
-                            {app.status !== "accepted" && (
-                              <Button size="sm" className="gap-1.5 bg-success text-white hover:bg-success/90" disabled={updateStatus.isPending} onClick={() => updateStatus.mutate({ appId: app.id, status: "accepted", seekerUserId: app.user_id })}><CheckCircle className="h-3.5 w-3.5" /> Accept</Button>
                             )}
                             {app.status !== "rejected" && (
                               <Button size="sm" variant="outline" className="gap-1.5 text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground" disabled={updateStatus.isPending} onClick={() => updateStatus.mutate({ appId: app.id, status: "rejected", seekerUserId: app.user_id })}><XCircle className="h-3.5 w-3.5" /> Reject</Button>
