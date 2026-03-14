@@ -19,6 +19,7 @@ const BlogPost = lazy(() => import("./pages/BlogPost"));
 const Companies = lazy(() => import("./pages/Companies"));
 const CompanyProfile = lazy(() => import("./pages/CompanyProfile"));
 const Jobs = lazy(() => import("./pages/Jobs"));
+const JobDetail = lazy(() => import("./pages/JobDetail"));
 const Courses = lazy(() => import("./pages/Courses"));
 const Ebooks = lazy(() => import("./pages/Ebooks"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
