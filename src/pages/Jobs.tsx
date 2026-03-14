@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, Briefcase, Search, Clock, Building2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { allDistricts, bangladeshLocations } from "@/data/bangladeshLocations";
+import { Link } from "react-router-dom";
 
 const Jobs = () => {
   const [search, setSearch] = useState("");
