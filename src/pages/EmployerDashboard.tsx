@@ -114,6 +114,18 @@ const EmployerDashboard = () => {
     onError: () => toast.error("Failed to update status"),
   });
 
+  const endJob = useMutation({
+    mutationFn: async (jobId: string) => {
+      const { error } = await supabase.from("jobs").update({ is_active: false }).eq("id", jobId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["employer-jobs", company?.id] });
+      toast.success("Job ended — no more applications will be accepted");
+    },
+    onError: () => toast.error("Failed to end job"),
+  });
+
   const handleSubmitCourse = async () => {
     if (!courseForm.title || !courseForm.category) { toast.error("Title and category required"); return; }
     const { error } = await supabase.from("courses").insert({
