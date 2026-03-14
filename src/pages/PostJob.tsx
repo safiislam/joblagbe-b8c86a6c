@@ -198,6 +198,25 @@ const PostJob = () => {
           <div className="mt-6 space-y-4 rounded-2xl border p-6">
             <h3 className="font-semibold">Company Details</h3>
             <div>
+              <Label>Company Logo</Label>
+              <div className="mt-1.5 flex items-center gap-4">
+                <div className="flex h-16 w-16 items-center justify-center rounded-xl border-2 border-dashed border-muted-foreground/30 bg-secondary overflow-hidden shrink-0">
+                  {logoPreview ? (
+                    <img src={logoPreview} alt="Logo preview" className="h-full w-full object-cover" />
+                  ) : (
+                    <Building2 className="h-6 w-6 text-muted-foreground" />
+                  )}
+                </div>
+                <div>
+                  <Button type="button" variant="outline" size="sm" className="gap-1.5 rounded-xl" onClick={() => logoInputRef.current?.click()}>
+                    <Upload className="h-3.5 w-3.5" /> {logoFile ? "Change Logo" : "Upload Logo"}
+                  </Button>
+                  <p className="mt-1 text-xs text-muted-foreground">PNG, JPG up to 2MB</p>
+                  <input ref={logoInputRef} type="file" accept="image/*" className="hidden" onChange={handleLogoSelect} />
+                </div>
+              </div>
+            </div>
+            <div>
               <Label>Company Name</Label>
               <Input value={companyForm.name} onChange={(e) => setCompanyForm({ ...companyForm, name: e.target.value })} required className="mt-1.5 rounded-xl" />
             </div>

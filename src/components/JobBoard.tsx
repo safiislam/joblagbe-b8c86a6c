@@ -237,7 +237,10 @@ const JobBoard = () => {
                   <div className="flex items-start justify-between">
                     <div>
                       <h3 className="text-xl font-bold">{selectedJob.title}</h3>
-                      <p className="mt-1 text-muted-foreground">
+                      <p className="mt-1 flex items-center gap-2 text-muted-foreground">
+                        {selectedJob.companies?.logo_url && (
+                          <img src={selectedJob.companies.logo_url} alt="" className="h-8 w-8 rounded-lg object-cover" />
+                        )}
                         <Link to={`/company/${selectedJob.company_id}`} className="hover:text-primary">{selectedJob.companies?.name}</Link> · {selectedJob.location}
                       </p>
                     </div>
