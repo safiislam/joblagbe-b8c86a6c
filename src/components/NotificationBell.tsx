@@ -57,7 +57,7 @@ const NotificationBell = () => {
   const unreadCount = notifications?.filter((n: any) => !n.is_read).length ?? 0;
 
   return (
-    <div className="relative">
+    <div className="relative" ref={containerRef}>
       <button
         onClick={() => setOpen(!open)}
         className="relative flex h-8 w-8 items-center justify-center rounded-full hover:bg-secondary transition-colors"
@@ -72,7 +72,6 @@ const NotificationBell = () => {
 
       {open && (
         <>
-          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
           <div className="absolute right-0 top-10 z-50 w-80 rounded-2xl border bg-card shadow-elevated animate-fade-in" style={{ animationDuration: "0.15s" }}>
             <div className="flex items-center justify-between border-b px-4 py-3">
               <h3 className="font-semibold text-sm">Notifications</h3>
