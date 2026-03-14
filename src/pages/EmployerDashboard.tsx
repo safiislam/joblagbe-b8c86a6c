@@ -227,14 +227,32 @@ const EmployerDashboard = () => {
                   <div className="border-b p-4"><h2 className="font-bold text-lg">Your Jobs</h2></div>
                   <div className="divide-y max-h-[500px] overflow-y-auto">
                     {myJobs && myJobs.length > 0 ? myJobs.map((job) => (
-                      <button key={job.id} onClick={() => setSelectedJobId(job.id)} className={`w-full p-4 text-left transition-colors hover:bg-secondary/50 ${selectedJobId === job.id ? "bg-primary/5 border-l-2 border-l-primary" : ""}`}>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <h3 className="font-semibold text-sm">{job.title}</h3>
-                          {!job.is_approved && <Badge variant="outline" className="border-accent text-accent text-[10px]">Pending</Badge>}
-                          {job.is_approved && <Badge variant="outline" className="border-success text-success text-[10px]">Live</Badge>}
-                        </div>
-                        <p className="mt-0.5 text-xs text-muted-foreground">{job.location} · {job.job_type} · {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}</p>
-                      </button>
+                      <div key={job.id} className={`p-4 transition-colors hover:bg-secondary/50 ${selectedJobId === job.id ? "bg-primary/5 border-l-2 border-l-primary" : ""}`}>
+                        <button onClick={() => setSelectedJobId(job.id)} className="w-full text-left">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h3 className="font-semibold text-sm">{job.title}</h3>
+                            {!job.is_active && <Badge variant="outline" className="border-destructive text-destructive text-[10px]">Ended</Badge>}
+                            {job.is_active && !job.is_approved && <Badge variant="outline" className="border-accent text-accent text-[10px]">Pending</Badge>}
+                            {job.is_active && job.is_approved && <Badge variant="outline" className="border-success text-success text-[10px]">Live</Badge>}
+                          </div>
+                          <p className="mt-0.5 text-xs text-muted-foreground">{job.location} · {job.job_type} · {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}</p>
+                        </button>
+                        {job.is_active && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="mt-2 gap-1.5 text-destructive border-destructive/30 hover:bg-destructive hover:text-destructive-foreground text-xs"
+                            disabled={endJob.isPending}
+                            onClick={() => {
+                              if (confirm("Are you sure you want to end this job? No one will be able to apply anymore.")) {
+                                endJob.mutate(job.id);
+                              }
+                            }}
+                          >
+                            <Ban className="h-3 w-3" /> End Job
+                          </Button>
+                        )}
+                      </div>
                     )) : (
                       <div className="flex flex-col items-center py-10 text-muted-foreground">
                         <Briefcase className="mb-2 h-8 w-8 opacity-30" />
