@@ -1,4 +1,6 @@
 import { Search, MapPin, TrendingUp } from "lucide-react";
+import { useState, FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useSiteContent } from "@/hooks/useSiteContent";
 
