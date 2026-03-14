@@ -111,34 +111,6 @@ const EmployerDashboard = () => {
     }
   };
 
-        {/* Verification Request */}
-        {company && !company.is_verified && (
-          <div className="mb-6 rounded-xl border bg-card p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <ShieldCheck className="h-5 w-5 text-primary shrink-0" />
-              <div>
-                <p className="font-semibold text-sm">কোম্পানি ভেরিফিকেশন</p>
-                <p className="text-xs text-muted-foreground">
-                  {verificationStatus?.status === "pending"
-                    ? "আপনার অনুরোধ পর্যালোচনা করা হচ্ছে"
-                    : verificationStatus?.status === "rejected"
-                    ? "আপনার অনুরোধ প্রত্যাখ্যান করা হয়েছে, পুনরায় চেষ্টা করুন"
-                    : "ভেরিফাই ব্যাজ পেতে আবেদন করুন"}
-                </p>
-              </div>
-            </div>
-            <Button
-              size="sm"
-              className="gap-1.5 shrink-0"
-              disabled={requestingVerify || verificationStatus?.status === "pending"}
-              onClick={handleRequestVerification}
-            >
-              {requestingVerify ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <BadgeCheck className="h-3.5 w-3.5" />}
-              {verificationStatus?.status === "pending" ? "অপেক্ষমান" : "ভেরিফিকেশন আবেদন"}
-            </Button>
-          </div>
-        )}
-
 
   const { data: applicants } = useQuery({
     queryKey: ["job-applicants", selectedJobId],
