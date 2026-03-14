@@ -468,6 +468,18 @@ const JobBoard = () => {
             </Link>
           </Button>
         </div>
+
+        {/* Apply Dialog */}
+        {applyJob && (
+          <ApplyJobDialog
+            open={!!applyJobId}
+            onOpenChange={(open) => { if (!open) setApplyJobId(null); }}
+            jobId={applyJob.id}
+            jobTitle={applyJob.title}
+            companyName={applyJob.companies?.name ?? undefined}
+            companyId={applyJob.company_id}
+          />
+        )}
       </div>
     </section>
   );
