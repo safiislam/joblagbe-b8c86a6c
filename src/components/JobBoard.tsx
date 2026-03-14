@@ -205,8 +205,13 @@ const JobBoard = () => {
                     </div>
                   </div>
                   <p className="mt-1.5 flex items-center gap-1.5 text-sm text-muted-foreground">
-                    <Link to={`/company/${job.company_id}`} onClick={(e) => e.stopPropagation()} className="flex items-center gap-1 hover:text-primary">
-                      <Building2 className="h-3.5 w-3.5" /> {job.companies?.name}
+                    <Link to={`/company/${job.company_id}`} onClick={(e) => e.stopPropagation()} className="flex items-center gap-1.5 hover:text-primary">
+                      {job.companies?.logo_url ? (
+                        <img src={job.companies.logo_url} alt="" className="h-5 w-5 rounded object-cover shrink-0" />
+                      ) : (
+                        <Building2 className="h-3.5 w-3.5" />
+                      )}
+                      {job.companies?.name}
                     </Link>
                   </p>
                   <div className="mt-2.5 flex flex-wrap gap-3 text-xs text-muted-foreground">
