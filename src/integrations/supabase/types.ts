@@ -216,6 +216,7 @@ export type Database = {
           category: string
           created_at: string
           description: string | null
+          discount_price: number | null
           duration: string | null
           id: string
           is_approved: boolean
@@ -231,6 +232,7 @@ export type Database = {
           category?: string
           created_at?: string
           description?: string | null
+          discount_price?: number | null
           duration?: string | null
           id?: string
           is_approved?: boolean
@@ -246,6 +248,7 @@ export type Database = {
           category?: string
           created_at?: string
           description?: string | null
+          discount_price?: number | null
           duration?: string | null
           id?: string
           is_approved?: boolean
