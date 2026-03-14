@@ -4,6 +4,7 @@ import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Building2, MapPin, Globe, Briefcase, ArrowLeft, Phone } from "lucide-react";
+import VerifiedBadge from "@/components/VerifiedBadge";
 import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
 
