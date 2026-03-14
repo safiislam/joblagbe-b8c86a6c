@@ -15,6 +15,7 @@ import {
   MapPin, Briefcase, Clock, Banknote, Building2, Phone, Globe,
   ArrowLeft, CheckCircle2, FileText, Loader2, Upload, File
 } from "lucide-react";
+import VerifiedBadge from "@/components/VerifiedBadge";
 import { formatDistanceToNow, format } from "date-fns";
 
 const formatSalary = (min: number | null, max: number | null) => {
