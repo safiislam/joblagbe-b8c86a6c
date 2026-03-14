@@ -42,7 +42,7 @@ const JobDetail = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("jobs")
-        .select("*, companies(name, location, logo_url, phone, website, description), categories(name)")
+        .select("*, companies(name, location, logo_url, phone, website, description, is_verified), categories(name)")
         .eq("id", id!)
         .single();
       if (error) throw error;
