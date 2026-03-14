@@ -193,30 +193,11 @@ const JobBoard = () => {
     },
   });
 
-  const handleApply = async (jobId: string) => {
-    if (!user) { toast.error("Please login to apply"); navigate("/login"); return; }
-    const { error } = await supabase.from("applications").insert({ job_id: jobId, user_id: user.id });
-    if (error) {
-      if (error.code === "23505") toast.info("You already applied to this job");
-      else toast.error(error.message);
-    } else {
-      toast.success("Application submitted!");
-      const job = jobs?.find(j => j.id === jobId);
-      if (job) {
-        const { data: comp } = await supabase.from("companies").select("user_id").eq("id", job.company_id).maybeSingle();
-        if (comp?.user_id) {
-          supabase.functions.invoke("notify", {
-            body: {
-              type: "new_application",
-              resource_id: jobId,
-              user_id: comp.user_id,
-              title: "📩 New Application!",
-              message: `Someone applied to your job "${job.title}".`,
-            },
-          }).catch(console.error);
-        }
-      }
-    }
+  const applyJob = jobs?.find((j) => j.id === applyJobId) || selectedJob;
+
+  const handleApply = (jobId: string) => {
+    if (!user) { toast.error("আবেদন করতে লগইন করুন"); navigate("/login"); return; }
+    setApplyJobId(jobId);
   };
 
   const hasActiveFilters = keyword || locationFilter || jobType !== "all" || categoryId !== "all";
