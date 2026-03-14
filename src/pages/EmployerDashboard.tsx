@@ -112,6 +112,7 @@ const EmployerDashboard = () => {
   };
 
 
+  const { data: applicants } = useQuery({
     queryKey: ["job-applicants", selectedJobId],
     queryFn: async () => {
       const { data } = await supabase
