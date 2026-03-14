@@ -21,8 +21,23 @@ const defaults: HeroData = {
 };
 
 const HeroSection = () => {
+  const [keyword, setKeyword] = useState("");
+  const [location, setLocation] = useState("");
+  const navigate = useNavigate();
   const { data } = useSiteContent<HeroData>("hero");
   const c = data || defaults;
+
+  const handleSearch = (e: FormEvent) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    if (keyword.trim()) params.set("q", keyword.trim());
+    if (location.trim()) params.set("location", location.trim());
+    navigate(`/jobs?${params.toString()}`);
+  };
+
+  const handleTagClick = (tag: string) => {
+    navigate(`/jobs?q=${encodeURIComponent(tag)}`);
+  };
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-primary/5 via-background to-background py-14 md:py-20">
