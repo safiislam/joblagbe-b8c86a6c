@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Bell } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,11 +6,38 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
 
+const requestNotificationPermission = async () => {
+  if (!("Notification" in window)) return "denied";
+  if (Notification.permission === "granted") return "granted";
+  if (Notification.permission === "denied") return "denied";
+  return await Notification.requestPermission();
+};
+
+const showBrowserNotification = (title: string, body: string) => {
+  if (!("Notification" in window) || Notification.permission !== "granted") return;
+  try {
+    new Notification(title, {
+      body,
+      icon: "/favicon.ico",
+      badge: "/favicon.ico",
+    });
+  } catch {
+    // Silent fail on unsupported environments
+  }
+};
+
 const NotificationBell = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const seenIdsRef = useRef<Set<string>>(new Set());
+  const initialLoadRef = useRef(true);
+
+  // Request permission on mount
+  useEffect(() => {
+    if (user) requestNotificationPermission();
+  }, [user]);
 
   useEffect(() => {
     if (!open) return;
@@ -23,6 +50,23 @@ const NotificationBell = () => {
     return () => document.removeEventListener("mousedown", handler);
   }, [open]);
 
+  const handleNewNotifications = useCallback((data: any[]) => {
+    if (!data?.length) return;
+    
+    if (initialLoadRef.current) {
+      // First load — seed seen IDs, don't fire browser notifications
+      data.forEach((n) => seenIdsRef.current.add(n.id));
+      initialLoadRef.current = false;
+      return;
+    }
+
+    const newUnread = data.filter((n) => !n.is_read && !seenIdsRef.current.has(n.id));
+    newUnread.forEach((n) => {
+      seenIdsRef.current.add(n.id);
+      showBrowserNotification(n.title, n.message);
+    });
+  }, []);
+
   const { data: notifications } = useQuery({
     queryKey: ["notifications", user?.id],
     queryFn: async () => {
@@ -32,10 +76,12 @@ const NotificationBell = () => {
         .eq("user_id", user!.id)
         .order("created_at", { ascending: false })
         .limit(20);
-      return data ?? [];
+      const result = data ?? [];
+      handleNewNotifications(result);
+      return result;
     },
     enabled: !!user,
-    refetchInterval: 30000,
+    refetchInterval: 15000,
   });
 
   const markRead = useMutation({
