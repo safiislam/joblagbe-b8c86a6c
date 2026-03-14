@@ -81,7 +81,7 @@ const PostJob = () => {
     if (!user) return null;
     const { data, error } = await supabase
       .from("companies")
-      .insert({ user_id: user.id, name: companyForm.name, location: companyForm.location, description: companyForm.description })
+      .insert({ user_id: user.id, name: companyForm.name, location: companyForm.location, description: companyForm.description, phone: companyForm.phone, website: companyForm.website })
       .select()
       .single();
     if (error) { toast.error(error.message); return null; }
