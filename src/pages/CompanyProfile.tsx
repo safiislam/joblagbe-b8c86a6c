@@ -4,6 +4,7 @@ import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Building2, MapPin, Globe, Briefcase, ArrowLeft, Phone } from "lucide-react";
+import VerifiedBadge from "@/components/VerifiedBadge";
 import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
 
@@ -56,7 +57,10 @@ const CompanyProfile = () => {
                   )}
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold">{company.name}</h1>
+                  <h1 className="text-2xl font-bold inline-flex items-center gap-2">
+                    {company.name}
+                    {company.is_verified && <VerifiedBadge className="h-5 w-5" />}
+                  </h1>
                   <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                     {company.location && (
                       <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{company.location}</span>

@@ -9,6 +9,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import SaveJobButton from "@/components/SaveJobButton";
 import ShareJobButton from "@/components/ShareJobButton";
+import VerifiedBadge from "@/components/VerifiedBadge";
 import ApplyJobDialog from "@/components/ApplyJobDialog";
 import {
   Select,
@@ -31,7 +32,7 @@ type JobRow = {
   created_at: string;
   category_id: string | null;
   company_id: string;
-  companies: { name: string; location: string | null; logo_url: string | null } | null;
+  companies: { name: string; location: string | null; logo_url: string | null; is_verified: boolean } | null;
 };
 
 const formatSalary = (min: number | null, max: number | null) => {
@@ -104,9 +105,10 @@ const JobCard = ({
         <Link
           to={`/company/${job.company_id}`}
           onClick={(e) => e.stopPropagation()}
-          className="mt-0.5 inline-block text-sm text-muted-foreground hover:text-primary transition-colors"
+          className="mt-0.5 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors"
         >
           {job.companies?.name}
+          {job.companies?.is_verified && <VerifiedBadge className="h-3.5 w-3.5" />}
         </Link>
 
         <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -177,7 +179,7 @@ const JobBoard = () => {
     queryFn: async () => {
       let query = supabase
         .from("jobs")
-        .select("*, companies(name, location, logo_url)")
+        .select("*, companies(name, location, logo_url, is_verified)")
         .eq("is_active", true)
         .eq("is_approved", true)
         .order("created_at", { ascending: false })
@@ -327,8 +329,9 @@ const JobBoard = () => {
                         <div>
                           <h3 className="text-xl font-bold leading-tight">{selectedJob.title}</h3>
                           <p className="mt-1 flex items-center gap-2 text-muted-foreground">
-                            <Link to={`/company/${selectedJob.company_id}`} className="hover:text-primary font-medium transition-colors">
+                            <Link to={`/company/${selectedJob.company_id}`} className="hover:text-primary font-medium transition-colors inline-flex items-center gap-1">
                               {selectedJob.companies?.name}
+                              {selectedJob.companies?.is_verified && <VerifiedBadge />}
                             </Link>
                             <span className="text-border">•</span>
                             <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{selectedJob.location}</span>
@@ -444,7 +447,7 @@ const JobBoard = () => {
                 )}
                 <div>
                   <h3 className="text-lg font-bold">{selectedJob.title}</h3>
-                  <p className="text-sm text-muted-foreground">{selectedJob.companies?.name} · {selectedJob.location}</p>
+                  <p className="text-sm text-muted-foreground inline-flex items-center gap-1">{selectedJob.companies?.name} {selectedJob.companies?.is_verified && <VerifiedBadge className="h-3.5 w-3.5" />} · {selectedJob.location}</p>
                 </div>
               </div>
               <div className="mt-3 flex flex-wrap gap-2">

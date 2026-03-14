@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
-import { Briefcase, Plus, Users, Clock, CheckCircle, Eye, XCircle, UserCheck, FileText, GraduationCap, Upload, Building2, Ban, ImagePlus, Loader2 } from "lucide-react";
+import { Briefcase, Plus, Users, Clock, CheckCircle, Eye, XCircle, UserCheck, FileText, GraduationCap, Upload, Building2, Ban, ImagePlus, Loader2, BadgeCheck, ShieldCheck } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
@@ -33,7 +33,7 @@ const EmployerDashboard = () => {
   const [showCourseForm, setShowCourseForm] = useState(false);
   const [courseForm, setCourseForm] = useState({ title: "", description: "", category: "", provider: "", duration: "", is_free: true, price: 0, discount_price: 0, link: "", thumbnail_url: "" });
   const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
-
+  const [requestingVerify, setRequestingVerify] = useState(false);
   useEffect(() => {
     if (!loading && (!user || profile?.role !== "employer")) navigate("/");
   }, [user, profile, loading, navigate]);
@@ -72,6 +72,45 @@ const EmployerDashboard = () => {
     },
     enabled: !!user,
   });
+
+  const { data: verificationStatus } = useQuery({
+    queryKey: ["verification-status", company?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("verification_requests")
+        .select("status")
+        .eq("company_id", company!.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!company,
+  });
+
+  const handleRequestVerification = async () => {
+    if (!company || !user) return;
+    setRequestingVerify(true);
+    try {
+      const { error } = await supabase.from("verification_requests").insert({
+        company_id: company.id,
+        user_id: user.id,
+        message: `Verification request for ${company.name}`,
+      });
+      if (error) {
+        if (error.code === "23505") toast.info("ভেরিফিকেশন অনুরোধ আগেই পাঠানো হয়েছে");
+        else throw error;
+      } else {
+        toast.success("ভেরিফিকেশন অনুরোধ পাঠানো হয়েছে!");
+        queryClient.invalidateQueries({ queryKey: ["verification-status"] });
+      }
+    } catch (err: any) {
+      toast.error(err.message || "অনুরোধ পাঠাতে সমস্যা হয়েছে");
+    } finally {
+      setRequestingVerify(false);
+    }
+  };
+
 
   const { data: applicants } = useQuery({
     queryKey: ["job-applicants", selectedJobId],
@@ -193,7 +232,10 @@ const EmployerDashboard = () => {
               </button>
             </div>
             <div>
-              <h1 className="text-2xl font-bold">Employer Dashboard</h1>
+              <h1 className="text-2xl font-bold inline-flex items-center gap-2">
+                Employer Dashboard
+                {company?.is_verified && <BadgeCheck className="h-5 w-5 text-primary" />}
+              </h1>
               <p className="mt-1 text-sm text-muted-foreground">{company?.name || "Set up your company to start posting"}</p>
             </div>
           </div>
@@ -217,6 +259,34 @@ const EmployerDashboard = () => {
             </div>
           ))}
         </div>
+
+        {/* Verification Request */}
+        {company && !company.is_verified && (
+          <div className="mb-6 rounded-xl border bg-card p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <ShieldCheck className="h-5 w-5 text-primary shrink-0" />
+              <div>
+                <p className="font-semibold text-sm">কোম্পানি ভেরিফিকেশন</p>
+                <p className="text-xs text-muted-foreground">
+                  {verificationStatus?.status === "pending"
+                    ? "আপনার অনুরোধ পর্যালোচনা করা হচ্ছে"
+                    : verificationStatus?.status === "rejected"
+                    ? "আপনার অনুরোধ প্রত্যাখ্যান করা হয়েছে, পুনরায় চেষ্টা করুন"
+                    : "ভেরিফাই ব্যাজ পেতে আবেদন করুন"}
+                </p>
+              </div>
+            </div>
+            <Button
+              size="sm"
+              className="gap-1.5 shrink-0"
+              disabled={requestingVerify || verificationStatus?.status === "pending"}
+              onClick={handleRequestVerification}
+            >
+              {requestingVerify ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <BadgeCheck className="h-3.5 w-3.5" />}
+              {verificationStatus?.status === "pending" ? "অপেক্ষমান" : "ভেরিফিকেশন আবেদন"}
+            </Button>
+          </div>
+        )}
 
         <Tabs defaultValue="jobs" className="space-y-4">
           <TabsList>
