@@ -41,14 +41,16 @@ const Header = () => {
         </Link>
 
         {/* Desktop search */}
-        <div className="hidden flex-1 items-center gap-2 rounded-xl border bg-secondary px-3 py-1.5 md:flex max-w-sm lg:max-w-md">
+        <form onSubmit={handleHeaderSearch} className="hidden flex-1 items-center gap-2 rounded-xl border bg-secondary px-3 py-1.5 md:flex max-w-sm lg:max-w-md">
           <Search className="h-4 w-4 text-muted-foreground" />
           <input
             type="text"
             placeholder="Search jobs, companies..."
+            value={headerSearch}
+            onChange={(e) => setHeaderSearch(e.target.value)}
             className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
           />
-        </div>
+        </form>
 
         <nav className="hidden items-center gap-1.5 md:flex">
           <Button variant="ghost" size="sm" asChild><Link to="/">Jobs</Link></Button>
