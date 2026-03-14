@@ -56,6 +56,26 @@ const PostJob = () => {
 
   const [companyForm, setCompanyForm] = useState({ name: "", location: "", description: "" });
   const [showCompanyForm, setShowCompanyForm] = useState(false);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
+
+  const handleLogoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) { toast.error("Logo must be under 2MB"); return; }
+    setLogoFile(file);
+    setLogoPreview(URL.createObjectURL(file));
+  };
+
+  const uploadLogo = async (companyId: string): Promise<string | null> => {
+    if (!logoFile) return null;
+    const ext = logoFile.name.split(".").pop();
+    const path = `${companyId}/logo.${ext}`;
+    const { error } = await supabase.storage.from("company-logos").upload(path, logoFile, { upsert: true });
+    if (error) { console.error(error); return null; }
+    return path;
+  };
 
   const createCompany = async () => {
     if (!user) return null;
@@ -65,6 +85,16 @@ const PostJob = () => {
       .select()
       .single();
     if (error) { toast.error(error.message); return null; }
+
+    // Upload logo if selected
+    if (logoFile && data) {
+      const logoPath = await uploadLogo(data.id);
+      if (logoPath) {
+        const publicUrl = supabase.storage.from("company-logos").getPublicUrl(logoPath).data.publicUrl;
+        await supabase.from("companies").update({ logo_url: publicUrl }).eq("id", data.id);
+      }
+    }
+
     toast.success("Company created!");
     setShowCompanyForm(false);
     return data;
