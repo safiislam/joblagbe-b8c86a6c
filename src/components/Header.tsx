@@ -1,6 +1,6 @@
-import { Search, Menu, X, LogOut, Shield } from "lucide-react";
+import { Search, Menu, X, LogOut, Shield, Home, Briefcase, Building2, BookOpen } from "lucide-react";
 import { useState, FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
@@ -12,6 +12,7 @@ const Header = () => {
   const [headerSearch, setHeaderSearch] = useState("");
   const { user, profile, isAdmin, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleHeaderSearch = (e: FormEvent) => {
     e.preventDefault();
@@ -53,7 +54,10 @@ const Header = () => {
         </form>
 
         <nav className="hidden items-center gap-1.5 md:flex">
-          <Button variant="ghost" size="sm" asChild><Link to="/">Jobs</Link></Button>
+          <Button variant="ghost" size="sm" asChild><Link to="/">Home</Link></Button>
+          <Button variant="ghost" size="sm" asChild><Link to="/jobs">Jobs</Link></Button>
+          <Button variant="ghost" size="sm" asChild><Link to="/companies">Companies</Link></Button>
+          <Button variant="ghost" size="sm" asChild><Link to="/blog">Blog</Link></Button>
           {user && profile?.role === "employer" && (
             <Button variant="ghost" size="sm" asChild><Link to="/post-job">Post Job</Link></Button>
           )}
@@ -125,7 +129,16 @@ const Header = () => {
           </form>
           <div className="flex flex-col gap-1">
             <Button variant="ghost" className="justify-start" asChild onClick={() => setMobileOpen(false)}>
-              <Link to="/">Jobs</Link>
+              <Link to="/"><Home className="mr-2 h-4 w-4" /> Home</Link>
+            </Button>
+            <Button variant="ghost" className="justify-start" asChild onClick={() => setMobileOpen(false)}>
+              <Link to="/jobs"><Briefcase className="mr-2 h-4 w-4" /> Jobs</Link>
+            </Button>
+            <Button variant="ghost" className="justify-start" asChild onClick={() => setMobileOpen(false)}>
+              <Link to="/companies"><Building2 className="mr-2 h-4 w-4" /> Companies</Link>
+            </Button>
+            <Button variant="ghost" className="justify-start" asChild onClick={() => setMobileOpen(false)}>
+              <Link to="/blog"><BookOpen className="mr-2 h-4 w-4" /> Blog</Link>
             </Button>
             {user && profile?.role === "employer" && (
               <Button variant="ghost" className="justify-start" asChild onClick={() => setMobileOpen(false)}>
@@ -155,6 +168,39 @@ const Header = () => {
         </div>
       )}
     </header>
+  );
+};
+
+const mobileNavItems = [
+  { to: "/", icon: Home, label: "Home" },
+  { to: "/jobs", icon: Briefcase, label: "Jobs" },
+  { to: "/companies", icon: Building2, label: "Companies" },
+  { to: "/blog", icon: BookOpen, label: "Blog" },
+];
+
+export const MobileBottomNav = () => {
+  const location = useLocation();
+
+  return (
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-card/95 backdrop-blur-xl md:hidden">
+      <div className="flex items-center justify-around py-1.5">
+        {mobileNavItems.map(({ to, icon: Icon, label }) => {
+          const isActive = location.pathname === to || (to === "/jobs" && location.pathname.startsWith("/jobs"));
+          return (
+            <Link
+              key={to}
+              to={to}
+              className={`flex flex-col items-center gap-0.5 px-3 py-1 text-[10px] font-medium transition-colors ${
+                isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Icon className={`h-5 w-5 ${isActive ? "text-primary" : ""}`} />
+              {label}
+            </Link>
+          );
+        })}
+      </div>
+    </nav>
   );
 };
 

@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { lazy, Suspense } from "react";
+import { MobileBottomNav } from "@/components/Header";
 import Index from "./pages/Index";
 
 const Login = lazy(() => import("./pages/Login"));
@@ -35,26 +36,29 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Suspense fallback={<div className="min-h-screen bg-background" />}>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<SignUp />} />
-              <Route path="/post-job" element={<PostJob />} />
-              
-              <Route path="/dashboard/*" element={<Dashboard />} />
-              <Route path="/my-applications" element={<SeekerDashboard />} />
-              <Route path="/employer-dashboard" element={<EmployerDashboard />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/blog/:slug" element={<BlogPost />} />
-              <Route path="/companies" element={<Companies />} />
-              <Route path="/company/:id" element={<CompanyProfile />} />
-              <Route path="/jobs" element={<Jobs />} />
-              <Route path="/jobs/:id" element={<JobDetail />} />
-              <Route path="/courses" element={<Courses />} />
-              <Route path="/ebooks" element={<Ebooks />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <div className="pb-14 md:pb-0">
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<SignUp />} />
+                <Route path="/post-job" element={<PostJob />} />
+                
+                <Route path="/dashboard/*" element={<Dashboard />} />
+                <Route path="/my-applications" element={<SeekerDashboard />} />
+                <Route path="/employer-dashboard" element={<EmployerDashboard />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/blog/:slug" element={<BlogPost />} />
+                <Route path="/companies" element={<Companies />} />
+                <Route path="/company/:id" element={<CompanyProfile />} />
+                <Route path="/jobs" element={<Jobs />} />
+                <Route path="/jobs/:id" element={<JobDetail />} />
+                <Route path="/courses" element={<Courses />} />
+                <Route path="/ebooks" element={<Ebooks />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </div>
+            <MobileBottomNav />
           </Suspense>
         </BrowserRouter>
       </TooltipProvider>
