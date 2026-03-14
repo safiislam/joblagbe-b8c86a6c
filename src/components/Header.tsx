@@ -12,6 +12,7 @@ const Header = () => {
   const [headerSearch, setHeaderSearch] = useState("");
   const { user, profile, isAdmin, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleHeaderSearch = (e: FormEvent) => {
     e.preventDefault();
