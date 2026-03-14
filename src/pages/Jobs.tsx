@@ -15,11 +15,14 @@ const Jobs = () => {
   const [search, setSearch] = useState(searchParams.get("q") || "");
   const [jobType, setJobType] = useState("all");
   const [location, setLocation] = useState(searchParams.get("location") || "all");
+  const [categoryFilter, setCategoryFilter] = useState(searchParams.get("category") || "all");
 
   useEffect(() => {
     setSearch(searchParams.get("q") || "");
     const loc = searchParams.get("location");
     if (loc) setLocation(loc);
+    const cat = searchParams.get("category");
+    if (cat) setCategoryFilter(cat);
   }, [searchParams]);
 
   const { data: jobs, isLoading } = useQuery({
