@@ -75,30 +75,17 @@ const Jobs = () => {
               ))}
             </SelectContent>
           </Select>
-          <Select value={district} onValueChange={(v) => { setDistrict(v); setUpazila("all"); }}>
+          <Select value={location} onValueChange={setLocation}>
             <SelectTrigger className="w-full sm:w-44">
-              <SelectValue placeholder="জেলা" />
+              <SelectValue placeholder="লোকেশন" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">সকল জেলা</SelectItem>
-              {allDistricts.map((d) => (
-                <SelectItem key={d} value={d}>{d}</SelectItem>
+              <SelectItem value="all">সকল লোকেশন</SelectItem>
+              {locations.map((loc) => (
+                <SelectItem key={loc} value={loc}>{loc}</SelectItem>
               ))}
             </SelectContent>
           </Select>
-          {district !== "all" && upazilas.length > 0 && (
-            <Select value={upazila} onValueChange={setUpazila}>
-              <SelectTrigger className="w-full sm:w-44">
-                <SelectValue placeholder="উপজেলা" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">সকল উপজেলা</SelectItem>
-                {upazilas.map((u) => (
-                  <SelectItem key={u} value={u}>{u}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
         </div>
 
         <p className="mb-4 text-sm text-muted-foreground">{filtered?.length ?? 0} টি চাকরি পাওয়া গেছে</p>
