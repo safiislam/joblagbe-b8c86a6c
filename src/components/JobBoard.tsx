@@ -193,7 +193,7 @@ const JobBoard = () => {
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <h3 className="font-semibold leading-snug">{job.title}</h3>
+                    <Link to={`/jobs/${job.id}`} onClick={(e) => e.stopPropagation()} className="font-semibold leading-snug hover:text-primary transition-colors">{job.title}</Link>
                     <div className="flex items-center gap-1 shrink-0">
                       {job.tag && (
                         <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase ${
