@@ -9,8 +9,18 @@ import logo from "@/assets/logo.png";
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [headerSearch, setHeaderSearch] = useState("");
   const { user, profile, isAdmin, signOut } = useAuth();
   const navigate = useNavigate();
+
+  const handleHeaderSearch = (e: FormEvent) => {
+    e.preventDefault();
+    if (headerSearch.trim()) {
+      navigate(`/jobs?q=${encodeURIComponent(headerSearch.trim())}`);
+      setHeaderSearch("");
+      setMobileOpen(false);
+    }
+  };
 
   const handleSignOut = async () => {
     await signOut();
