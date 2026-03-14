@@ -178,7 +178,7 @@ const JobBoard = () => {
     queryFn: async () => {
       let query = supabase
         .from("jobs")
-        .select("*, companies(name, location, logo_url)")
+        .select("*, companies(name, location, logo_url, is_verified)")
         .eq("is_active", true)
         .eq("is_approved", true)
         .order("created_at", { ascending: false })
