@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
-import { Briefcase, Plus, Users, Clock, CheckCircle, Eye, XCircle, UserCheck, FileText, GraduationCap, Upload, Building2, Ban, ImagePlus, Loader2, BadgeCheck, ShieldCheck, Save } from "lucide-react";
+import { Briefcase, Plus, Users, Clock, CheckCircle, Eye, XCircle, UserCheck, FileText, GraduationCap, Upload, Building2, Ban, ImagePlus, Loader2, BadgeCheck, ShieldCheck, Save, BookMarked, Construction } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
