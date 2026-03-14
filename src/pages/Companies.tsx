@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import { Building2, MapPin, Globe } from "lucide-react";
+import VerifiedBadge from "@/components/VerifiedBadge";
 
 const Companies = () => {
   const { data: companies, isLoading } = useQuery({
