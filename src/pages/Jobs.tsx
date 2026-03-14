@@ -29,11 +29,10 @@ const Jobs = () => {
   });
 
   const jobTypes = [...new Set(jobs?.map((j) => j.job_type) ?? [])];
-
-  const upazilas = useMemo(() => {
-    if (district === "all") return [];
-    return bangladeshLocations[district as keyof typeof bangladeshLocations] ?? [];
-  }, [district]);
+  const locations = useMemo(() => {
+    const locs = jobs?.map((j) => j.location).filter(Boolean) ?? [];
+    return [...new Set(locs)].sort();
+  }, [jobs]);
 
   const filtered = jobs?.filter((job) => {
     const matchSearch =
@@ -41,11 +40,7 @@ const Jobs = () => {
       job.title.toLowerCase().includes(search.toLowerCase()) ||
       (job.companies as any)?.name?.toLowerCase().includes(search.toLowerCase());
     const matchType = jobType === "all" || job.job_type === jobType;
-    const loc = job.location?.toLowerCase() ?? "";
-    const matchLoc =
-      district === "all" ||
-      loc.includes(district.toLowerCase()) ||
-      (upazila !== "all" && loc.includes(upazila.toLowerCase()));
+    const matchLoc = location === "all" || job.location?.toLowerCase() === location.toLowerCase();
     return matchSearch && matchType && matchLoc;
   });
 
