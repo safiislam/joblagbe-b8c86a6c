@@ -36,7 +36,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Suspense fallback={<div className="min-h-screen bg-background" />}>
-            <div className="pb-14 md:pb-0">
+            <div>
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/login" element={<Login />} />
