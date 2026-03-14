@@ -208,7 +208,7 @@ const AIChatWidget = () => {
                 type="submit"
                 size="icon"
                 disabled={!input.trim() || isLoading}
-                className="h-10 w-10 shrink-0 rounded-xl bg-accent text-accent-foreground hover:bg-accent/90 -translate-y-0.5"
+                className="h-10 w-10 shrink-0 rounded-xl bg-accent text-accent-foreground hover:bg-accent/90 -translate-y-2"
               >
                 <Send className="h-4 w-4" />
               </Button>
