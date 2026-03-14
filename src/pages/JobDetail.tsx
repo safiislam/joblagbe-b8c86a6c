@@ -15,6 +15,7 @@ import {
   MapPin, Briefcase, Clock, Banknote, Building2, Phone, Globe,
   ArrowLeft, CheckCircle2, FileText, Loader2, Upload, File
 } from "lucide-react";
+import VerifiedBadge from "@/components/VerifiedBadge";
 import { formatDistanceToNow, format } from "date-fns";
 
 const formatSalary = (min: number | null, max: number | null) => {
@@ -41,7 +42,7 @@ const JobDetail = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("jobs")
-        .select("*, companies(name, location, logo_url, phone, website, description), categories(name)")
+        .select("*, companies(name, location, logo_url, phone, website, description, is_verified), categories(name)")
         .eq("id", id!)
         .single();
       if (error) throw error;
@@ -241,6 +242,7 @@ const JobDetail = () => {
                     <Link to={`/company/${job.company_id}`} className="mt-1 inline-flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors">
                       <Building2 className="h-4 w-4" />
                       {company?.name}
+                      {company?.is_verified && <VerifiedBadge className="h-4 w-4" />}
                     </Link>
                   </div>
                 </div>

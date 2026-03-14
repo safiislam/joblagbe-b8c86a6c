@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Briefcase, Search, Clock, Building2 } from "lucide-react";
+import VerifiedBadge from "@/components/VerifiedBadge";
 import { formatDistanceToNow } from "date-fns";
 import { Link, useSearchParams } from "react-router-dom";
 
@@ -30,7 +31,7 @@ const Jobs = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("jobs")
-        .select("*, companies(name, logo_url), categories(name)")
+        .select("*, companies(name, logo_url, is_verified), categories(name)")
         .eq("is_active", true)
         .eq("is_approved", true)
         .order("created_at", { ascending: false });
@@ -144,7 +145,10 @@ const Jobs = () => {
                   </div>
                   <div>
                     <h3 className="font-bold text-lg group-hover:text-primary transition-colors">{job.title}</h3>
-                    <p className="text-sm text-muted-foreground">{(job.companies as any)?.name}</p>
+                    <p className="text-sm text-muted-foreground inline-flex items-center gap-1">
+                      {(job.companies as any)?.name}
+                      {(job.companies as any)?.is_verified && <VerifiedBadge className="h-3.5 w-3.5" />}
+                    </p>
                     <div className="mt-2 flex flex-wrap gap-2">
                       <Badge variant="secondary" className="gap-1 text-xs">
                         <MapPin className="h-3 w-3" /> {job.location}

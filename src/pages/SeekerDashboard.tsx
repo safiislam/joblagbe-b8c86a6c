@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
 import ResumeUpload from "@/components/ResumeUpload";
 import SaveJobButton from "@/components/SaveJobButton";
+import VerifiedBadge from "@/components/VerifiedBadge";
 
 type ApplicationRow = {
   id: string;
@@ -62,7 +63,7 @@ const SeekerDashboard = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("applications")
-        .select("id, status, created_at, cover_letter, jobs(title, location, job_type, companies(name))")
+        .select("id, status, created_at, cover_letter, jobs(title, location, job_type, companies(name, is_verified))")
         .eq("user_id", user!.id)
         .order("created_at", { ascending: false });
       return (data as unknown as ApplicationRow[]) ?? [];
@@ -75,7 +76,7 @@ const SeekerDashboard = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("saved_jobs")
-        .select("id, job_id, created_at, jobs(title, location, job_type, companies(name))")
+        .select("id, job_id, created_at, jobs(title, location, job_type, companies(name, is_verified))")
         .eq("user_id", user!.id)
         .order("created_at", { ascending: false });
       return (data as unknown as SavedJobRow[]) ?? [];
@@ -185,6 +186,7 @@ const SeekerDashboard = () => {
                           <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
                             <span className="flex items-center gap-1">
                               <Building2 className="h-3 w-3" />{app.jobs?.companies?.name}
+                              {(app.jobs?.companies as any)?.is_verified && <VerifiedBadge className="h-3 w-3" />}
                             </span>
                             <span className="flex items-center gap-1">
                               <MapPin className="h-3 w-3" />{app.jobs?.location}
@@ -219,6 +221,7 @@ const SeekerDashboard = () => {
                       <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
                         <span className="flex items-center gap-1">
                           <Building2 className="h-3 w-3" />{s.jobs?.companies?.name}
+                          {(s.jobs?.companies as any)?.is_verified && <VerifiedBadge className="h-3 w-3" />}
                         </span>
                         <span className="flex items-center gap-1">
                           <MapPin className="h-3 w-3" />{s.jobs?.location}
