@@ -1,8 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
-// Bulk fetch: single query for all site_content rows
+// Bulk fetch: single query for all site_content rows.
+// Seeds individual ["site-content", key] caches so child components
+// never fire their own network requests.
 export function useAllSiteContent() {
+  const queryClient = useQueryClient();
+
   return useQuery({
     queryKey: ["site-content-all"],
     queryFn: async () => {
@@ -11,25 +15,22 @@ export function useAllSiteContent() {
         .select("section_key, content");
       if (error) return {};
       const map: Record<string, any> = {};
-      data?.forEach((row) => { map[row.section_key] = row.content; });
+      data?.forEach((row) => {
+        map[row.section_key] = row.content;
+        // Pre-seed individual caches so useSiteContent never fires a request
+        queryClient.setQueryData(["site-content", row.section_key], row.content);
+      });
       return map;
     },
     staleTime: 5 * 60 * 1000,
   });
 }
 
-// Single section hook — uses the bulk cache if available, otherwise fetches individually
+// Single section hook — reads from pre-seeded cache when bulk fetch ran first
 export function useSiteContent<T = Record<string, any>>(sectionKey: string) {
-  const queryClient = useQueryClient();
-
   return useQuery({
     queryKey: ["site-content", sectionKey],
     queryFn: async () => {
-      // Try to use bulk cache first
-      const bulkData = queryClient.getQueryData<Record<string, any>>(["site-content-all"]);
-      if (bulkData && sectionKey in bulkData) {
-        return bulkData[sectionKey] as T | null;
-      }
       const { data, error } = await supabase
         .from("site_content")
         .select("content")
