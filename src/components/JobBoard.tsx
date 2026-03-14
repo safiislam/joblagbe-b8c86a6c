@@ -30,7 +30,7 @@ type JobRow = {
   created_at: string;
   category_id: string | null;
   company_id: string;
-  companies: { name: string; location: string | null } | null;
+  companies: { name: string; location: string | null; logo_url: string | null } | null;
 };
 
 const formatSalary = (min: number | null, max: number | null) => {
