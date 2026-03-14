@@ -1,6 +1,6 @@
 import Header from "@/components/Header";
 import AnnouncementBanner from "@/components/AnnouncementBanner";
-import FraudWarning from "@/components/FraudWarning";
+
 import HeroSection from "@/components/HeroSection";
 import QuickLinks from "@/components/QuickLinks";
 import CategoryGrid from "@/components/CategoryGrid";
@@ -14,7 +14,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <AnnouncementBanner />
-      <FraudWarning />
+      
       <Header />
       <HeroSection />
       <QuickLinks />
