@@ -31,7 +31,7 @@ const Jobs = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("jobs")
-        .select("*, companies(name, logo_url), categories(name)")
+        .select("*, companies(name, logo_url, is_verified), categories(name)")
         .eq("is_active", true)
         .eq("is_approved", true)
         .order("created_at", { ascending: false });
