@@ -47,7 +47,7 @@ const Jobs = () => {
       job.title.toLowerCase().includes(search.toLowerCase()) ||
       (job.companies as any)?.name?.toLowerCase().includes(search.toLowerCase());
     const matchType = jobType === "all" || job.job_type === jobType;
-    const matchLoc = location === "all" || job.location?.toLowerCase() === location.toLowerCase();
+    const matchLoc = location === "all" || job.location?.toLowerCase().includes(location.toLowerCase());
     return matchSearch && matchType && matchLoc;
   });
 
