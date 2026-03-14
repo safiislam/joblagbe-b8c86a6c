@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Building2, MapPin, Globe, Briefcase, ArrowLeft } from "lucide-react";
+import { Building2, MapPin, Globe, Briefcase, ArrowLeft, Phone } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
 
@@ -60,6 +60,11 @@ const CompanyProfile = () => {
                   <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                     {company.location && (
                       <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{company.location}</span>
+                    )}
+                    {company.phone && (
+                      <a href={`tel:${company.phone}`} className="flex items-center gap-1 text-primary hover:underline">
+                        <Phone className="h-3.5 w-3.5" />{company.phone}
+                      </a>
                     )}
                     {company.website && (
                       <a href={company.website} target="_blank" rel="noopener" className="flex items-center gap-1 text-primary hover:underline">
