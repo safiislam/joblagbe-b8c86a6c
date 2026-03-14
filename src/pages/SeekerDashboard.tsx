@@ -63,7 +63,7 @@ const SeekerDashboard = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("applications")
-        .select("id, status, created_at, cover_letter, jobs(title, location, job_type, companies(name))")
+        .select("id, status, created_at, cover_letter, jobs(title, location, job_type, companies(name, is_verified))")
         .eq("user_id", user!.id)
         .order("created_at", { ascending: false });
       return (data as unknown as ApplicationRow[]) ?? [];
