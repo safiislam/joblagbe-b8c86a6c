@@ -9,6 +9,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import SaveJobButton from "@/components/SaveJobButton";
 import ShareJobButton from "@/components/ShareJobButton";
+import ApplyJobDialog from "@/components/ApplyJobDialog";
 import {
   Select,
   SelectContent,
@@ -150,6 +151,7 @@ const JobBoard = () => {
   const [jobType, setJobType] = useState("all");
   const [categoryId, setCategoryId] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
+  const [applyJobId, setApplyJobId] = useState<string | null>(null);
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -191,30 +193,11 @@ const JobBoard = () => {
     },
   });
 
-  const handleApply = async (jobId: string) => {
-    if (!user) { toast.error("Please login to apply"); navigate("/login"); return; }
-    const { error } = await supabase.from("applications").insert({ job_id: jobId, user_id: user.id });
-    if (error) {
-      if (error.code === "23505") toast.info("You already applied to this job");
-      else toast.error(error.message);
-    } else {
-      toast.success("Application submitted!");
-      const job = jobs?.find(j => j.id === jobId);
-      if (job) {
-        const { data: comp } = await supabase.from("companies").select("user_id").eq("id", job.company_id).maybeSingle();
-        if (comp?.user_id) {
-          supabase.functions.invoke("notify", {
-            body: {
-              type: "new_application",
-              resource_id: jobId,
-              user_id: comp.user_id,
-              title: "📩 New Application!",
-              message: `Someone applied to your job "${job.title}".`,
-            },
-          }).catch(console.error);
-        }
-      }
-    }
+  const applyJob = jobs?.find((j) => j.id === applyJobId) || selectedJob;
+
+  const handleApply = (jobId: string) => {
+    if (!user) { toast.error("আবেদন করতে লগইন করুন"); navigate("/login"); return; }
+    setApplyJobId(jobId);
   };
 
   const hasActiveFilters = keyword || locationFilter || jobType !== "all" || categoryId !== "all";
@@ -485,6 +468,18 @@ const JobBoard = () => {
             </Link>
           </Button>
         </div>
+
+        {/* Apply Dialog */}
+        {applyJob && (
+          <ApplyJobDialog
+            open={!!applyJobId}
+            onOpenChange={(open) => { if (!open) setApplyJobId(null); }}
+            jobId={applyJob.id}
+            jobTitle={applyJob.title}
+            companyName={applyJob.companies?.name ?? undefined}
+            companyId={applyJob.company_id}
+          />
+        )}
       </div>
     </section>
   );
