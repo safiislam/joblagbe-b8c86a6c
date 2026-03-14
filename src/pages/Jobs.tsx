@@ -105,6 +105,17 @@ const Jobs = () => {
               ))}
             </SelectContent>
           </Select>
+          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+            <SelectTrigger className="w-full sm:w-44">
+              <SelectValue placeholder="ক্যাটাগরি" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">সকল ক্যাটাগরি</SelectItem>
+              {categories?.map((cat) => (
+                <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <p className="mb-4 text-sm text-muted-foreground">{filtered?.length ?? 0} টি চাকরি পাওয়া গেছে</p>
