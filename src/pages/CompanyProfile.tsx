@@ -57,7 +57,10 @@ const CompanyProfile = () => {
                   )}
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold">{company.name}</h1>
+                  <h1 className="text-2xl font-bold inline-flex items-center gap-2">
+                    {company.name}
+                    {company.is_verified && <VerifiedBadge className="h-5 w-5" />}
+                  </h1>
                   <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                     {company.location && (
                       <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{company.location}</span>
