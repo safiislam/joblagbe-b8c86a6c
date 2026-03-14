@@ -155,13 +155,6 @@ const JobBoard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const applyJob = jobs?.find((j) => j.id === applyJobId) || selectedJob;
-
-  const handleApply = (jobId: string) => {
-    if (!user) { toast.error("আবেদন করতে লগইন করুন"); navigate("/login"); return; }
-    setApplyJobId(jobId);
-  };
-
   const { data: categories } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
