@@ -447,7 +447,7 @@ const JobBoard = () => {
                 )}
                 <div>
                   <h3 className="text-lg font-bold">{selectedJob.title}</h3>
-                  <p className="text-sm text-muted-foreground">{selectedJob.companies?.name} · {selectedJob.location}</p>
+                  <p className="text-sm text-muted-foreground inline-flex items-center gap-1">{selectedJob.companies?.name} {selectedJob.companies?.is_verified && <VerifiedBadge className="h-3.5 w-3.5" />} · {selectedJob.location}</p>
                 </div>
               </div>
               <div className="mt-3 flex flex-wrap gap-2">
