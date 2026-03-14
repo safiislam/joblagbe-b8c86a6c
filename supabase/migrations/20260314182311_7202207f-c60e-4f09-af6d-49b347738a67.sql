@@ -1,0 +1,2 @@
+ALTER TABLE public.ebooks ADD COLUMN IF NOT EXISTS book_type text NOT NULL DEFAULT 'ebook' CHECK (book_type IN ('ebook', 'hardcopy'));
+ALTER TABLE public.ebooks ADD COLUMN IF NOT EXISTS purchase_link text DEFAULT NULL;

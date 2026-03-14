@@ -265,6 +265,7 @@ export type Database = {
       ebooks: {
         Row: {
           author: string | null
+          book_type: string
           category: string
           cover_image_url: string | null
           created_at: string
@@ -274,10 +275,12 @@ export type Database = {
           is_free: boolean
           pages: number | null
           price: number | null
+          purchase_link: string | null
           title: string
         }
         Insert: {
           author?: string | null
+          book_type?: string
           category?: string
           cover_image_url?: string | null
           created_at?: string
@@ -287,10 +290,12 @@ export type Database = {
           is_free?: boolean
           pages?: number | null
           price?: number | null
+          purchase_link?: string | null
           title: string
         }
         Update: {
           author?: string | null
+          book_type?: string
           category?: string
           cover_image_url?: string | null
           created_at?: string
@@ -300,6 +305,7 @@ export type Database = {
           is_free?: boolean
           pages?: number | null
           price?: number | null
+          purchase_link?: string | null
           title?: string
         }
         Relationships: []
