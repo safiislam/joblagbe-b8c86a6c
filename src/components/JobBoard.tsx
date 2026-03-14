@@ -418,7 +418,7 @@ const JobBoard = () => {
         {/* Mobile detail modal */}
         {selectedJob && (
           <div className="fixed inset-0 z-50 flex items-end bg-foreground/40 backdrop-blur-sm lg:hidden" onClick={() => setSelectedJob(null)}>
-            <div className="max-h-[85vh] w-full overflow-y-auto rounded-t-3xl bg-card p-6" onClick={(e) => e.stopPropagation()}>
+            <div className="relative max-h-[85vh] w-full overflow-y-auto rounded-t-3xl bg-card p-6" onClick={(e) => e.stopPropagation()}>
               <div className="flex items-center justify-between mb-4">
                 <div className="mx-auto h-1 w-10 rounded-full bg-border" />
                 <button
