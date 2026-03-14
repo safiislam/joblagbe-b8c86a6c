@@ -338,6 +338,13 @@ const JobBoard = () => {
                       <div className="flex items-center gap-1 shrink-0">
                         <SaveJobButton jobId={selectedJob.id} saved={savedJobIds?.has(selectedJob.id)} />
                         <ShareJobButton jobTitle={selectedJob.title} jobId={selectedJob.id} />
+                        <button
+                          onClick={() => setSelectedJob(null)}
+                          className="ml-1 rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                          title="বন্ধ করুন"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
                       </div>
                     </div>
 
