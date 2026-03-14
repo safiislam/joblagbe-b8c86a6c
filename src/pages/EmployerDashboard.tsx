@@ -138,7 +138,7 @@ const EmployerDashboard = () => {
     if (error) { toast.error(error.message); return; }
     toast.success("Course submitted for approval!");
     setShowCourseForm(false);
-    setCourseForm({ title: "", description: "", category: "", provider: "", duration: "", is_free: true, price: 0, link: "" });
+    setCourseForm({ title: "", description: "", category: "", provider: "", duration: "", is_free: true, price: 0, discount_price: 0, link: "", thumbnail_url: "" });
     queryClient.invalidateQueries({ queryKey: ["employer-courses"] });
   };
 
