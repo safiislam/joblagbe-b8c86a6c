@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
-import { Briefcase, Plus, Users, Clock, CheckCircle, Eye, XCircle, UserCheck, FileText, GraduationCap, Upload, Building2, Ban, ImagePlus, Loader2, BadgeCheck, ShieldCheck, Save, BookMarked, Construction } from "lucide-react";
+import { Briefcase, Plus, Users, Clock, CheckCircle, Eye, XCircle, UserCheck, FileText, GraduationCap, Upload, Building2, Ban, ImagePlus, Loader2, BadgeCheck, ShieldCheck, Save } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
@@ -368,7 +368,7 @@ const EmployerDashboard = () => {
           <TabsList>
             <TabsTrigger value="jobs" className="gap-1.5"><Briefcase className="h-3.5 w-3.5" /> Jobs</TabsTrigger>
             <TabsTrigger value="courses" className="gap-1.5"><GraduationCap className="h-3.5 w-3.5" /> Courses</TabsTrigger>
-            <TabsTrigger value="ebooks" className="gap-1.5"><BookMarked className="h-3.5 w-3.5" /> E-Books</TabsTrigger>
+            
             <TabsTrigger value="company" className="gap-1.5"><Building2 className="h-3.5 w-3.5" /> Company</TabsTrigger>
           </TabsList>
 
@@ -559,26 +559,6 @@ const EmployerDashboard = () => {
             </div>
           </TabsContent>
 
-          {/* E-BOOKS TAB */}
-          <TabsContent value="ebooks">
-            <div className="rounded-2xl border bg-card shadow-card">
-              <div className="flex items-center justify-between border-b p-4">
-                <h2 className="font-bold text-lg flex items-center gap-2">
-                  <BookMarked className="h-5 w-5 text-primary" /> E-Books
-                </h2>
-              </div>
-              <div className="flex flex-col items-center justify-center py-16 text-center">
-                <div className="rounded-full bg-primary/10 p-4 mb-4">
-                  <Construction className="h-10 w-10 text-primary" />
-                </div>
-                <h3 className="text-lg font-bold mb-2">🚧 নির্মাণাধীন</h3>
-                <p className="text-sm text-muted-foreground max-w-md">
-                  এই বিভাগটি শীঘ্রই চালু হবে। এখান থেকে আপনি ই-বুক প্রকাশ ও পরিচালনা করতে পারবেন।
-                </p>
-                <Badge variant="outline" className="mt-4 text-xs">Coming Soon</Badge>
-              </div>
-            </div>
-          </TabsContent>
 
           {/* COMPANY TAB */}
           <TabsContent value="company">
