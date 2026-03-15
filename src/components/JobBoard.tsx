@@ -78,13 +78,14 @@ const JobCard = ({
       {/* Company logo */}
       <div className="shrink-0">
         {job.companies?.logo_url ? (
-          <img
+            <img
             src={optimizeStorageImage(job.companies.logo_url, { width: 96, height: 96 })}
             alt=""
             className="h-12 w-12 rounded-xl border bg-secondary object-cover"
             width={48}
             height={48}
             loading="lazy"
+            decoding="async"
           />
         ) : (
           <div className="flex h-12 w-12 items-center justify-center rounded-xl border bg-secondary">

@@ -23,7 +23,7 @@ const Footer = () => {
       <div className="container py-12">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <div>
-            <img src={logo} alt="Job Lagbe" width={40} height={40} className="h-10 w-auto" />
+            <img src={logo} alt="Job Lagbe" width={40} height={40} className="h-10 w-auto" loading="lazy" decoding="async" />
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{desc}</p>
             <div className="mt-4 flex gap-3">
               <a href={socialFb} target="_blank" rel="noopener noreferrer" className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary text-muted-foreground transition-colors hover:bg-primary hover:text-primary-foreground">
