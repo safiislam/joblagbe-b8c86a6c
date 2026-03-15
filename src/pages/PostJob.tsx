@@ -33,7 +33,7 @@ const PostJob = () => {
     categoryId: "",
     description: "",
     requirements: "",
-    tag: "",
+    
   });
 
   const { data: company } = useQuery({
