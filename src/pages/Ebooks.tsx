@@ -218,6 +218,14 @@ const Ebooks = () => {
           <EmptyState message="কোনো বই পাওয়া যায়নি" />
         )}
       </div>
+      <PaymentDialog
+        open={!!paymentBook}
+        onOpenChange={(open) => { if (!open) setPaymentBook(null); }}
+        itemType="ebook"
+        itemId={paymentBook?.id}
+        itemTitle={paymentBook?.title || ""}
+        amount={paymentBook?.price || 0}
+      />
       <Footer />
     </div>
   );
