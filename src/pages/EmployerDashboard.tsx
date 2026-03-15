@@ -368,7 +368,7 @@ const EmployerDashboard = () => {
           <TabsList>
             <TabsTrigger value="jobs" className="gap-1.5"><Briefcase className="h-3.5 w-3.5" /> Jobs</TabsTrigger>
             <TabsTrigger value="courses" className="gap-1.5"><GraduationCap className="h-3.5 w-3.5" /> Courses</TabsTrigger>
-            <TabsTrigger value="ebooks" className="gap-1.5"><BookMarked className="h-3.5 w-3.5" /> E-Books</TabsTrigger>
+            
             <TabsTrigger value="company" className="gap-1.5"><Building2 className="h-3.5 w-3.5" /> Company</TabsTrigger>
           </TabsList>
 
