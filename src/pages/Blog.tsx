@@ -5,6 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { BookOpen, ArrowRight } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { getJobDisplayTag } from "@/lib/jobTag";
 
 const Blog = () => {
   const { data: posts, isLoading } = useQuery({
