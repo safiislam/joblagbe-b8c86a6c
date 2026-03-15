@@ -27,7 +27,7 @@ type Ebook = {
   purchase_link?: string | null;
 };
 
-const BookCard = ({ book }: { book: Ebook }) => {
+const BookCard = ({ book, onBuy }: { book: Ebook; onBuy: (book: Ebook) => void }) => {
   const isHardcopy = book.book_type === "hardcopy";
 
   return (
