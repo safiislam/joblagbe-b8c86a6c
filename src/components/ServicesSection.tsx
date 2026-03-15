@@ -55,16 +55,30 @@ const ServicesSection = () => {
 
     setSubmitting(true);
     try {
-      const { error } = await supabase.from("service_orders").insert({
+      const { error, data: inserted } = await supabase.from("service_orders").insert({
         service_type: orderService?.title || "",
         name: formData.name.trim(),
         email: formData.email.trim() || null,
         phone: formData.phone.trim() || null,
         details: formData.details.trim() || null,
         user_id: user?.id || null,
-      });
+      }).select("id").single();
       if (error) throw error;
-      toast.success("অর্ডার সফলভাবে জমা হয়েছে! আমরা শীঘ্রই যোগাযোগ করবো।");
+      
+      // Parse cost to number
+      const costStr = orderService?.cost || "";
+      const amount = parseInt(costStr.replace(/[^\d]/g, "")) || 0;
+      
+      if (amount > 0) {
+        // Open payment dialog
+        setPaymentItem({
+          title: orderService?.title || "",
+          amount,
+          orderId: inserted?.id,
+        });
+      } else {
+        toast.success("অর্ডার সফলভাবে জমা হয়েছে! আমরা শীঘ্রই যোগাযোগ করবো।");
+      }
       setOrderService(null);
     } catch (err: any) {
       toast.error(err.message || "অর্ডার জমা দিতে সমস্যা হয়েছে");
