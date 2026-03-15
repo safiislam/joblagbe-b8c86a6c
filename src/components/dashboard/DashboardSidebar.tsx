@@ -1,7 +1,7 @@
 import {
   BarChart3, Briefcase, Building2, Users, FileText, BookOpen,
   GraduationCap, BookMarked, MessageSquare, ShoppingCart, Activity,
-  Mail, Home, Settings, Shield, PenSquare
+  Mail, Home, Settings, Shield, PenSquare, Megaphone
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
