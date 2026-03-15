@@ -194,6 +194,16 @@ const ServicesSection = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Payment Dialog */}
+      <PaymentDialog
+        open={!!paymentItem}
+        onOpenChange={(open) => { if (!open) setPaymentItem(null); }}
+        itemType="service"
+        itemId={paymentItem?.orderId}
+        itemTitle={paymentItem?.title || ""}
+        amount={paymentItem?.amount || 0}
+      />
     </section>
   );
 };
