@@ -16,6 +16,7 @@ import DashboardContacts from "@/components/dashboard/DashboardContacts";
 import DashboardActivity from "@/components/dashboard/DashboardActivity";
 import DashboardChatLogs from "@/components/dashboard/DashboardChatLogs";
 import DashboardSiteContent from "@/components/dashboard/DashboardSiteContent";
+import DashboardPopups from "@/components/dashboard/DashboardPopups";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import NotificationBell from "@/components/NotificationBell";
@@ -83,6 +84,7 @@ const Dashboard = () => {
               <Route path="activity" element={<DashboardActivity />} />
               <Route path="chat-logs" element={<DashboardChatLogs />} />
               <Route path="site-content" element={<DashboardSiteContent />} />
+              <Route path="popups" element={<DashboardPopups />} />
             </Routes>
           </main>
         </div>
