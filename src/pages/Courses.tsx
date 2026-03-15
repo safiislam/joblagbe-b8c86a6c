@@ -6,8 +6,9 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Search, BookOpen, Clock, ExternalLink } from "lucide-react";
+import { Search, BookOpen, Clock, ExternalLink, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import PaymentDialog from "@/components/PaymentDialog";
 
 const Courses = () => {
   const [search, setSearch] = useState("");
