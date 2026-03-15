@@ -14,6 +14,7 @@ const Courses = () => {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [priceFilter, setPriceFilter] = useState("all");
+  const [paymentCourse, setPaymentCourse] = useState<{ id: string; title: string; price: number } | null>(null);
 
   const { data: courses, isLoading } = useQuery({
     queryKey: ["all-courses"],
