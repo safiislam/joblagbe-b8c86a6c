@@ -14,7 +14,7 @@ type PopupBanner = {
   sort_order: number;
 };
 
-const DISMISSED_KEY = "popup_banner_dismissed";
+
 
 const PopupBannerModal = () => {
   const [open, setOpen] = useState(false);
@@ -35,11 +35,8 @@ const PopupBannerModal = () => {
 
   useEffect(() => {
     if (!banners?.length) return;
-    const dismissed = sessionStorage.getItem(DISMISSED_KEY);
-    if (!dismissed) {
-      const timer = setTimeout(() => setOpen(true), 1500);
-      return () => clearTimeout(timer);
-    }
+    const timer = setTimeout(() => setOpen(true), 1500);
+    return () => clearTimeout(timer);
   }, [banners]);
 
   // Auto-close after 5 seconds of no interaction
@@ -47,14 +44,12 @@ const PopupBannerModal = () => {
     if (!open) return;
     let autoCloseTimer = setTimeout(() => {
       setOpen(false);
-      sessionStorage.setItem(DISMISSED_KEY, "1");
     }, 5000);
 
     const resetTimer = () => {
       clearTimeout(autoCloseTimer);
       autoCloseTimer = setTimeout(() => {
         setOpen(false);
-        sessionStorage.setItem(DISMISSED_KEY, "1");
       }, 5000);
     };
 
@@ -72,7 +67,6 @@ const PopupBannerModal = () => {
 
   const close = useCallback(() => {
     setOpen(false);
-    sessionStorage.setItem(DISMISSED_KEY, "1");
   }, []);
 
   if (!open || !banners?.length) return null;
