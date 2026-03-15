@@ -44,14 +44,12 @@ const PopupBannerModal = () => {
     if (!open) return;
     let autoCloseTimer = setTimeout(() => {
       setOpen(false);
-      sessionStorage.setItem(DISMISSED_KEY, "1");
     }, 5000);
 
     const resetTimer = () => {
       clearTimeout(autoCloseTimer);
       autoCloseTimer = setTimeout(() => {
         setOpen(false);
-        sessionStorage.setItem(DISMISSED_KEY, "1");
       }, 5000);
     };
 
