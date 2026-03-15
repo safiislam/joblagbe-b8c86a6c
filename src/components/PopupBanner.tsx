@@ -35,11 +35,8 @@ const PopupBannerModal = () => {
 
   useEffect(() => {
     if (!banners?.length) return;
-    const dismissed = sessionStorage.getItem(DISMISSED_KEY);
-    if (!dismissed) {
-      const timer = setTimeout(() => setOpen(true), 1500);
-      return () => clearTimeout(timer);
-    }
+    const timer = setTimeout(() => setOpen(true), 1500);
+    return () => clearTimeout(timer);
   }, [banners]);
 
   // Auto-close after 5 seconds of no interaction
