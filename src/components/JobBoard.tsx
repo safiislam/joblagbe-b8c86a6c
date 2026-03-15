@@ -440,7 +440,7 @@ const JobBoard = () => {
               </div>
               <div className="flex items-start gap-3">
                 {selectedJob.companies?.logo_url ? (
-                  <img src={selectedJob.companies.logo_url} alt="" className="h-12 w-12 rounded-xl border object-cover" />
+                  <img src={optimizeStorageImage(selectedJob.companies.logo_url, { width: 96, height: 96 })} alt="" className="h-12 w-12 rounded-xl border object-cover" width={48} height={48} loading="lazy" />
                 ) : (
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl border bg-secondary">
                     <Building2 className="h-5 w-5 text-muted-foreground" />

@@ -98,10 +98,13 @@ const PopupBannerModal = () => {
         {banner.image_url && (
           <div className="relative w-full aspect-[16/10] bg-muted overflow-hidden">
             <img
-              src={banner.image_url}
+              src={optimizeStorageImage(banner.image_url, { width: 600, quality: 70 })}
               alt={banner.title}
               className="w-full h-full object-cover"
               loading="eager"
+              fetchPriority="high"
+              width={600}
+              height={375}
             />
             {/* Carousel navigation arrows over image */}
             {total > 1 && (
