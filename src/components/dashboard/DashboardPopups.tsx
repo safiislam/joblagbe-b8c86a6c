@@ -73,7 +73,7 @@ const DashboardPopups = () => {
         sort_order: form.sort_order,
       };
 
-      if (editing) {
+      if (editing && editing !== "new") {
         const { error } = await supabase.from("popup_banners").update(payload).eq("id", editing);
         if (error) throw error;
       } else {
