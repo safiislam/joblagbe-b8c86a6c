@@ -283,16 +283,6 @@ const PostJob = () => {
                 </SelectContent>
               </Select>
             </div>
-            <div>
-              <Label>Tag (optional)</Label>
-              <Select value={form.tag} onValueChange={(v) => setForm({ ...form, tag: v })}>
-                <SelectTrigger className="mt-1.5 rounded-xl"><SelectValue placeholder="None" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="New">New</SelectItem>
-                  <SelectItem value="Urgent">Urgent</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
           </div>
           <div>
             <Label>Description</Label>
