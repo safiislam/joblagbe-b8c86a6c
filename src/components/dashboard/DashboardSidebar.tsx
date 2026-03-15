@@ -28,6 +28,7 @@ const contentItems = [
 ];
 
 const trackingItems = [
+  { title: "Payments", url: "/dashboard/payments", icon: CreditCard },
   { title: "Service Orders", url: "/dashboard/service-orders", icon: ShoppingCart },
   { title: "Contact Leads", url: "/dashboard/contacts", icon: Mail },
   { title: "User Activity", url: "/dashboard/activity", icon: Activity },

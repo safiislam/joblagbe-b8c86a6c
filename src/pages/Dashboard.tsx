@@ -80,6 +80,7 @@ const Dashboard = () => {
               <Route path="blog" element={<DashboardBlog />} />
               <Route path="courses" element={<DashboardCourses />} />
               <Route path="ebooks" element={<DashboardEbooks />} />
+              <Route path="payments" element={<DashboardPayments />} />
               <Route path="service-orders" element={<DashboardServiceOrders />} />
               <Route path="contacts" element={<DashboardContacts />} />
               <Route path="activity" element={<DashboardActivity />} />
