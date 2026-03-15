@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Search, BookOpen, Clock, ExternalLink, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PaymentDialog from "@/components/PaymentDialog";
+import { getJobDisplayTag } from "@/lib/jobTag";
 
 const Courses = () => {
   const [search, setSearch] = useState("");
@@ -93,11 +94,12 @@ const Courses = () => {
                   )}
                 </div>
                 <div className="flex flex-1 flex-col p-5">
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center gap-2 mb-2 flex-wrap">
                     <Badge variant="secondary" className="text-xs">{course.category}</Badge>
                     <Badge variant={course.is_free ? "default" : "outline"} className="text-xs">
                       {course.is_free ? "ফ্রি" : `৳${course.price}`}
                     </Badge>
+                    {(() => { const dt = getJobDisplayTag(null, course.created_at); return dt ? <Badge className="bg-accent/15 text-accent border-accent/20 text-[10px]">{dt}</Badge> : null; })()}
                   </div>
                   <h3 className="font-bold text-lg font-bangla group-hover:text-primary transition-colors">{course.title}</h3>
                   {course.description && <p className="mt-2 text-sm text-muted-foreground font-bangla line-clamp-2">{course.description}</p>}
