@@ -67,6 +67,13 @@ const DashboardJobs = () => {
     toast.success("Job rejected"); refreshAll();
   };
 
+  const handleTagChange = async (jobId: string, newTag: string) => {
+    const tagValue = newTag === "none" ? null : newTag;
+    const { error } = await supabase.from("jobs").update({ tag: tagValue }).eq("id", jobId);
+    if (error) { toast.error(error.message); return; }
+    toast.success(`Tag updated to ${tagValue || "None"}`); refreshAll();
+  };
+
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-bold">Job Management</h1>
