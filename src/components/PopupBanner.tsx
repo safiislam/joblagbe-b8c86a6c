@@ -101,8 +101,7 @@ const PopupBannerModal = () => {
               src={optimizeStorageImage(banner.image_url, { width: 600, quality: 70 })}
               alt={banner.title}
               className="w-full h-full object-cover"
-              loading="eager"
-              fetchPriority="high"
+              loading="lazy"
               width={600}
               height={375}
             />
