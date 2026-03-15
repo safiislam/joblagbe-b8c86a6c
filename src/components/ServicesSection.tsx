@@ -76,7 +76,7 @@ const ServicesSection = () => {
         setPaymentItem({
           title: orderService?.title || "",
           amount,
-          orderId: inserted?.id,
+          orderId,
         });
       } else {
         toast.success("অর্ডার সফলভাবে জমা হয়েছে! আমরা শীঘ্রই যোগাযোগ করবো।");
