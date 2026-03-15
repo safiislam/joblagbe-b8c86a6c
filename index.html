@@ -11,9 +11,18 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'" />
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" /></noscript>
     <style>
-      /* Critical inline CSS to prevent FOIT and improve LCP */
-      body { font-family: 'Inter', 'Hind Siliguri', sans-serif; margin: 0; }
+      /* Critical inline CSS to prevent FOIT and improve FCP/LCP */
+      body { font-family: 'Inter', 'Hind Siliguri', sans-serif; margin: 0; background: #fff; color: hsl(210,29%,13%); }
       #root { min-height: 100vh; }
+      .sk-header { height: 56px; border-bottom: 1px solid hsl(210,20%,90%); display: flex; align-items: center; padding: 0 1rem; }
+      .sk-logo { width: 32px; height: 32px; border-radius: 8px; background: hsl(210,20%,96%); }
+      .sk-hero { text-align: center; padding: 3.5rem 1rem 2rem; }
+      .sk-badge { display: inline-block; background: hsl(210,20%,96%); border-radius: 9999px; height: 28px; width: 180px; margin-bottom: 1rem; }
+      .sk-title { height: 2.5rem; width: 80%; max-width: 500px; margin: 0 auto 0.75rem; background: hsl(210,20%,96%); border-radius: 8px; }
+      .sk-sub { height: 1rem; width: 60%; max-width: 380px; margin: 0 auto; background: hsl(210,20%,96%); border-radius: 6px; }
+      .sk-search { max-width: 600px; margin: 1.5rem auto 0; height: 56px; border-radius: 1rem; border: 1px solid hsl(210,20%,90%); background: #fff; }
+      @keyframes sk-pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+      .sk-pulse { animation: sk-pulse 1.5s ease-in-out infinite; }
     </style>
     <title>Job লাগবে?</title>
     <meta name="description" content="Bangladesh&#39;s trusted job portal. Find your dream career from thousands of jobs.">
@@ -37,7 +46,18 @@
 </head>
 
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Inline skeleton for fast First Contentful Paint — replaced by React on mount -->
+      <div class="sk-pulse">
+        <div class="sk-header"><div class="sk-logo"></div></div>
+        <div class="sk-hero">
+          <div class="sk-badge"></div>
+          <div class="sk-title"></div>
+          <div class="sk-sub"></div>
+          <div class="sk-search"></div>
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
