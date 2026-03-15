@@ -46,7 +46,18 @@
 </head>
 
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Inline skeleton for fast First Contentful Paint — replaced by React on mount -->
+      <div class="sk-pulse">
+        <div class="sk-header"><div class="sk-logo"></div></div>
+        <div class="sk-hero">
+          <div class="sk-badge"></div>
+          <div class="sk-title"></div>
+          <div class="sk-sub"></div>
+          <div class="sk-search"></div>
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
