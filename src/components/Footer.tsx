@@ -66,7 +66,7 @@ const Footer = () => {
       </div>
       <div className="border-t">
         <div className="container py-5 text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} Job Lagbe. All rights reserved.
+          © {new Date().getFullYear()} Job Lagbe. All rights reserved. · <Link to="/terms" className="underline hover:text-primary transition-colors">Terms & Conditions</Link>
         </div>
       </div>
     </footer>
