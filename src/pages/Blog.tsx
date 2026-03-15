@@ -5,6 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { BookOpen, ArrowRight } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { getJobDisplayTag } from "@/lib/jobTag";
 
 const Blog = () => {
   const { data: posts, isLoading } = useQuery({
@@ -50,7 +52,10 @@ const Blog = () => {
                   </div>
                 )}
                 <div className="p-5">
-                  <p className="text-xs text-muted-foreground">{post.author_name} · {formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs text-muted-foreground">{post.author_name} · {formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}</p>
+                    {(() => { const dt = getJobDisplayTag(null, post.created_at); return dt ? <Badge className="bg-accent/15 text-accent border-accent/20 text-[10px]">{dt}</Badge> : null; })()}
+                  </div>
                   <h3 className="mt-2 font-bold text-lg leading-snug group-hover:text-primary transition-colors">{post.title}</h3>
                   {post.excerpt && <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{post.excerpt}</p>}
                   <span className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary">
