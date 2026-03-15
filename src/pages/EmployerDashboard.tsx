@@ -559,26 +559,6 @@ const EmployerDashboard = () => {
             </div>
           </TabsContent>
 
-          {/* E-BOOKS TAB */}
-          <TabsContent value="ebooks">
-            <div className="rounded-2xl border bg-card shadow-card">
-              <div className="flex items-center justify-between border-b p-4">
-                <h2 className="font-bold text-lg flex items-center gap-2">
-                  <BookMarked className="h-5 w-5 text-primary" /> E-Books
-                </h2>
-              </div>
-              <div className="flex flex-col items-center justify-center py-16 text-center">
-                <div className="rounded-full bg-primary/10 p-4 mb-4">
-                  <Construction className="h-10 w-10 text-primary" />
-                </div>
-                <h3 className="text-lg font-bold mb-2">🚧 নির্মাণাধীন</h3>
-                <p className="text-sm text-muted-foreground max-w-md">
-                  এই বিভাগটি শীঘ্রই চালু হবে। এখান থেকে আপনি ই-বুক প্রকাশ ও পরিচালনা করতে পারবেন।
-                </p>
-                <Badge variant="outline" className="mt-4 text-xs">Coming Soon</Badge>
-              </div>
-            </div>
-          </TabsContent>
 
           {/* COMPANY TAB */}
           <TabsContent value="company">
