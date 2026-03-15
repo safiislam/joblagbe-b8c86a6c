@@ -11,6 +11,7 @@ import SaveJobButton from "@/components/SaveJobButton";
 import ShareJobButton from "@/components/ShareJobButton";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import ApplyJobDialog from "@/components/ApplyJobDialog";
+import JobFraudWarning from "@/components/JobFraudWarning";
 import {
   Select,
   SelectContent,
