@@ -12,6 +12,7 @@ const JobBoard = lazy(() => import("@/components/JobBoard"));
 const ServicesSection = lazy(() => import("@/components/ServicesSection"));
 const EmployerCTA = lazy(() => import("@/components/EmployerCTA"));
 const AIChatWidget = lazy(() => import("@/components/AIChatWidget"));
+const PopupBannerModal = lazy(() => import("@/components/PopupBanner"));
 
 const SectionFallback = () => <div className="py-16" />;
 
