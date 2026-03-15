@@ -118,15 +118,15 @@ const JobCard = ({
           <span className={`rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${typeColorMap[job.job_type] || "bg-secondary text-muted-foreground"}`}>
             {job.job_type}
           </span>
-          {job.tag && (
+          {(() => { const dt = getJobDisplayTag(job.tag, job.created_at); return dt ? (
             <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide ${
-              job.tag === "Urgent"
+              dt === "Urgent"
                 ? "bg-destructive/10 text-destructive border border-destructive/20"
                 : "bg-accent/15 text-accent border border-accent/20"
             }`}>
-              {job.tag}
+              {dt}
             </span>
-          )}
+          ) : null; })()}
         </div>
 
         <div className="mt-2.5 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
