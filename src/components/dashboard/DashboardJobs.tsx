@@ -99,8 +99,16 @@ const DashboardJobs = () => {
                   </div>
                   <p className="mt-0.5 text-xs text-muted-foreground">{job.companies?.name} · {job.location} · {job.job_type} · {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}</p>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <Button variant="ghost" size="sm" onClick={() => setExpandedJob(expandedJob === job.id ? null : job.id)} className="gap-1 text-xs">
+                <div className="flex items-center gap-2 shrink-0 flex-wrap">
+                  <Select value={job.tag || "none"} onValueChange={(v) => handleTagChange(job.id, v)}>
+                    <SelectTrigger className="h-7 w-[90px] text-[10px]"><Tag className="h-3 w-3 mr-1" /><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">No Tag</SelectItem>
+                      <SelectItem value="New">New</SelectItem>
+                      <SelectItem value="Urgent">Urgent</SelectItem>
+                      <SelectItem value="Hot">Hot</SelectItem>
+                    </SelectContent>
+                  </Select>
                     <Eye className="h-3 w-3" /> {expandedJob === job.id ? "Hide" : "Preview"}
                   </Button>
                   {!job.is_approved && job.is_active && (
