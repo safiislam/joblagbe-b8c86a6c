@@ -105,14 +105,24 @@ const Courses = () => {
                     <span className="flex items-center gap-1 text-xs text-muted-foreground">
                       <Clock className="h-3 w-3" /> {course.duration ?? "—"}
                     </span>
-                    {course.link ? (
-                      <Button size="sm" variant="outline" className="gap-1" asChild>
-                        <a href={course.link} target="_blank" rel="noopener noreferrer">
-                          শুরু করুন <ExternalLink className="h-3 w-3" />
-                        </a>
-                      </Button>
+                    {course.is_free ? (
+                      course.link ? (
+                        <Button size="sm" variant="outline" className="gap-1" asChild>
+                          <a href={course.link} target="_blank" rel="noopener noreferrer">
+                            শুরু করুন <ExternalLink className="h-3 w-3" />
+                          </a>
+                        </Button>
+                      ) : (
+                        <Button size="sm" variant="outline" disabled>শীঘ্রই আসছে</Button>
+                      )
                     ) : (
-                      <Button size="sm" variant="outline" disabled>শীঘ্রই আসছে</Button>
+                      <Button
+                        size="sm"
+                        className="gap-1"
+                        onClick={() => setPaymentCourse({ id: course.id, title: course.title, price: Number(course.discount_price || course.price || 0) })}
+                      >
+                        <ShoppingCart className="h-3 w-3" /> কিনুন ৳{course.discount_price || course.price}
+                      </Button>
                     )}
                   </div>
                 </div>
