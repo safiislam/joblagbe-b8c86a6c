@@ -1,6 +1,10 @@
-import { Briefcase, Building2, Users, FileText, Clock, GraduationCap, BookMarked, BookOpen, TrendingUp } from "lucide-react";
+import { Briefcase, Building2, Users, FileText, Clock, GraduationCap, BookMarked, BookOpen, TrendingUp, ArrowUpRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area } from "recharts";
+import { format, subDays } from "date-fns";
+
+const COLORS = ["hsl(var(--primary))", "hsl(var(--accent))", "hsl(var(--success))", "hsl(var(--muted-foreground))"];
 
 const DashboardOverview = () => {
   const { data: stats } = useQuery({
@@ -31,6 +35,54 @@ const DashboardOverview = () => {
     },
   });
 
+  // Fetch recent signups (last 7 days)
+  const { data: recentSignups } = useQuery({
+    queryKey: ["dashboard-recent-signups"],
+    queryFn: async () => {
+      const sevenDaysAgo = subDays(new Date(), 7).toISOString();
+      const { data } = await supabase
+        .from("profiles")
+        .select("created_at")
+        .gte("created_at", sevenDaysAgo)
+        .order("created_at", { ascending: true });
+
+      const grouped: Record<string, number> = {};
+      for (let i = 6; i >= 0; i--) {
+        const day = format(subDays(new Date(), i), "MMM dd");
+        grouped[day] = 0;
+      }
+      data?.forEach((p) => {
+        const day = format(new Date(p.created_at), "MMM dd");
+        if (grouped[day] !== undefined) grouped[day]++;
+      });
+      return Object.entries(grouped).map(([name, users]) => ({ name, users }));
+    },
+  });
+
+  // Fetch recent applications (last 7 days)
+  const { data: recentApps } = useQuery({
+    queryKey: ["dashboard-recent-apps"],
+    queryFn: async () => {
+      const sevenDaysAgo = subDays(new Date(), 7).toISOString();
+      const { data } = await supabase
+        .from("applications")
+        .select("created_at")
+        .gte("created_at", sevenDaysAgo)
+        .order("created_at", { ascending: true });
+
+      const grouped: Record<string, number> = {};
+      for (let i = 6; i >= 0; i--) {
+        const day = format(subDays(new Date(), i), "MMM dd");
+        grouped[day] = 0;
+      }
+      data?.forEach((a) => {
+        const day = format(new Date(a.created_at), "MMM dd");
+        if (grouped[day] !== undefined) grouped[day]++;
+      });
+      return Object.entries(grouped).map(([name, apps]) => ({ name, apps }));
+    },
+  });
+
   const statCards = [
     { icon: Briefcase, label: "Total Jobs", value: stats?.jobs ?? 0, color: "text-primary", bg: "bg-primary/10" },
     { icon: Clock, label: "Pending Jobs", value: stats?.pending ?? 0, color: "text-accent", bg: "bg-accent/10" },
@@ -42,6 +94,18 @@ const DashboardOverview = () => {
     { icon: BookOpen, label: "Blog Posts", value: stats?.blogs ?? 0, color: "text-accent", bg: "bg-accent/10" },
   ];
 
+  const userPieData = [
+    { name: "Seekers", value: stats?.seekers ?? 0 },
+    { name: "Employers", value: stats?.employers ?? 0 },
+  ];
+
+  const contentPieData = [
+    { name: "Jobs", value: stats?.jobs ?? 0 },
+    { name: "Courses", value: stats?.courses ?? 0 },
+    { name: "E-Books", value: stats?.ebooks ?? 0 },
+    { name: "Blogs", value: stats?.blogs ?? 0 },
+  ];
+
   return (
     <div className="space-y-6">
       <div>
@@ -49,11 +113,15 @@ const DashboardOverview = () => {
         <p className="text-sm text-muted-foreground">Welcome to Job Lagbe Admin Panel</p>
       </div>
 
+      {/* Stat Cards */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         {statCards.map((c) => (
-          <div key={c.label} className="rounded-2xl border bg-card p-4 shadow-sm">
-            <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${c.bg}`}>
-              <c.icon className={`h-4 w-4 ${c.color}`} />
+          <div key={c.label} className="rounded-2xl border bg-card p-4 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${c.bg}`}>
+                <c.icon className={`h-4 w-4 ${c.color}`} />
+              </div>
+              <ArrowUpRight className="h-3.5 w-3.5 text-muted-foreground/50" />
             </div>
             <p className="mt-2 text-xl font-bold lg:text-2xl">{c.value}</p>
             <p className="text-xs text-muted-foreground">{c.label}</p>
@@ -61,33 +129,111 @@ const DashboardOverview = () => {
         ))}
       </div>
 
-      {/* Quick stats panels */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <div className="rounded-2xl border bg-card p-6 shadow-sm">
-          <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-            <TrendingUp className="h-4 w-4" /> Platform Overview
+      {/* Charts Row */}
+      <div className="grid gap-4 md:grid-cols-2">
+        {/* User Signups - Area Chart */}
+        <div className="rounded-2xl border bg-card p-5 shadow-sm">
+          <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
+            <Users className="h-4 w-4 text-primary" /> New Signups (Last 7 Days)
           </h3>
-          <div className="mt-4 space-y-3">
-            <div className="flex items-center justify-between"><span className="text-sm">Active Jobs</span><span className="font-bold text-success">{(stats?.jobs ?? 0) - (stats?.pending ?? 0)}</span></div>
-            <div className="flex items-center justify-between"><span className="text-sm">Pending Review</span><span className="font-bold text-accent">{stats?.pending ?? 0}</span></div>
-            <div className="flex items-center justify-between"><span className="text-sm">Pending Courses</span><span className="font-bold text-accent">{stats?.pendingCourses ?? 0}</span></div>
+          <div className="h-48">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={recentSignups ?? []}>
+                <defs>
+                  <linearGradient id="signupGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                    <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="name" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
+                <YAxis tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" allowDecimals={false} />
+                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid hsl(var(--border))", background: "hsl(var(--card))" }} />
+                <Area type="monotone" dataKey="users" stroke="hsl(var(--primary))" fill="url(#signupGrad)" strokeWidth={2} />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         </div>
-        <div className="rounded-2xl border bg-card p-6 shadow-sm">
-          <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+
+        {/* Applications - Bar Chart */}
+        <div className="rounded-2xl border bg-card p-5 shadow-sm">
+          <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
+            <FileText className="h-4 w-4 text-accent" /> Applications (Last 7 Days)
+          </h3>
+          <div className="h-48">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={recentApps ?? []}>
+                <XAxis dataKey="name" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
+                <YAxis tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" allowDecimals={false} />
+                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid hsl(var(--border))", background: "hsl(var(--card))" }} />
+                <Bar dataKey="apps" fill="hsl(var(--accent))" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
+      {/* Pie Charts + Stats */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {/* User Breakdown Pie */}
+        <div className="rounded-2xl border bg-card p-5 shadow-sm">
+          <h3 className="text-sm font-semibold mb-2 flex items-center gap-2">
             <Users className="h-4 w-4" /> User Breakdown
           </h3>
-          <div className="mt-4 space-y-3">
-            <div className="flex items-center justify-between"><span className="text-sm">Total Users</span><span className="font-bold">{stats?.users ?? 0}</span></div>
-            <div className="flex items-center justify-between"><span className="text-sm">Job Seekers</span><span className="font-bold text-primary">{stats?.seekers ?? 0}</span></div>
-            <div className="flex items-center justify-between"><span className="text-sm">Employers</span><span className="font-bold text-accent">{stats?.employers ?? 0}</span></div>
+          <div className="h-44 flex items-center justify-center">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie data={userPieData} cx="50%" cy="50%" innerRadius={40} outerRadius={65} paddingAngle={4} dataKey="value">
+                  {userPieData.map((_, i) => (
+                    <Cell key={i} fill={COLORS[i]} />
+                  ))}
+                </Pie>
+                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid hsl(var(--border))", background: "hsl(var(--card))" }} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="flex justify-center gap-4 text-xs">
+            <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-full bg-primary" /> Seekers ({stats?.seekers ?? 0})</span>
+            <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-full bg-accent" /> Employers ({stats?.employers ?? 0})</span>
           </div>
         </div>
-        <div className="rounded-2xl border bg-card p-6 shadow-sm">
-          <h3 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-            <FileText className="h-4 w-4" /> Leads & Orders
+
+        {/* Content Breakdown Pie */}
+        <div className="rounded-2xl border bg-card p-5 shadow-sm">
+          <h3 className="text-sm font-semibold mb-2 flex items-center gap-2">
+            <BookOpen className="h-4 w-4" /> Content Breakdown
           </h3>
-          <div className="mt-4 space-y-3">
+          <div className="h-44 flex items-center justify-center">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie data={contentPieData} cx="50%" cy="50%" innerRadius={40} outerRadius={65} paddingAngle={4} dataKey="value">
+                  {contentPieData.map((_, i) => (
+                    <Cell key={i} fill={COLORS[i]} />
+                  ))}
+                </Pie>
+                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid hsl(var(--border))", background: "hsl(var(--card))" }} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="flex flex-wrap justify-center gap-3 text-xs">
+            {contentPieData.map((d, i) => (
+              <span key={d.name} className="flex items-center gap-1">
+                <span className="h-2.5 w-2.5 rounded-full" style={{ background: COLORS[i] }} />
+                {d.name} ({d.value})
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Quick Stats Panel */}
+        <div className="rounded-2xl border bg-card p-5 shadow-sm">
+          <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
+            <TrendingUp className="h-4 w-4" /> Platform Status
+          </h3>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between"><span className="text-sm">Active Jobs</span><span className="font-bold text-success">{(stats?.jobs ?? 0) - (stats?.pending ?? 0)}</span></div>
+            <div className="flex items-center justify-between"><span className="text-sm">Pending Jobs</span><span className="font-bold text-accent">{stats?.pending ?? 0}</span></div>
+            <div className="flex items-center justify-between"><span className="text-sm">Pending Courses</span><span className="font-bold text-accent">{stats?.pendingCourses ?? 0}</span></div>
+            <hr className="border-border" />
             <div className="flex items-center justify-between"><span className="text-sm">Service Orders</span><span className="font-bold text-primary">{stats?.serviceOrders ?? 0}</span></div>
             <div className="flex items-center justify-between"><span className="text-sm">Contact Leads</span><span className="font-bold text-success">{stats?.contacts ?? 0}</span></div>
           </div>
