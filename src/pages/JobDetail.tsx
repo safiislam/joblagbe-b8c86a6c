@@ -301,6 +301,8 @@ const JobDetail = () => {
                 </ul>
               </div>
             )}
+
+            <JobFraudWarning />
           </div>
 
           {/* Sidebar */}
