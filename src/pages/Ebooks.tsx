@@ -112,6 +112,7 @@ const Ebooks = () => {
   const [category, setCategory] = useState("all");
   const [priceFilter, setPriceFilter] = useState("all");
   const [activeTab, setActiveTab] = useState("all");
+  const [paymentBook, setPaymentBook] = useState<{ id: string; title: string; price: number } | null>(null);
 
   const { data: ebooks, isLoading } = useQuery({
     queryKey: ["all-ebooks"],
