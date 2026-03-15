@@ -36,7 +36,7 @@ const PopupBannerModal = () => {
 
   useEffect(() => {
     if (!banners?.length) return;
-    const timer = setTimeout(() => setOpen(true), 1500);
+    const timer = setTimeout(() => setOpen(true), 5000);
     return () => clearTimeout(timer);
   }, [banners]);
 
@@ -101,8 +101,7 @@ const PopupBannerModal = () => {
               src={optimizeStorageImage(banner.image_url, { width: 600, quality: 70 })}
               alt={banner.title}
               className="w-full h-full object-cover"
-              loading="eager"
-              fetchPriority="high"
+              loading="lazy"
               width={600}
               height={375}
             />
