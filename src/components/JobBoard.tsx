@@ -79,9 +79,12 @@ const JobCard = ({
       <div className="shrink-0">
         {job.companies?.logo_url ? (
           <img
-            src={job.companies.logo_url}
+            src={optimizeStorageImage(job.companies.logo_url, { width: 96, height: 96 })}
             alt=""
             className="h-12 w-12 rounded-xl border bg-secondary object-cover"
+            width={48}
+            height={48}
+            loading="lazy"
           />
         ) : (
           <div className="flex h-12 w-12 items-center justify-center rounded-xl border bg-secondary">
