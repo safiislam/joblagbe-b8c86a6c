@@ -10,6 +10,7 @@ import { Search, BookMarked, Download, FileText, BookOpen, ShoppingCart, Tablet 
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PaymentDialog from "@/components/PaymentDialog";
+import { getJobDisplayTag } from "@/lib/jobTag";
 
 type Ebook = {
   id: string;
