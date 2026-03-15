@@ -211,7 +211,7 @@ const Ebooks = () => {
         ) : filtered && filtered.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filtered.map((book) => (
-              <BookCard key={book.id} book={book} />
+              <BookCard key={book.id} book={book} onBuy={(b) => setPaymentBook({ id: b.id, title: b.title, price: Number(b.price || 0) })} />
             ))}
           </div>
         ) : (
