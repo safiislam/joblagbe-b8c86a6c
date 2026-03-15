@@ -7,6 +7,7 @@ import { Building2, MapPin, Globe, Briefcase, ArrowLeft, Phone } from "lucide-re
 import VerifiedBadge from "@/components/VerifiedBadge";
 import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
+import { getJobDisplayTag } from "@/lib/jobTag";
 
 const CompanyProfile = () => {
   const { id } = useParams();
