@@ -24,6 +24,7 @@ const JobDetail = lazy(() => import("./pages/JobDetail"));
 const Courses = lazy(() => import("./pages/Courses"));
 const Ebooks = lazy(() => import("./pages/Ebooks"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const Terms = lazy(() => import("./pages/Terms"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
