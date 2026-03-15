@@ -50,11 +50,12 @@ const BookCard = ({ book, onBuy }: { book: Ebook; onBuy: (book: Ebook) => void }
         </Badge>
       </div>
       <div className="flex flex-1 flex-col p-5">
-        <div className="flex items-center gap-2 mb-2">
+        <div className="flex items-center gap-2 mb-2 flex-wrap">
           <Badge variant="secondary" className="text-xs">{book.category}</Badge>
           <Badge variant={book.is_free ? "default" : "outline"} className="text-xs">
             {book.is_free ? "ফ্রি" : `৳${book.price}`}
           </Badge>
+          {(() => { const dt = getJobDisplayTag(null, book.created_at); return dt ? <Badge className="bg-accent/15 text-accent border-accent/20 text-[10px]">{dt}</Badge> : null; })()}
         </div>
         <h3 className="font-bold text-lg font-bangla group-hover:text-primary transition-colors line-clamp-2">
           {book.title}
