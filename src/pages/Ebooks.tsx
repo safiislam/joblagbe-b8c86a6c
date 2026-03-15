@@ -65,24 +65,34 @@ const BookCard = ({ book, onBuy }: { book: Ebook; onBuy: (book: Ebook) => void }
           <span className="flex items-center gap-1 text-xs text-muted-foreground">
             <FileText className="h-3 w-3" /> {book.author ?? "—"} {book.pages ? `· ${book.pages} পৃষ্ঠা` : ""}
           </span>
-          {isHardcopy ? (
-            book.purchase_link ? (
-              <Button size="sm" className="gap-1.5 bg-amber-500 hover:bg-amber-600 text-white" asChild>
-                <a href={book.purchase_link} target="_blank" rel="noopener noreferrer">
-                  <ShoppingCart className="h-3.5 w-3.5" /> কিনুন
+          {book.is_free ? (
+            isHardcopy ? (
+              book.purchase_link ? (
+                <Button size="sm" className="gap-1.5 bg-amber-500 hover:bg-amber-600 text-white" asChild>
+                  <a href={book.purchase_link} target="_blank" rel="noopener noreferrer">
+                    <ShoppingCart className="h-3.5 w-3.5" /> ফ্রি কপি
+                  </a>
+                </Button>
+              ) : (
+                <Button size="sm" variant="outline" disabled>শীঘ্রই আসছে</Button>
+              )
+            ) : book.download_url ? (
+              <Button size="sm" variant="outline" className="gap-1.5" asChild>
+                <a href={book.download_url} target="_blank" rel="noopener noreferrer">
+                  <Download className="h-3.5 w-3.5" /> ডাউনলোড
                 </a>
               </Button>
             ) : (
               <Button size="sm" variant="outline" disabled>শীঘ্রই আসছে</Button>
             )
-          ) : book.download_url ? (
-            <Button size="sm" variant="outline" className="gap-1.5" asChild>
-              <a href={book.download_url} target="_blank" rel="noopener noreferrer">
-                <Download className="h-3.5 w-3.5" /> ডাউনলোড
-              </a>
-            </Button>
           ) : (
-            <Button size="sm" variant="outline" disabled>শীঘ্রই আসছে</Button>
+            <Button
+              size="sm"
+              className="gap-1.5"
+              onClick={() => onBuy(book)}
+            >
+              <ShoppingCart className="h-3.5 w-3.5" /> কিনুন ৳{book.price}
+            </Button>
           )}
         </div>
       </div>
