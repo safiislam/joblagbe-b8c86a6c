@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Search, BookMarked, Download, FileText, BookOpen, ShoppingCart, Tablet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import PaymentDialog from "@/components/PaymentDialog";
 
 type Ebook = {
   id: string;
