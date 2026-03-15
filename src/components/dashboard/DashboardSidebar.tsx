@@ -1,7 +1,7 @@
 import {
   BarChart3, Briefcase, Building2, Users, FileText, BookOpen,
   GraduationCap, BookMarked, MessageSquare, ShoppingCart, Activity,
-  Mail, Home, Settings, Shield, PenSquare, Megaphone
+  Mail, Home, Settings, Shield, PenSquare, Megaphone, CreditCard
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -28,6 +28,7 @@ const contentItems = [
 ];
 
 const trackingItems = [
+  { title: "Payments", url: "/dashboard/payments", icon: CreditCard },
   { title: "Service Orders", url: "/dashboard/service-orders", icon: ShoppingCart },
   { title: "Contact Leads", url: "/dashboard/contacts", icon: Mail },
   { title: "User Activity", url: "/dashboard/activity", icon: Activity },

@@ -6,13 +6,15 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Search, BookOpen, Clock, ExternalLink } from "lucide-react";
+import { Search, BookOpen, Clock, ExternalLink, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import PaymentDialog from "@/components/PaymentDialog";
 
 const Courses = () => {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [priceFilter, setPriceFilter] = useState("all");
+  const [paymentCourse, setPaymentCourse] = useState<{ id: string; title: string; price: number } | null>(null);
 
   const { data: courses, isLoading } = useQuery({
     queryKey: ["all-courses"],
@@ -103,14 +105,24 @@ const Courses = () => {
                     <span className="flex items-center gap-1 text-xs text-muted-foreground">
                       <Clock className="h-3 w-3" /> {course.duration ?? "—"}
                     </span>
-                    {course.link ? (
-                      <Button size="sm" variant="outline" className="gap-1" asChild>
-                        <a href={course.link} target="_blank" rel="noopener noreferrer">
-                          শুরু করুন <ExternalLink className="h-3 w-3" />
-                        </a>
-                      </Button>
+                    {course.is_free ? (
+                      course.link ? (
+                        <Button size="sm" variant="outline" className="gap-1" asChild>
+                          <a href={course.link} target="_blank" rel="noopener noreferrer">
+                            শুরু করুন <ExternalLink className="h-3 w-3" />
+                          </a>
+                        </Button>
+                      ) : (
+                        <Button size="sm" variant="outline" disabled>শীঘ্রই আসছে</Button>
+                      )
                     ) : (
-                      <Button size="sm" variant="outline" disabled>শীঘ্রই আসছে</Button>
+                      <Button
+                        size="sm"
+                        className="gap-1"
+                        onClick={() => setPaymentCourse({ id: course.id, title: course.title, price: Number(course.discount_price || course.price || 0) })}
+                      >
+                        <ShoppingCart className="h-3 w-3" /> কিনুন ৳{course.discount_price || course.price}
+                      </Button>
                     )}
                   </div>
                 </div>
@@ -124,6 +136,14 @@ const Courses = () => {
           </div>
         )}
       </div>
+      <PaymentDialog
+        open={!!paymentCourse}
+        onOpenChange={(open) => { if (!open) setPaymentCourse(null); }}
+        itemType="course"
+        itemId={paymentCourse?.id}
+        itemTitle={paymentCourse?.title || ""}
+        amount={paymentCourse?.price || 0}
+      />
       <Footer />
     </div>
   );

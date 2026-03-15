@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Search, BookMarked, Download, FileText, BookOpen, ShoppingCart, Tablet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import PaymentDialog from "@/components/PaymentDialog";
 
 type Ebook = {
   id: string;
@@ -26,7 +27,7 @@ type Ebook = {
   purchase_link?: string | null;
 };
 
-const BookCard = ({ book }: { book: Ebook }) => {
+const BookCard = ({ book, onBuy }: { book: Ebook; onBuy: (book: Ebook) => void }) => {
   const isHardcopy = book.book_type === "hardcopy";
 
   return (
@@ -64,24 +65,34 @@ const BookCard = ({ book }: { book: Ebook }) => {
           <span className="flex items-center gap-1 text-xs text-muted-foreground">
             <FileText className="h-3 w-3" /> {book.author ?? "—"} {book.pages ? `· ${book.pages} পৃষ্ঠা` : ""}
           </span>
-          {isHardcopy ? (
-            book.purchase_link ? (
-              <Button size="sm" className="gap-1.5 bg-amber-500 hover:bg-amber-600 text-white" asChild>
-                <a href={book.purchase_link} target="_blank" rel="noopener noreferrer">
-                  <ShoppingCart className="h-3.5 w-3.5" /> কিনুন
+          {book.is_free ? (
+            isHardcopy ? (
+              book.purchase_link ? (
+                <Button size="sm" className="gap-1.5 bg-amber-500 hover:bg-amber-600 text-white" asChild>
+                  <a href={book.purchase_link} target="_blank" rel="noopener noreferrer">
+                    <ShoppingCart className="h-3.5 w-3.5" /> ফ্রি কপি
+                  </a>
+                </Button>
+              ) : (
+                <Button size="sm" variant="outline" disabled>শীঘ্রই আসছে</Button>
+              )
+            ) : book.download_url ? (
+              <Button size="sm" variant="outline" className="gap-1.5" asChild>
+                <a href={book.download_url} target="_blank" rel="noopener noreferrer">
+                  <Download className="h-3.5 w-3.5" /> ডাউনলোড
                 </a>
               </Button>
             ) : (
               <Button size="sm" variant="outline" disabled>শীঘ্রই আসছে</Button>
             )
-          ) : book.download_url ? (
-            <Button size="sm" variant="outline" className="gap-1.5" asChild>
-              <a href={book.download_url} target="_blank" rel="noopener noreferrer">
-                <Download className="h-3.5 w-3.5" /> ডাউনলোড
-              </a>
-            </Button>
           ) : (
-            <Button size="sm" variant="outline" disabled>শীঘ্রই আসছে</Button>
+            <Button
+              size="sm"
+              className="gap-1.5"
+              onClick={() => onBuy(book)}
+            >
+              <ShoppingCart className="h-3.5 w-3.5" /> কিনুন ৳{book.price}
+            </Button>
           )}
         </div>
       </div>
@@ -101,6 +112,7 @@ const Ebooks = () => {
   const [category, setCategory] = useState("all");
   const [priceFilter, setPriceFilter] = useState("all");
   const [activeTab, setActiveTab] = useState("all");
+  const [paymentBook, setPaymentBook] = useState<{ id: string; title: string; price: number } | null>(null);
 
   const { data: ebooks, isLoading } = useQuery({
     queryKey: ["all-ebooks"],
@@ -199,13 +211,21 @@ const Ebooks = () => {
         ) : filtered && filtered.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filtered.map((book) => (
-              <BookCard key={book.id} book={book} />
+              <BookCard key={book.id} book={book} onBuy={(b) => setPaymentBook({ id: b.id, title: b.title, price: Number(b.price || 0) })} />
             ))}
           </div>
         ) : (
           <EmptyState message="কোনো বই পাওয়া যায়নি" />
         )}
       </div>
+      <PaymentDialog
+        open={!!paymentBook}
+        onOpenChange={(open) => { if (!open) setPaymentBook(null); }}
+        itemType="ebook"
+        itemId={paymentBook?.id}
+        itemTitle={paymentBook?.title || ""}
+        amount={paymentBook?.price || 0}
+      />
       <Footer />
     </div>
   );
