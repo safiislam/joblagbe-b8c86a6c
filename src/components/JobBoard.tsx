@@ -326,7 +326,7 @@ const JobBoard = () => {
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex gap-4">
                         {selectedJob.companies?.logo_url ? (
-                          <img src={selectedJob.companies.logo_url} alt="" className="h-14 w-14 rounded-xl border bg-card object-cover shrink-0" />
+                          <img src={optimizeStorageImage(selectedJob.companies.logo_url, { width: 112, height: 112 })} alt="" className="h-14 w-14 rounded-xl border bg-card object-cover shrink-0" width={56} height={56} loading="lazy" decoding="async" />
                         ) : (
                           <div className="flex h-14 w-14 items-center justify-center rounded-xl border bg-card shrink-0">
                             <Building2 className="h-6 w-6 text-muted-foreground" />
