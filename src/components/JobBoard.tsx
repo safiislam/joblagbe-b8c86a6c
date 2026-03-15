@@ -363,15 +363,15 @@ const JobBoard = () => {
                       <span className="rounded-full border bg-secondary px-3 py-1 text-sm text-muted-foreground">
                         {formatDistanceToNow(new Date(selectedJob.created_at), { addSuffix: true })}
                       </span>
-                      {selectedJob.tag && (
+                      {(() => { const dt = getJobDisplayTag(selectedJob.tag, selectedJob.created_at); return dt ? (
                         <span className={`rounded-full px-3 py-1 text-sm font-bold ${
-                          selectedJob.tag === "Urgent"
+                          dt === "Urgent"
                             ? "bg-destructive/10 text-destructive"
                             : "bg-accent/15 text-accent"
                         }`}>
-                          {selectedJob.tag}
+                          {dt}
                         </span>
-                      )}
+                      ) : null; })()}
                     </div>
                   </div>
 
