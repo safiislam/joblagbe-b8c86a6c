@@ -106,12 +106,15 @@ const AIChatWidget = () => {
     <>
       {/* Floating button */}
       {!open && (
-        <button
-          onClick={() => setOpen(true)}
-          className="fixed bottom-20 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-lg transition-transform hover:scale-110 active:scale-95 md:bottom-20 md:right-6 animate-chat-bounce"
-        >
-          <MessageCircle className="h-6 w-6" />
-        </button>
+        <div className="fixed bottom-20 right-5 z-50 md:bottom-20 md:right-6">
+          <div className="absolute inset-0 rounded-full animate-chat-glow" />
+          <button
+            onClick={() => setOpen(true)}
+            className="relative flex h-14 w-14 items-center justify-center rounded-full bg-accent text-accent-foreground shadow-lg transition-transform hover:scale-110 active:scale-95 animate-chat-bounce"
+          >
+            <MessageCircle className="h-6 w-6" />
+          </button>
+        </div>
       )}
 
       {/* Chat panel */}
