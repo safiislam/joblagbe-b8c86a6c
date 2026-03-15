@@ -10,6 +10,7 @@ import { MapPin, Briefcase, Search, Clock, Building2 } from "lucide-react";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import { formatDistanceToNow } from "date-fns";
 import { Link, useSearchParams } from "react-router-dom";
+import { getJobDisplayTag } from "@/lib/jobTag";
 
 const Jobs = () => {
   const [searchParams] = useSearchParams();
