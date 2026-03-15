@@ -55,14 +55,16 @@ const ServicesSection = () => {
 
     setSubmitting(true);
     try {
-      const { error, data: inserted } = await supabase.from("service_orders").insert({
+      const orderId = crypto.randomUUID();
+      const { error } = await supabase.from("service_orders").insert({
+        id: orderId,
         service_type: orderService?.title || "",
         name: formData.name.trim(),
         email: formData.email.trim() || null,
         phone: formData.phone.trim() || null,
         details: formData.details.trim() || null,
         user_id: user?.id || null,
-      }).select("id").single();
+      });
       if (error) throw error;
       
       // Parse cost to number
