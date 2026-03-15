@@ -121,7 +121,7 @@ const PostJob = () => {
       salary_min: form.salaryMin ? parseInt(form.salaryMin) : null,
       salary_max: form.salaryMax ? parseInt(form.salaryMax) : null,
       job_type: form.jobType,
-      tag: form.tag || null,
+      tag: null,
       description: form.description,
       requirements: form.requirements.split("\n").filter(Boolean),
       is_approved: false,
