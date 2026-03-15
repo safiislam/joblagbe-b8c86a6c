@@ -58,6 +58,7 @@ const App = () => (
                 <Route path="/ebooks" element={<Ebooks />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/terms" element={<Terms />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </div>
