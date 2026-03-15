@@ -1,4 +1,5 @@
 import { MapPin, Clock, Banknote, Building2, ChevronRight, Briefcase, Search, Filter, X, ArrowRight, Sparkles } from "lucide-react";
+import { optimizeStorageImage } from "@/lib/imageOptimize";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
