@@ -33,6 +33,7 @@ const ServicesSection = () => {
   const [orderService, setOrderService] = useState<ServiceItem | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", phone: "", details: "" });
+  const [paymentItem, setPaymentItem] = useState<{ title: string; amount: number; orderId?: string } | null>(null);
 
   const title = data?.title || "আমাদের সেবাসমূহ";
   const subtitle = data?.subtitle || "Services that help you succeed";
