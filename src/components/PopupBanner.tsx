@@ -67,7 +67,6 @@ const PopupBannerModal = () => {
 
   const close = useCallback(() => {
     setOpen(false);
-    sessionStorage.setItem(DISMISSED_KEY, "1");
   }, []);
 
   if (!open || !banners?.length) return null;
