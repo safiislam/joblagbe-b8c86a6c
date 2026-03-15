@@ -163,7 +163,7 @@ const PostJob = () => {
           </p>
           <div className="mt-6 flex gap-3">
             <Button onClick={() => navigate("/employer-dashboard")} variant="outline">Go to Dashboard</Button>
-            <Button onClick={() => { setSubmitted(false); setForm({ title: "", location: "", salaryMin: "", salaryMax: "", jobType: "Full-time", categoryId: "", description: "", requirements: "", tag: "" }); }} className="bg-accent text-accent-foreground">
+            <Button onClick={() => { setSubmitted(false); setForm({ title: "", location: "", salaryMin: "", salaryMax: "", jobType: "Full-time", categoryId: "", description: "", requirements: "" }); }} className="bg-accent text-accent-foreground">
               Post Another Job
             </Button>
           </div>
