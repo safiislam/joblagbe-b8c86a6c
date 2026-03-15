@@ -42,6 +42,34 @@ const PopupBannerModal = () => {
     }
   }, [banners]);
 
+  // Auto-close after 5 seconds of no interaction
+  useEffect(() => {
+    if (!open) return;
+    let autoCloseTimer = setTimeout(() => {
+      setOpen(false);
+      sessionStorage.setItem(DISMISSED_KEY, "1");
+    }, 5000);
+
+    const resetTimer = () => {
+      clearTimeout(autoCloseTimer);
+      autoCloseTimer = setTimeout(() => {
+        setOpen(false);
+        sessionStorage.setItem(DISMISSED_KEY, "1");
+      }, 5000);
+    };
+
+    window.addEventListener("mousemove", resetTimer);
+    window.addEventListener("touchstart", resetTimer);
+    window.addEventListener("keydown", resetTimer);
+
+    return () => {
+      clearTimeout(autoCloseTimer);
+      window.removeEventListener("mousemove", resetTimer);
+      window.removeEventListener("touchstart", resetTimer);
+      window.removeEventListener("keydown", resetTimer);
+    };
+  }, [open]);
+
   const close = useCallback(() => {
     setOpen(false);
     sessionStorage.setItem(DISMISSED_KEY, "1");
