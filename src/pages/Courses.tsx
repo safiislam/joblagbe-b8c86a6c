@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Search, BookOpen, Clock, ExternalLink, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PaymentDialog from "@/components/PaymentDialog";
+import { getJobDisplayTag } from "@/lib/jobTag";
 
 const Courses = () => {
   const [search, setSearch] = useState("");
