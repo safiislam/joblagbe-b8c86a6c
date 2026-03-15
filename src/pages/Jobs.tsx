@@ -156,7 +156,7 @@ const Jobs = () => {
                       <Badge variant="secondary" className="gap-1 text-xs">
                         <Briefcase className="h-3 w-3" /> {job.job_type}
                       </Badge>
-                      {job.tag && <Badge className="text-xs">{job.tag}</Badge>}
+                      {(() => { const dt = getJobDisplayTag(job.tag, job.created_at); return dt ? <Badge className="text-xs">{dt}</Badge> : null; })()}
                     </div>
                   </div>
                 </div>
