@@ -14,7 +14,7 @@ type PopupBanner = {
   sort_order: number;
 };
 
-const DISMISSED_KEY = "popup_banner_dismissed";
+
 
 const PopupBannerModal = () => {
   const [open, setOpen] = useState(false);
