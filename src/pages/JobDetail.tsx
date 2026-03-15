@@ -267,11 +267,11 @@ const JobDetail = () => {
                 <Badge variant="secondary" className="gap-1.5 px-3 py-1.5">
                   <Clock className="h-3.5 w-3.5" /> {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}
                 </Badge>
-                {job.tag && (
-                  <Badge className={`px-3 py-1.5 ${job.tag === "Urgent" ? "bg-accent/15 text-accent border-accent/20" : "bg-success/15 text-success border-success/20"}`}>
-                    {job.tag}
+                {(() => { const dt = getJobDisplayTag(job.tag, job.created_at); return dt ? (
+                  <Badge className={`px-3 py-1.5 ${dt === "Urgent" ? "bg-accent/15 text-accent border-accent/20" : "bg-success/15 text-success border-success/20"}`}>
+                    {dt}
                   </Badge>
-                )}
+                ) : null; })()}
                 {category?.name && (
                   <Badge variant="outline" className="px-3 py-1.5">{category.name}</Badge>
                 )}
