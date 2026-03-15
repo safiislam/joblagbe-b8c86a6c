@@ -136,6 +136,14 @@ const Courses = () => {
           </div>
         )}
       </div>
+      <PaymentDialog
+        open={!!paymentCourse}
+        onOpenChange={(open) => { if (!open) setPaymentCourse(null); }}
+        itemType="course"
+        itemId={paymentCourse?.id}
+        itemTitle={paymentCourse?.title || ""}
+        amount={paymentCourse?.price || 0}
+      />
       <Footer />
     </div>
   );
