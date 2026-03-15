@@ -16,6 +16,7 @@ import {
   ArrowLeft, CheckCircle2, FileText, Loader2, Upload, File
 } from "lucide-react";
 import VerifiedBadge from "@/components/VerifiedBadge";
+import JobFraudWarning from "@/components/JobFraudWarning";
 import { formatDistanceToNow, format } from "date-fns";
 
 const formatSalary = (min: number | null, max: number | null) => {
@@ -300,6 +301,8 @@ const JobDetail = () => {
                 </ul>
               </div>
             )}
+
+            <JobFraudWarning />
           </div>
 
           {/* Sidebar */}
