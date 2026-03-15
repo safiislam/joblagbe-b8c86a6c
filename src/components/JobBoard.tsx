@@ -12,6 +12,7 @@ import ShareJobButton from "@/components/ShareJobButton";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import ApplyJobDialog from "@/components/ApplyJobDialog";
 import JobFraudWarning from "@/components/JobFraudWarning";
+import { getJobDisplayTag } from "@/lib/jobTag";
 import {
   Select,
   SelectContent,
@@ -117,15 +118,15 @@ const JobCard = ({
           <span className={`rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${typeColorMap[job.job_type] || "bg-secondary text-muted-foreground"}`}>
             {job.job_type}
           </span>
-          {job.tag && (
+          {(() => { const dt = getJobDisplayTag(job.tag, job.created_at); return dt ? (
             <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide ${
-              job.tag === "Urgent"
+              dt === "Urgent"
                 ? "bg-destructive/10 text-destructive border border-destructive/20"
                 : "bg-accent/15 text-accent border border-accent/20"
             }`}>
-              {job.tag}
+              {dt}
             </span>
-          )}
+          ) : null; })()}
         </div>
 
         <div className="mt-2.5 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
@@ -362,15 +363,15 @@ const JobBoard = () => {
                       <span className="rounded-full border bg-secondary px-3 py-1 text-sm text-muted-foreground">
                         {formatDistanceToNow(new Date(selectedJob.created_at), { addSuffix: true })}
                       </span>
-                      {selectedJob.tag && (
+                      {(() => { const dt = getJobDisplayTag(selectedJob.tag, selectedJob.created_at); return dt ? (
                         <span className={`rounded-full px-3 py-1 text-sm font-bold ${
-                          selectedJob.tag === "Urgent"
+                          dt === "Urgent"
                             ? "bg-destructive/10 text-destructive"
                             : "bg-accent/15 text-accent"
                         }`}>
-                          {selectedJob.tag}
+                          {dt}
                         </span>
-                      )}
+                      ) : null; })()}
                     </div>
                   </div>
 

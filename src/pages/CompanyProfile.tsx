@@ -7,6 +7,7 @@ import { Building2, MapPin, Globe, Briefcase, ArrowLeft, Phone } from "lucide-re
 import VerifiedBadge from "@/components/VerifiedBadge";
 import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
+import { getJobDisplayTag } from "@/lib/jobTag";
 
 const CompanyProfile = () => {
   const { id } = useParams();
@@ -101,11 +102,11 @@ const CompanyProfile = () => {
                             <span>{formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}</span>
                           </div>
                         </div>
-                        {job.tag && (
-                          <Badge className={job.tag === "Urgent" ? "bg-accent/15 text-accent border-0" : "bg-success/15 text-success border-0"}>
-                            {job.tag}
+                        {(() => { const dt = getJobDisplayTag(job.tag, job.created_at); return dt ? (
+                          <Badge className={dt === "Urgent" ? "bg-accent/15 text-accent border-0" : "bg-success/15 text-success border-0"}>
+                            {dt}
                           </Badge>
-                        )}
+                        ) : null; })()}
                       </div>
                     </div>
                   ))
