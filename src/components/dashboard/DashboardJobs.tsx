@@ -109,6 +109,7 @@ const DashboardJobs = () => {
                       <SelectItem value="Hot">Hot</SelectItem>
                     </SelectContent>
                   </Select>
+                  <Button variant="ghost" size="sm" onClick={() => setExpandedJob(expandedJob === job.id ? null : job.id)} className="gap-1 text-xs">
                     <Eye className="h-3 w-3" /> {expandedJob === job.id ? "Hide" : "Preview"}
                   </Button>
                   {!job.is_approved && job.is_active && (
