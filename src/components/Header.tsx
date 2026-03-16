@@ -12,6 +12,7 @@ const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [headerSearch, setHeaderSearch] = useState("");
   const { user, profile, isAdmin, signOut } = useAuth();
+  const { logoUrl } = useBrandSettings();
   const navigate = useNavigate();
   const location = useLocation();
 
