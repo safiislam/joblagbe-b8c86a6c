@@ -101,7 +101,7 @@ const EditProfileDialog = ({ open, onOpenChange }: Props) => {
             </button>
             <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
           </div>
-          <p className="text-xs text-muted-foreground">Click camera icon to change photo</p>
+          <p className="text-xs text-muted-foreground">Click camera icon to change photo (max 300KB)</p>
         </div>
 
         <div className="space-y-4">

@@ -273,7 +273,7 @@ const EmployerDashboard = () => {
                   input.onchange = async (e) => {
                     const file = (e.target as HTMLInputElement).files?.[0];
                     if (!file) return;
-                    if (file.size > 2 * 1024 * 1024) { toast.error("Logo must be under 2MB"); return; }
+                    if (file.size > 300 * 1024) { toast.error("লোগো সর্বোচ্চ ৩০০KB হতে হবে"); return; }
                     const ext = file.name.split(".").pop();
                     const path = `${company.id}/logo.${ext}`;
                     const { error } = await supabase.storage.from("company-logos").upload(path, file, { upsert: true });

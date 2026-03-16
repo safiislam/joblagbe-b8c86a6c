@@ -211,7 +211,7 @@ const PostJob = () => {
                   <Button type="button" variant="outline" size="sm" className="gap-1.5 rounded-xl" onClick={() => logoInputRef.current?.click()}>
                     <Upload className="h-3.5 w-3.5" /> {logoFile ? "Change Logo" : "Upload Logo"}
                   </Button>
-                  <p className="mt-1 text-xs text-muted-foreground">PNG, JPG up to 2MB</p>
+                  <p className="mt-1 text-xs text-muted-foreground">PNG, JPG সর্বোচ্চ ৩০০KB</p>
                   <input ref={logoInputRef} type="file" accept="image/*" className="hidden" onChange={handleLogoSelect} />
                 </div>
               </div>
