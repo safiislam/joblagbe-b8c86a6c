@@ -24,7 +24,17 @@ const SignUp = () => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    const trimmed = emailOrPhone.trim();
+    
+    if (!isEmail(trimmed) && !isPhone(trimmed)) {
+      toast.error("Please enter a valid email or phone number (01XXXXXXXXX).");
+      return;
+    }
+
     setLoading(true);
+    const email = isEmail(trimmed) ? trimmed : `${trimmed.replace(/[\s-]/g, "")}@phone.local`;
+    const phone = isPhone(trimmed) ? trimmed.replace(/[\s-]/g, "") : null;
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -39,12 +49,11 @@ const SignUp = () => {
       return;
     }
 
-    // Update phone in profile if signup succeeded
     if (data?.user && phone) {
       await supabase.from("profiles").update({ phone }).eq("user_id", data.user.id);
     }
 
-    toast.success("Account created! Check your email to confirm.");
+    toast.success(isEmail(trimmed) ? "Account created! Check your email to confirm." : "Account created successfully!");
     setLoading(false);
     navigate("/");
   };
