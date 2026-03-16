@@ -6,9 +6,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Search, BookMarked, Download, FileText, BookOpen, ShoppingCart, Tablet } from "lucide-react";
+import { Search, BookMarked, Download, FileText, BookOpen, ShoppingCart, Tablet, Eye, X, User, Hash, Calendar, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import PaymentDialog from "@/components/PaymentDialog";
 import { getJobDisplayTag } from "@/lib/jobTag";
 
@@ -28,12 +29,160 @@ type Ebook = {
   purchase_link?: string | null;
 };
 
-const BookCard = ({ book, onBuy }: { book: Ebook; onBuy: (book: Ebook) => void }) => {
+const PriceDisplay = ({ book, size = "sm" }: { book: Ebook; size?: "sm" | "lg" }) => {
+  if (book.is_free) {
+    return (
+      <Badge variant="default" className={size === "lg" ? "text-sm px-3 py-1" : "text-xs"}>
+        ফ্রি
+      </Badge>
+    );
+  }
+
+  const hasDiscount = book.price && book.price > 0;
+
+  return (
+    <div className="flex items-center gap-2">
+      {hasDiscount && (
+        <span className={`font-bold text-primary ${size === "lg" ? "text-2xl" : "text-base"}`}>
+          ৳{book.price}
+        </span>
+      )}
+    </div>
+  );
+};
+
+const BookDetailDialog = ({
+  book,
+  open,
+  onOpenChange,
+  onBuy,
+}: {
+  book: Ebook | null;
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  onBuy: (book: Ebook) => void;
+}) => {
+  if (!book) return null;
+  const isHardcopy = book.book_type === "hardcopy";
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto p-0 rounded-2xl">
+        {/* Cover Image */}
+        <div className="relative h-56 bg-gradient-to-br from-primary/5 to-accent/5 flex items-center justify-center">
+          {book.cover_image_url ? (
+            <img src={book.cover_image_url} alt={book.title} className="h-full w-full object-cover" />
+          ) : (
+            <BookMarked className="h-20 w-20 text-primary/20" />
+          )}
+          <Badge
+            className={`absolute top-4 left-4 ${
+              isHardcopy ? "bg-amber-500/90 text-white border-0" : "bg-emerald-500/90 text-white border-0"
+            }`}
+          >
+            {isHardcopy ? "📖 হার্ড কপি" : "📱 ই-বুক"}
+          </Badge>
+        </div>
+
+        <div className="p-6 space-y-4">
+          <DialogHeader className="p-0">
+            <DialogTitle className="text-xl font-bold font-bangla leading-tight">{book.title}</DialogTitle>
+          </DialogHeader>
+
+          {/* Meta info */}
+          <div className="flex flex-wrap gap-2">
+            <Badge variant="secondary">{book.category}</Badge>
+            {(() => {
+              const dt = getJobDisplayTag(null, book.created_at);
+              return dt ? <Badge className="bg-accent/15 text-accent border-accent/20 text-[10px]">{dt}</Badge> : null;
+            })()}
+          </div>
+
+          {/* Price section */}
+          <div className="rounded-xl bg-muted/50 p-4 flex items-center justify-between">
+            <div>
+              <p className="text-xs text-muted-foreground mb-1">মূল্য</p>
+              <PriceDisplay book={book} size="lg" />
+            </div>
+            {!book.is_free && (
+              <Button onClick={() => onBuy(book)} className="gap-2">
+                <ShoppingCart className="h-4 w-4" /> কিনুন
+              </Button>
+            )}
+            {book.is_free && !isHardcopy && book.download_url && (
+              <Button className="gap-2" asChild>
+                <a href={book.download_url} target="_blank" rel="noopener noreferrer">
+                  <Download className="h-4 w-4" /> ডাউনলোড
+                </a>
+              </Button>
+            )}
+            {book.is_free && isHardcopy && book.purchase_link && (
+              <Button className="gap-2 bg-amber-500 hover:bg-amber-600 text-white" asChild>
+                <a href={book.purchase_link} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="h-4 w-4" /> ফ্রি কপি নিন
+                </a>
+              </Button>
+            )}
+          </div>
+
+          {/* Details grid */}
+          <div className="grid grid-cols-2 gap-3">
+            {book.author && (
+              <div className="flex items-center gap-2 rounded-lg border p-3">
+                <User className="h-4 w-4 text-muted-foreground shrink-0" />
+                <div>
+                  <p className="text-[10px] text-muted-foreground">লেখক</p>
+                  <p className="text-sm font-medium">{book.author}</p>
+                </div>
+              </div>
+            )}
+            {book.pages && (
+              <div className="flex items-center gap-2 rounded-lg border p-3">
+                <Hash className="h-4 w-4 text-muted-foreground shrink-0" />
+                <div>
+                  <p className="text-[10px] text-muted-foreground">পৃষ্ঠা সংখ্যা</p>
+                  <p className="text-sm font-medium">{book.pages} পৃষ্ঠা</p>
+                </div>
+              </div>
+            )}
+            <div className="flex items-center gap-2 rounded-lg border p-3">
+              <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
+              <div>
+                <p className="text-[10px] text-muted-foreground">প্রকাশ</p>
+                <p className="text-sm font-medium">{new Date(book.created_at).toLocaleDateString("bn-BD")}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 rounded-lg border p-3">
+              <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
+              <div>
+                <p className="text-[10px] text-muted-foreground">ধরন</p>
+                <p className="text-sm font-medium">{isHardcopy ? "হার্ড কপি" : "ই-বুক"}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Description */}
+          {book.description && (
+            <div>
+              <h4 className="font-semibold mb-2">বিবরণ</h4>
+              <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{book.description}</p>
+            </div>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const BookCard = ({ book, onBuy, onView }: { book: Ebook; onBuy: (book: Ebook) => void; onView: (book: Ebook) => void }) => {
   const isHardcopy = book.book_type === "hardcopy";
 
   return (
     <div className="group flex flex-col rounded-2xl border bg-card shadow-card overflow-hidden transition-all hover:-translate-y-1 hover:shadow-elevated">
-      <div className="relative flex h-44 items-center justify-center bg-gradient-to-br from-primary/5 to-accent/5">
+      <div
+        className="relative flex h-44 items-center justify-center bg-gradient-to-br from-primary/5 to-accent/5 cursor-pointer"
+        onClick={() => onView(book)}
+      >
         {book.cover_image_url ? (
           <img src={book.cover_image_url} alt={book.title} className="h-full w-full object-cover" />
         ) : (
@@ -41,23 +190,31 @@ const BookCard = ({ book, onBuy }: { book: Ebook; onBuy: (book: Ebook) => void }
         )}
         <Badge
           className={`absolute top-3 left-3 text-[10px] font-semibold ${
-            isHardcopy
-              ? "bg-amber-500/90 text-white border-0"
-              : "bg-emerald-500/90 text-white border-0"
+            isHardcopy ? "bg-amber-500/90 text-white border-0" : "bg-emerald-500/90 text-white border-0"
           }`}
         >
           {isHardcopy ? "📖 হার্ড কপি" : "📱 ই-বুক"}
         </Badge>
+        {/* View overlay on hover */}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+          <span className="bg-white/90 text-foreground rounded-full px-3 py-1.5 text-xs font-medium flex items-center gap-1">
+            <Eye className="h-3.5 w-3.5" /> বিস্তারিত দেখুন
+          </span>
+        </div>
       </div>
       <div className="flex flex-1 flex-col p-5">
         <div className="flex items-center gap-2 mb-2 flex-wrap">
           <Badge variant="secondary" className="text-xs">{book.category}</Badge>
-          <Badge variant={book.is_free ? "default" : "outline"} className="text-xs">
-            {book.is_free ? "ফ্রি" : `৳${book.price}`}
-          </Badge>
-          {(() => { const dt = getJobDisplayTag(null, book.created_at); return dt ? <Badge className="bg-accent/15 text-accent border-accent/20 text-[10px]">{dt}</Badge> : null; })()}
+          <PriceDisplay book={book} />
+          {(() => {
+            const dt = getJobDisplayTag(null, book.created_at);
+            return dt ? <Badge className="bg-accent/15 text-accent border-accent/20 text-[10px]">{dt}</Badge> : null;
+          })()}
         </div>
-        <h3 className="font-bold text-lg font-bangla group-hover:text-primary transition-colors line-clamp-2">
+        <h3
+          className="font-bold text-lg font-bangla group-hover:text-primary transition-colors line-clamp-2 cursor-pointer"
+          onClick={() => onView(book)}
+        >
           {book.title}
         </h3>
         {book.description && (
@@ -67,35 +224,32 @@ const BookCard = ({ book, onBuy }: { book: Ebook; onBuy: (book: Ebook) => void }
           <span className="flex items-center gap-1 text-xs text-muted-foreground">
             <FileText className="h-3 w-3" /> {book.author ?? "—"} {book.pages ? `· ${book.pages} পৃষ্ঠা` : ""}
           </span>
-          {book.is_free ? (
-            isHardcopy ? (
-              book.purchase_link ? (
-                <Button size="sm" className="gap-1.5 bg-amber-500 hover:bg-amber-600 text-white" asChild>
-                  <a href={book.purchase_link} target="_blank" rel="noopener noreferrer">
-                    <ShoppingCart className="h-3.5 w-3.5" /> ফ্রি কপি
+          <div className="flex items-center gap-1.5">
+            <Button size="sm" variant="outline" className="gap-1 text-xs" onClick={() => onView(book)}>
+              <Eye className="h-3.5 w-3.5" /> বিস্তারিত
+            </Button>
+            {book.is_free ? (
+              isHardcopy ? (
+                book.purchase_link ? (
+                  <Button size="sm" className="gap-1 bg-amber-500 hover:bg-amber-600 text-white text-xs" asChild>
+                    <a href={book.purchase_link} target="_blank" rel="noopener noreferrer">
+                      <ShoppingCart className="h-3.5 w-3.5" /> ফ্রি কপি
+                    </a>
+                  </Button>
+                ) : null
+              ) : book.download_url ? (
+                <Button size="sm" variant="default" className="gap-1 text-xs" asChild>
+                  <a href={book.download_url} target="_blank" rel="noopener noreferrer">
+                    <Download className="h-3.5 w-3.5" /> ডাউনলোড
                   </a>
                 </Button>
-              ) : (
-                <Button size="sm" variant="outline" disabled>শীঘ্রই আসছে</Button>
-              )
-            ) : book.download_url ? (
-              <Button size="sm" variant="outline" className="gap-1.5" asChild>
-                <a href={book.download_url} target="_blank" rel="noopener noreferrer">
-                  <Download className="h-3.5 w-3.5" /> ডাউনলোড
-                </a>
-              </Button>
+              ) : null
             ) : (
-              <Button size="sm" variant="outline" disabled>শীঘ্রই আসছে</Button>
-            )
-          ) : (
-            <Button
-              size="sm"
-              className="gap-1.5"
-              onClick={() => onBuy(book)}
-            >
-              <ShoppingCart className="h-3.5 w-3.5" /> কিনুন ৳{book.price}
-            </Button>
-          )}
+              <Button size="sm" className="gap-1 text-xs" onClick={() => onBuy(book)}>
+                <ShoppingCart className="h-3.5 w-3.5" /> ৳{book.price}
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -116,6 +270,7 @@ const Ebooks = () => {
   const [priceFilter, setPriceFilter] = useState("all");
   const [activeTab, setActiveTab] = useState("all");
   const [paymentBook, setPaymentBook] = useState<{ id: string; title: string; price: number } | null>(null);
+  const [viewBook, setViewBook] = useState<Ebook | null>(null);
 
   const { data: ebooks, isLoading } = useQuery({
     queryKey: ["all-ebooks"],
@@ -214,13 +369,30 @@ const Ebooks = () => {
         ) : filtered && filtered.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filtered.map((book) => (
-              <BookCard key={book.id} book={book} onBuy={(b) => setPaymentBook({ id: b.id, title: b.title, price: Number(b.price || 0) })} />
+              <BookCard
+                key={book.id}
+                book={book}
+                onBuy={(b) => setPaymentBook({ id: b.id, title: b.title, price: Number(b.price || 0) })}
+                onView={(b) => setViewBook(b)}
+              />
             ))}
           </div>
         ) : (
           <EmptyState message="কোনো বই পাওয়া যায়নি" />
         )}
       </div>
+
+      {/* Book Detail Dialog */}
+      <BookDetailDialog
+        book={viewBook}
+        open={!!viewBook}
+        onOpenChange={(open) => { if (!open) setViewBook(null); }}
+        onBuy={(b) => {
+          setViewBook(null);
+          setPaymentBook({ id: b.id, title: b.title, price: Number(b.price || 0) });
+        }}
+      />
+
       <PaymentDialog
         open={!!paymentBook}
         onOpenChange={(open) => { if (!open) setPaymentBook(null); }}
