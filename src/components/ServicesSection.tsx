@@ -1,4 +1,4 @@
-import { FileText, Megaphone, ScrollText, Check, Loader2, type LucideIcon } from "lucide-react";
+import { FileText, Megaphone, ScrollText, Check, Loader2, Eye, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -32,6 +32,7 @@ const ServicesSection = () => {
   const { data } = useSiteContent<ServicesData>("services");
   const { user, profile } = useAuth();
   const [orderService, setOrderService] = useState<ServiceItem | null>(null);
+  const [detailService, setDetailService] = useState<ServiceItem | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", phone: "", details: "" });
   const [paymentItem, setPaymentItem] = useState<{ title: string; amount: number; orderId?: string } | null>(null);
@@ -41,6 +42,7 @@ const ServicesSection = () => {
   const items = data?.items || [];
 
   const openOrder = (service: ServiceItem) => {
+    setDetailService(null);
     setFormData({
       name: profile?.full_name || "",
       email: user?.email || "",
@@ -70,17 +72,11 @@ const ServicesSection = () => {
       });
       if (error) throw error;
       
-      // Parse cost to number
       const costStr = orderService?.cost || "";
       const amount = parseInt(costStr.replace(/[^\d]/g, "")) || 0;
       
       if (amount > 0) {
-        // Open payment dialog
-        setPaymentItem({
-          title: orderService?.title || "",
-          amount,
-          orderId,
-        });
+        setPaymentItem({ title: orderService?.title || "", amount, orderId });
       } else {
         toast.success("অর্ডার সফলভাবে জমা হয়েছে! আমরা শীঘ্রই যোগাযোগ করবো।");
       }
@@ -105,33 +101,44 @@ const ServicesSection = () => {
             const Icon = iconMap[s.icon] || FileText;
             const style = colorCycle[i % colorCycle.length];
             return (
-              <div key={s.title || i} className={`rounded-xl border ${style.border} bg-card p-5 flex flex-col justify-between transition-shadow hover:shadow-elevated`}>
-                <div>
-                  <div className={`inline-flex h-10 w-10 items-center justify-center rounded-lg ${style.color}`}>
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <h3 className="mt-3 text-base font-bold font-bangla">{s.title}</h3>
-                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground font-bangla">{s.desc}</p>
-                  <ul className="mt-3 space-y-1">
-                    {(s.features || []).map((f) => (
-                      <li key={f} className="flex items-start gap-1.5 text-xs text-muted-foreground font-bangla">
-                        <Check className="h-3.5 w-3.5 mt-0.5 shrink-0 text-primary" />
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
+              <div key={s.title || i} className={`rounded-xl border ${style.border} bg-card p-5 flex flex-col items-center text-center gap-3 transition-shadow hover:shadow-elevated`}>
+                <div className={`inline-flex h-10 w-10 items-center justify-center rounded-lg ${style.color}`}>
+                  <Icon className="h-5 w-5" />
                 </div>
-                <div className="mt-4 flex items-center justify-between">
-                  <span className="text-sm font-semibold font-bangla">{s.cost}</span>
-                  <Button size="sm" className="text-xs h-8" onClick={() => openOrder(s)}>
-                    Order Now
-                  </Button>
-                </div>
+                <h3 className="text-base font-bold font-bangla">{s.title}</h3>
+                <Button size="sm" variant="outline" className="text-xs h-8 gap-1.5" onClick={() => setDetailService(s)}>
+                  <Eye className="h-3.5 w-3.5" />
+                  বিস্তারিত দেখুন
+                </Button>
               </div>
             );
           })}
         </div>
       </div>
+
+      {/* Details Dialog */}
+      <Dialog open={!!detailService} onOpenChange={(open) => { if (!open) setDetailService(null); }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-bangla">{detailService?.title}</DialogTitle>
+            <DialogDescription className="font-bangla">{detailService?.desc}</DialogDescription>
+          </DialogHeader>
+          <ul className="space-y-1.5">
+            {(detailService?.features || []).map((f) => (
+              <li key={f} className="flex items-start gap-1.5 text-sm text-muted-foreground font-bangla">
+                <Check className="h-4 w-4 mt-0.5 shrink-0 text-primary" />
+                {f}
+              </li>
+            ))}
+          </ul>
+          <div className="flex items-center justify-between pt-2">
+            <span className="text-sm font-semibold font-bangla">{detailService?.cost}</span>
+            <Button size="sm" className="text-xs h-8" onClick={() => detailService && openOrder(detailService)}>
+              Order Now
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Order Dialog */}
       <Dialog open={!!orderService} onOpenChange={(open) => { if (!open) setOrderService(null); }}>
@@ -143,57 +150,27 @@ const ServicesSection = () => {
               {orderService?.cost && <span className="text-muted-foreground"> — {orderService.cost}</span>}
             </DialogDescription>
           </DialogHeader>
-
           <div className="space-y-3">
             <div>
               <label className="text-sm font-medium">নাম <span className="text-destructive">*</span></label>
-              <Input
-                value={formData.name}
-                onChange={(e) => setFormData((p) => ({ ...p, name: e.target.value }))}
-                placeholder="আপনার নাম"
-                className="mt-1 rounded-xl"
-              />
+              <Input value={formData.name} onChange={(e) => setFormData((p) => ({ ...p, name: e.target.value }))} placeholder="আপনার নাম" className="mt-1 rounded-xl" />
             </div>
             <div>
               <label className="text-sm font-medium">ইমেইল</label>
-              <Input
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData((p) => ({ ...p, email: e.target.value }))}
-                placeholder="example@email.com"
-                className="mt-1 rounded-xl"
-              />
+              <Input type="email" value={formData.email} onChange={(e) => setFormData((p) => ({ ...p, email: e.target.value }))} placeholder="example@email.com" className="mt-1 rounded-xl" />
             </div>
             <div>
               <label className="text-sm font-medium">ফোন</label>
-              <Input
-                value={formData.phone}
-                onChange={(e) => setFormData((p) => ({ ...p, phone: e.target.value }))}
-                placeholder="01XXXXXXXXX"
-                className="mt-1 rounded-xl"
-              />
+              <Input value={formData.phone} onChange={(e) => setFormData((p) => ({ ...p, phone: e.target.value }))} placeholder="01XXXXXXXXX" className="mt-1 rounded-xl" />
             </div>
             <div>
               <label className="text-sm font-medium">বিস্তারিত (ঐচ্ছিক)</label>
-              <Textarea
-                value={formData.details}
-                onChange={(e) => setFormData((p) => ({ ...p, details: e.target.value }))}
-                placeholder="আপনার প্রয়োজন সম্পর্কে লিখুন..."
-                rows={3}
-                className="mt-1 rounded-xl resize-none"
-              />
+              <Textarea value={formData.details} onChange={(e) => setFormData((p) => ({ ...p, details: e.target.value }))} placeholder="আপনার প্রয়োজন সম্পর্কে লিখুন..." rows={3} className="mt-1 rounded-xl resize-none" />
             </div>
           </div>
-
           <div className="flex gap-3 pt-2">
-            <Button variant="outline" className="rounded-xl" onClick={() => setOrderService(null)}>
-              বাতিল
-            </Button>
-            <Button
-              onClick={handleSubmit}
-              disabled={submitting}
-              className="flex-1 rounded-xl font-semibold"
-            >
+            <Button variant="outline" className="rounded-xl" onClick={() => setOrderService(null)}>বাতিল</Button>
+            <Button onClick={handleSubmit} disabled={submitting} className="flex-1 rounded-xl font-semibold">
               {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "অর্ডার জমা দিন"}
             </Button>
           </div>
