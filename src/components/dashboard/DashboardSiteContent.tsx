@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUpdateSiteContent } from "@/hooks/useSiteContent";
@@ -9,7 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Save, Plus, Trash2, Eye } from "lucide-react";
+import { Save, Plus, Trash2, Eye, Upload, Image } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -393,7 +393,57 @@ const DashboardSiteContent = () => {
         {/* PWA Settings */}
         <TabsContent value="pwa_settings" className="space-y-4">
           <div className="rounded-xl border bg-card p-5 space-y-4">
-            <p className="text-xs text-muted-foreground">PWA manifest ও থিম সেটিংস (পরিবর্তন করলে রিবিল্ড প্রয়োজন)</p>
+            <p className="text-xs text-muted-foreground">App ব্র্যান্ডিং, লোগো ও PWA manifest সেটিংস</p>
+            
+            {/* Logo Upload */}
+            <div>
+              <Label>App Logo</Label>
+              <div className="mt-2 flex items-center gap-4">
+                {editData.pwa_settings?.logo_url ? (
+                  <img src={editData.pwa_settings.logo_url} alt="Logo" className="h-14 w-14 rounded-lg border object-contain bg-white p-1" />
+                ) : (
+                  <div className="h-14 w-14 rounded-lg border bg-muted flex items-center justify-center">
+                    <Image className="h-6 w-6 text-muted-foreground" />
+                  </div>
+                )}
+                <div className="flex flex-col gap-1.5">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1.5"
+                    onClick={() => {
+                      const input = document.createElement("input");
+                      input.type = "file";
+                      input.accept = "image/png,image/jpeg,image/webp,image/svg+xml";
+                      input.onchange = async (e) => {
+                        const file = (e.target as HTMLInputElement).files?.[0];
+                        if (!file) return;
+                        if (file.size > 300 * 1024) {
+                          toast.error("Logo must be under 300KB");
+                          return;
+                        }
+                        const ext = file.name.split(".").pop() || "png";
+                        const path = `logo.${ext}`;
+                        const { error } = await supabase.storage.from("site-assets").upload(path, file, { upsert: true });
+                        if (error) {
+                          toast.error("Upload failed: " + error.message);
+                          return;
+                        }
+                        const { data: urlData } = supabase.storage.from("site-assets").getPublicUrl(path);
+                        const logoUrl = urlData.publicUrl + "?t=" + Date.now();
+                        updateField("pwa_settings", "logo_url", logoUrl);
+                        toast.success("Logo uploaded! Click Save to apply.");
+                      };
+                      input.click();
+                    }}
+                  >
+                    <Upload className="h-3 w-3" /> Upload Logo
+                  </Button>
+                  <span className="text-[10px] text-muted-foreground">PNG, JPG, WebP, SVG — Max 300KB</span>
+                </div>
+              </div>
+            </div>
+
             <div>
               <Label>App Name</Label>
               <Input className="mt-1" value={editData.pwa_settings?.app_name || ""} onChange={(e) => updateField("pwa_settings", "app_name", e.target.value)} placeholder="Job লাগবে - চাকরি খুঁজুন" />
@@ -421,7 +471,7 @@ const DashboardSiteContent = () => {
               </div>
             </div>
             <div className="rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground">
-              ⚠️ PWA manifest সেটিংস সেভ করা হবে ডাটাবেসে। তবে এগুলো কার্যকর হতে অ্যাপ রিবিল্ড ও রিপাবলিশ করতে হবে।
+              ⚠️ Logo ও App Name পরিবর্তন সাইটে সাথে সাথে প্রতিফলিত হবে। PWA manifest সেটিংস কার্যকর হতে রিবিল্ড ও রিপাবলিশ করতে হবে।
             </div>
             <SaveBtn sectionKey="pwa_settings" />
           </div>

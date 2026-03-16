@@ -6,13 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import logo from "@/assets/logo.png";
+import { useBrandSettings } from "@/hooks/useBrandSettings";
 import { Separator } from "@/components/ui/separator";
 
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { logoUrl } = useBrandSettings();
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [showForgot, setShowForgot] = useState(false);
@@ -64,7 +65,7 @@ const Login = () => {
       <div className="w-full max-w-md rounded-2xl border bg-card p-8 shadow-elevated">
         <div className="mb-8 flex flex-col items-center text-center">
           <Link to="/">
-            <img src={logo} alt="Job Lagbe" width={40} height={40} className="h-10 w-auto" />
+            <img src={logoUrl} alt="Job Lagbe" width={40} height={40} className="h-10 w-auto" />
           </Link>
           <h2 className="mt-4 text-xl font-bold">{showForgot ? "Reset Password" : "Welcome Back"}</h2>
           <p className="mt-1 text-sm text-muted-foreground">

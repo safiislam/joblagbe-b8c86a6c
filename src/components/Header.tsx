@@ -4,7 +4,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
-import logo from "@/assets/logo.png";
+import { useBrandSettings } from "@/hooks/useBrandSettings";
 
 const NotificationBell = lazy(() => import("@/components/NotificationBell"));
 
@@ -12,6 +12,7 @@ const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [headerSearch, setHeaderSearch] = useState("");
   const { user, profile, isAdmin, signOut } = useAuth();
+  const { logoUrl } = useBrandSettings();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -39,7 +40,7 @@ const Header = () => {
     <header className="sticky top-0 z-50 border-b bg-card/90 backdrop-blur-xl">
       <div className="container flex h-14 items-center justify-between gap-3 md:h-16">
         <Link to="/" className="shrink-0">
-          <img src={logo} alt="Job Lagbe" width={36} height={36} className="h-8 w-auto md:h-9" decoding="async" />
+          <img src={logoUrl} alt="Job Lagbe" width={36} height={36} className="h-8 w-auto md:h-9" decoding="async" />
         </Link>
 
         {/* Desktop search */}

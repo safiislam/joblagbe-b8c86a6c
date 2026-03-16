@@ -1,7 +1,7 @@
 import { Facebook, Youtube, Mail, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
-import logo from "@/assets/logo.png";
 import { useSiteContent } from "@/hooks/useSiteContent";
+import { useBrandSettings } from "@/hooks/useBrandSettings";
 
 type FooterData = {
   description: string;
@@ -12,6 +12,7 @@ type FooterData = {
 
 const Footer = () => {
   const { data } = useSiteContent<FooterData>("footer");
+  const { logoUrl } = useBrandSettings();
   const desc = data?.description || "Bangladesh's trusted job portal connecting talent with opportunity.";
   const email = data?.contact_email || "support@joblagbe.com";
   const phone = data?.contact_phone || "+880 1XXX-XXXXXX";
@@ -23,7 +24,7 @@ const Footer = () => {
       <div className="container py-12">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <div>
-            <img src={logo} alt="Job Lagbe" width={40} height={40} className="h-10 w-auto" loading="lazy" decoding="async" />
+            <img src={logoUrl} alt="Job Lagbe" width={40} height={40} className="h-10 w-auto" loading="lazy" decoding="async" />
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{desc}</p>
             <div className="mt-4 flex gap-3">
               <a href={socialFb} target="_blank" rel="noopener noreferrer" className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary text-muted-foreground transition-colors hover:bg-primary hover:text-primary-foreground">
