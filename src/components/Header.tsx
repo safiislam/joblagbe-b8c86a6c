@@ -1,4 +1,4 @@
-import { Search, Menu, X, LogOut, Shield, Home, Briefcase, Building2, BookOpen } from "lucide-react";
+import { Search, Menu, X, LogOut, Shield, Home, Briefcase, Building2, BookOpen, Download } from "lucide-react";
 import { useState, FormEvent, lazy, Suspense } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -59,6 +59,7 @@ const Header = () => {
           <Button variant="ghost" size="sm" asChild><Link to="/jobs">Jobs</Link></Button>
           <Button variant="ghost" size="sm" asChild><Link to="/companies">Companies</Link></Button>
           <Button variant="ghost" size="sm" asChild><Link to="/blog">Blog</Link></Button>
+          <Button variant="ghost" size="sm" className="gap-1" asChild><Link to="/install"><Download className="h-3.5 w-3.5" /> Install</Link></Button>
           {user && profile?.role === "employer" && (
             <Button variant="ghost" size="sm" asChild><Link to="/post-job">Post Job</Link></Button>
           )}
@@ -143,6 +144,9 @@ const Header = () => {
             </Button>
             <Button variant="ghost" className="justify-start" asChild onClick={() => setMobileOpen(false)}>
               <Link to="/blog"><BookOpen className="mr-2 h-4 w-4" /> Blog</Link>
+            </Button>
+            <Button variant="ghost" className="justify-start" asChild onClick={() => setMobileOpen(false)}>
+              <Link to="/install"><Download className="mr-2 h-4 w-4" /> Install App</Link>
             </Button>
             {user && profile?.role === "employer" && (
               <Button variant="ghost" className="justify-start" asChild onClick={() => setMobileOpen(false)}>
