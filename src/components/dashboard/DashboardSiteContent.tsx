@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useUpdateSiteContent } from "@/hooks/useSiteContent";
@@ -9,7 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Save, Plus, Trash2, Eye } from "lucide-react";
+import { Save, Plus, Trash2, Eye, Upload, Image } from "lucide-react";
 import {
   Select,
   SelectContent,
