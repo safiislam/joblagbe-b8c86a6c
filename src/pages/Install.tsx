@@ -35,6 +35,15 @@ const defaultContent = {
   ],
 };
 
+const StepItem = ({ step, children }: { step: number; children: React.ReactNode }) => (
+  <li className="flex items-start gap-3">
+    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-bold">
+      {step}
+    </span>
+    <span className="pt-0.5">{children}</span>
+  </li>
+);
+
 const Install = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
@@ -92,15 +101,6 @@ const Install = () => {
     }
   };
 
-  const StepItem = ({ step, children }: { step: number; children: React.ReactNode }) => (
-    <li className="flex items-start gap-3">
-      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-bold">
-        {step}
-      </span>
-      <span className="pt-0.5">{children}</span>
-    </li>
-  );
-
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -108,7 +108,7 @@ const Install = () => {
         {/* Hero */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-primary/10 mb-5">
-            <Smartphone className="h-10 w-10 text-primary" />
+            <Download className="h-10 w-10 text-primary" />
           </div>
           <h1 className="text-3xl font-bold mb-2">{c.title}</h1>
           <p className="text-muted-foreground text-base max-w-md mx-auto">{c.subtitle}</p>
@@ -122,7 +122,7 @@ const Install = () => {
           </div>
         ) : (
           <div className="space-y-5">
-            {/* One-click install button */}
+            {/* One-click install button (Android Chrome / Desktop Chrome) */}
             {deferredPrompt && (
               <div className="rounded-2xl border-2 border-primary/30 bg-primary/5 p-6 text-center shadow-sm">
                 <p className="text-sm text-muted-foreground mb-3">এক ক্লিকে ইনস্টল করুন</p>
@@ -140,17 +140,17 @@ const Install = () => {
 
             {/* iOS instructions */}
             {platform === "ios" && (
-              <div className="rounded-2xl border bg-card p-6 shadow-sm">
+              <div className="rounded-2xl border-2 border-primary/30 bg-primary/5 p-6 shadow-sm">
                 <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-                  <Share className="h-5 w-5 text-primary" /> iPhone / iPad এ ইনস্টল
+                  <Share className="h-5 w-5 text-primary" /> iPhone / iPad এ ইনস্টল করুন
                 </h3>
                 <ol className="space-y-4">
                   <StepItem step={1}><strong>Safari</strong> ব্রাউজারে এই পেজ ওপেন করুন</StepItem>
                   <StepItem step={2}>
-                    <span className="inline-flex items-center gap-1">নিচের <Share className="h-4 w-4" /> <strong>Share</strong> বাটনে ট্যাপ করুন</span>
+                    <span className="inline-flex items-center gap-1 flex-wrap">নিচের <Share className="h-4 w-4" /> <strong>Share</strong> বাটনে ট্যাপ করুন</span>
                   </StepItem>
                   <StepItem step={3}>
-                    <span className="inline-flex items-center gap-1"><Plus className="h-4 w-4" /> <strong>"Add to Home Screen"</strong> এ ট্যাপ করুন</span>
+                    <span className="inline-flex items-center gap-1 flex-wrap"><Plus className="h-4 w-4" /> <strong>"Add to Home Screen"</strong> এ ট্যাপ করুন</span>
                   </StepItem>
                   <StepItem step={4}><strong>"Add"</strong> চাপুন — হোম স্ক্রিনে অ্যাপ আইকন দেখাবে!</StepItem>
                 </ol>
@@ -159,19 +159,19 @@ const Install = () => {
 
             {/* Android instructions */}
             {platform === "android" && (
-              <div className="rounded-2xl border bg-card p-6 shadow-sm">
+              <div className="rounded-2xl border-2 border-primary/30 bg-primary/5 p-6 shadow-sm">
                 <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-                  <Chrome className="h-5 w-5 text-primary" /> Android এ ইনস্টল
+                  <Chrome className="h-5 w-5 text-primary" /> Android এ ইনস্টল করুন
                 </h3>
                 {deferredPrompt && (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground mb-3">
                     উপরের <strong>"এখনই ইনস্টল করুন"</strong> বাটনে ক্লিক করুন। অথবা নিচের ধাপ অনুসরণ করুন:
                   </p>
                 )}
-                <ol className="space-y-4 mt-3">
+                <ol className="space-y-4">
                   <StepItem step={1}><strong>Chrome</strong> ব্রাউজারে এই পেজ ওপেন করুন</StepItem>
                   <StepItem step={2}>
-                    <span className="inline-flex items-center gap-1">উপরে <MoreVertical className="h-4 w-4" /> মেনু (তিন ডট) এ ট্যাপ করুন</span>
+                    <span className="inline-flex items-center gap-1 flex-wrap">উপরে <MoreVertical className="h-4 w-4" /> মেনু (তিন ডট) এ ট্যাপ করুন</span>
                   </StepItem>
                   <StepItem step={3}><strong>"Install app"</strong> বা <strong>"Add to Home Screen"</strong> এ ট্যাপ করুন</StepItem>
                   <StepItem step={4}><strong>"Install"</strong> চাপুন — হোম স্ক্রিনে অ্যাপ যোগ হবে!</StepItem>
