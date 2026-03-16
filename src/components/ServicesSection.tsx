@@ -56,6 +56,8 @@ const ServicesSection = () => {
 
     setSubmitting(true);
     try {
+      const allowed = await checkRateLimit(RATE_LIMITS.SERVICE_ORDER, user?.id);
+      if (!allowed) { setSubmitting(false); return; }
       const orderId = crypto.randomUUID();
       const { error } = await supabase.from("service_orders").insert({
         id: orderId,
