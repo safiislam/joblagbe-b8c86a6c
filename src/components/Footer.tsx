@@ -1,7 +1,7 @@
 import { Facebook, Youtube, Mail, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
-import logo from "@/assets/logo.png";
 import { useSiteContent } from "@/hooks/useSiteContent";
+import { useBrandSettings } from "@/hooks/useBrandSettings";
 
 type FooterData = {
   description: string;
