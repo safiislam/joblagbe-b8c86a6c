@@ -22,6 +22,7 @@ type Ebook = {
   pages: number | null;
   is_free: boolean;
   price: number | null;
+  discount_price: number | null;
   cover_image_url: string | null;
   download_url: string | null;
   created_at: string;
@@ -38,12 +39,31 @@ const PriceDisplay = ({ book, size = "sm" }: { book: Ebook; size?: "sm" | "lg" }
     );
   }
 
-  const price = book.price ?? 0;
+  const originalPrice = book.price ?? 0;
+  const discountPrice = book.discount_price;
+  const hasDiscount = discountPrice != null && discountPrice < originalPrice;
+  const discountPercent = hasDiscount ? Math.round(((originalPrice - discountPrice) / originalPrice) * 100) : 0;
+
+  if (hasDiscount) {
+    return (
+      <div className="flex items-center gap-1.5 flex-wrap">
+        <span className={`font-bold text-primary ${size === "lg" ? "text-2xl" : "text-base"}`}>
+          ৳{discountPrice}
+        </span>
+        <span className={`line-through text-muted-foreground ${size === "lg" ? "text-base" : "text-xs"}`}>
+          ৳{originalPrice}
+        </span>
+        <Badge variant="destructive" className={`${size === "lg" ? "text-xs px-2" : "text-[10px] px-1.5"}`}>
+          -{discountPercent}%
+        </Badge>
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center gap-2">
       <span className={`font-bold text-primary ${size === "lg" ? "text-2xl" : "text-base"}`}>
-        ৳{price}
+        ৳{originalPrice}
       </span>
     </div>
   );
@@ -244,7 +264,7 @@ const BookCard = ({ book, onBuy, onView }: { book: Ebook; onBuy: (book: Ebook) =
               ) : null
             ) : (
               <Button size="sm" className="gap-1 text-xs" onClick={() => onBuy(book)}>
-                <ShoppingCart className="h-3.5 w-3.5" /> ৳{book.price}
+                <ShoppingCart className="h-3.5 w-3.5" /> ৳{book.discount_price != null && book.discount_price < (book.price ?? 0) ? book.discount_price : book.price}
               </Button>
             )}
           </div>

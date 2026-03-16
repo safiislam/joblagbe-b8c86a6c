@@ -19,6 +19,7 @@ const emptyForm = {
   pages: 0,
   is_free: true,
   price: 0,
+  discount_price: null as number | null,
   download_url: "",
   book_type: "ebook" as string,
   purchase_link: "",
@@ -85,6 +86,7 @@ const DashboardEbooks = () => {
     const payload = {
       ...form,
       price: form.is_free ? 0 : form.price,
+      discount_price: form.is_free ? null : (form.discount_price || null),
       pages: form.pages || null,
       purchase_link: form.purchase_link || null,
       cover_image_url: form.cover_image_url || null,
@@ -113,6 +115,7 @@ const DashboardEbooks = () => {
       pages: e.pages ?? 0,
       is_free: e.is_free,
       price: e.price ?? 0,
+      discount_price: e.discount_price ?? null,
       download_url: e.download_url ?? "",
       book_type: e.book_type ?? "ebook",
       purchase_link: e.purchase_link ?? "",
@@ -248,10 +251,27 @@ const DashboardEbooks = () => {
               <Label>ফ্রি</Label>
             </div>
             {!form.is_free && (
-              <div className="flex items-center gap-2">
-                <Label>মূল্য (৳)</Label>
-                <Input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: Number(e.target.value) })} className="w-32 rounded-xl" />
-              </div>
+              <>
+                <div className="flex items-center gap-2">
+                  <Label>মূল দাম (৳)</Label>
+                  <Input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: Number(e.target.value) })} className="w-32 rounded-xl" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Label>অফার দাম (৳)</Label>
+                  <Input
+                    type="number"
+                    value={form.discount_price ?? ""}
+                    onChange={(e) => setForm({ ...form, discount_price: e.target.value ? Number(e.target.value) : null })}
+                    className="w-32 rounded-xl"
+                    placeholder="খালি রাখুন"
+                  />
+                </div>
+                {form.discount_price != null && form.discount_price < form.price && (
+                  <Badge variant="destructive" className="text-xs">
+                    -{Math.round(((form.price - form.discount_price) / form.price) * 100)}% ছাড়
+                  </Badge>
+                )}
+              </>
             )}
           </div>
 
@@ -307,7 +327,7 @@ const DashboardEbooks = () => {
                   {e.book_type === "hardcopy" ? "হার্ড কপি" : "ই-বুক"}
                 </Badge>
                 <Badge variant={e.is_free ? "default" : "outline"} className="text-[10px] shrink-0">
-                  {e.is_free ? "ফ্রি" : `৳${e.price}`}
+                  {e.is_free ? "ফ্রি" : e.discount_price != null && e.discount_price < e.price ? `৳${e.discount_price} (৳${e.price})` : `৳${e.price}`}
                 </Badge>
               </div>
               <p className="text-xs text-muted-foreground mt-0.5 truncate">
