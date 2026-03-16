@@ -71,7 +71,7 @@ const Courses = () => {
     );
   };
 
-  const getFinalPrice = (course: any) => Number(course.discount_price || course.price || 0);
+  const getFinalPrice = (course: any) => course ? Number(course.discount_price || course.price || 0) : 0;
 
   return (
     <div className="min-h-screen bg-background">
