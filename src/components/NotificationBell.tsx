@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Bell, Check, CheckCheck, Trash2, ExternalLink } from "lucide-react";
+import { Bell, Check, CheckCheck, Trash2, ExternalLink, Mail, CheckCircle2, XCircle, Star, PartyPopper, ClipboardList, ShieldCheck, AlertTriangle, Info, type LucideIcon } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -48,18 +48,18 @@ const playNotificationSound = () => {
   }
 };
 
-const typeIcons: Record<string, string> = {
-  new_application: "📩",
-  job_approved: "✅",
-  job_rejected: "❌",
-  application_shortlisted: "⭐",
-  application_accepted: "🎉",
-  application_rejected: "📋",
-  course_approved: "✅",
-  course_rejected: "❌",
-  verification_approved: "🛡️",
-  verification_rejected: "⚠️",
-  info: "ℹ️",
+const typeConfig: Record<string, { icon: LucideIcon; color: string }> = {
+  new_application: { icon: Mail, color: "text-blue-500" },
+  job_approved: { icon: CheckCircle2, color: "text-green-500" },
+  job_rejected: { icon: XCircle, color: "text-destructive" },
+  application_shortlisted: { icon: Star, color: "text-yellow-500" },
+  application_accepted: { icon: CheckCircle2, color: "text-green-500" },
+  application_rejected: { icon: XCircle, color: "text-destructive" },
+  course_approved: { icon: CheckCircle2, color: "text-green-500" },
+  course_rejected: { icon: XCircle, color: "text-destructive" },
+  verification_approved: { icon: ShieldCheck, color: "text-green-500" },
+  verification_rejected: { icon: AlertTriangle, color: "text-yellow-500" },
+  info: { icon: Info, color: "text-muted-foreground" },
 };
 
 const NotificationBell = () => {
