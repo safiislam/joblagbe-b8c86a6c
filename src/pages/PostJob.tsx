@@ -63,7 +63,7 @@ const PostJob = () => {
   const handleLogoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 2 * 1024 * 1024) { toast.error("Logo must be under 2MB"); return; }
+    if (file.size > 300 * 1024) { toast.error("লোগো সর্বোচ্চ ৩০০KB হতে হবে"); return; }
     setLogoFile(file);
     setLogoPreview(URL.createObjectURL(file));
   };
@@ -111,6 +111,21 @@ const PostJob = () => {
       const newCompany = await createCompany();
       if (!newCompany) { setLoading(false); return; }
       companyId = newCompany.id;
+    }
+
+    // Check daily job posting limit (max 10 per day)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const { count } = await supabase
+      .from("jobs")
+      .select("id", { count: "exact", head: true })
+      .eq("company_id", companyId)
+      .gte("created_at", today.toISOString());
+
+    if ((count ?? 0) >= 10) {
+      toast.error("আপনি আজকের জন্য সর্বোচ্চ ১০টি চাকরি পোস্ট করেছেন। আগামীকাল আবার চেষ্টা করুন।");
+      setLoading(false);
+      return;
     }
 
     const { error } = await supabase.from("jobs").insert({
@@ -211,7 +226,7 @@ const PostJob = () => {
                   <Button type="button" variant="outline" size="sm" className="gap-1.5 rounded-xl" onClick={() => logoInputRef.current?.click()}>
                     <Upload className="h-3.5 w-3.5" /> {logoFile ? "Change Logo" : "Upload Logo"}
                   </Button>
-                  <p className="mt-1 text-xs text-muted-foreground">PNG, JPG up to 2MB</p>
+                  <p className="mt-1 text-xs text-muted-foreground">PNG, JPG সর্বোচ্চ ৩০০KB</p>
                   <input ref={logoInputRef} type="file" accept="image/*" className="hidden" onChange={handleLogoSelect} />
                 </div>
               </div>

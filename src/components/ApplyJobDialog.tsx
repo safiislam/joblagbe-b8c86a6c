@@ -261,7 +261,7 @@ const ApplyJobDialog = ({
                 </div>
               )}
 
-              {/* Upload new CV */}
+              {/* Upload new CV — only if under limit */}
               <input
                 ref={fileInputRef}
                 type="file"
@@ -269,20 +269,22 @@ const ApplyJobDialog = ({
                 className="hidden"
                 onChange={handleFileUpload}
               />
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full rounded-xl gap-2 border-dashed"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={uploading}
-              >
-                {uploading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Upload className="h-4 w-4" />
-                )}
-                {uploading ? "আপলোড হচ্ছে..." : "নতুন সিভি আপলোড করুন"}
-              </Button>
+              {(!documents || documents.length < 2) && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full rounded-xl gap-2 border-dashed"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                >
+                  {uploading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Upload className="h-4 w-4" />
+                  )}
+                  {uploading ? "আপলোড হচ্ছে..." : `নতুন সিভি আপলোড করুন (${documents?.length ?? 0}/2)`}
+                </Button>
+              )}
             </div>
           )}
         </div>

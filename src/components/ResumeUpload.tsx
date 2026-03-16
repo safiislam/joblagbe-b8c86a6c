@@ -101,7 +101,7 @@ const ResumeUpload = () => {
         <h3 className="font-bold flex items-center gap-2">
           <FileText className="h-4 w-4 text-primary" /> Resume / CV
         </h3>
-        <p className="mt-1 text-xs text-muted-foreground">Upload multiple resumes (PDF, DOC — max 5MB each)</p>
+        <p className="mt-1 text-xs text-muted-foreground">Upload up to 2 resumes (PDF, DOC — max 5MB each)</p>
 
         {isLoading ? (
           <div className="mt-3 text-sm text-muted-foreground">Loading...</div>
@@ -126,23 +126,28 @@ const ResumeUpload = () => {
           </div>
         )}
 
-        <label className="mt-3 flex cursor-pointer items-center gap-2 rounded-xl border-2 border-dashed border-primary/20 p-4 transition-colors hover:border-primary/40 hover:bg-primary/5">
-          {uploading && uploadType === "resume" ? (
-            <Loader2 className="h-5 w-5 animate-spin text-primary" />
-          ) : (
-            <Plus className="h-5 w-5 text-primary" />
-          )}
-          <span className="text-sm text-muted-foreground">
-            {uploading && uploadType === "resume" ? "Uploading..." : "Add resume"}
-          </span>
-          <input
-            type="file"
-            accept=".pdf,.doc,.docx"
-            onChange={(e) => handleUpload(e, "resume")}
-            className="hidden"
-            disabled={uploading}
-          />
-        </label>
+        {resumes.length < 2 && (
+          <label className="mt-3 flex cursor-pointer items-center gap-2 rounded-xl border-2 border-dashed border-primary/20 p-4 transition-colors hover:border-primary/40 hover:bg-primary/5">
+            {uploading && uploadType === "resume" ? (
+              <Loader2 className="h-5 w-5 animate-spin text-primary" />
+            ) : (
+              <Plus className="h-5 w-5 text-primary" />
+            )}
+            <span className="text-sm text-muted-foreground">
+              {uploading && uploadType === "resume" ? "Uploading..." : `Add resume (${resumes.length}/2)`}
+            </span>
+            <input
+              type="file"
+              accept=".pdf,.doc,.docx"
+              onChange={(e) => handleUpload(e, "resume")}
+              className="hidden"
+              disabled={uploading}
+            />
+          </label>
+        )}
+        {resumes.length >= 2 && (
+          <p className="mt-3 text-xs text-muted-foreground text-center">সর্বোচ্চ ২টি সিভি আপলোড করা হয়েছে</p>
+        )}
       </div>
 
       {/* Video CV Section */}
@@ -176,23 +181,28 @@ const ResumeUpload = () => {
           </div>
         ))}
 
-        <label className="mt-3 flex cursor-pointer items-center gap-2 rounded-xl border-2 border-dashed border-primary/20 p-4 transition-colors hover:border-primary/40 hover:bg-primary/5">
-          {uploading && uploadType === "video_cv" ? (
-            <Loader2 className="h-5 w-5 animate-spin text-primary" />
-          ) : (
-            <Plus className="h-5 w-5 text-primary" />
-          )}
-          <span className="text-sm text-muted-foreground">
-            {uploading && uploadType === "video_cv" ? "Uploading..." : "Add video CV"}
-          </span>
-          <input
-            type="file"
-            accept="video/mp4,video/quicktime,video/webm"
-            onChange={(e) => handleUpload(e, "video_cv")}
-            className="hidden"
-            disabled={uploading}
-          />
-        </label>
+        {videoCvs.length < 1 && (
+          <label className="mt-3 flex cursor-pointer items-center gap-2 rounded-xl border-2 border-dashed border-primary/20 p-4 transition-colors hover:border-primary/40 hover:bg-primary/5">
+            {uploading && uploadType === "video_cv" ? (
+              <Loader2 className="h-5 w-5 animate-spin text-primary" />
+            ) : (
+              <Plus className="h-5 w-5 text-primary" />
+            )}
+            <span className="text-sm text-muted-foreground">
+              {uploading && uploadType === "video_cv" ? "Uploading..." : "Add video CV"}
+            </span>
+            <input
+              type="file"
+              accept="video/mp4,video/quicktime,video/webm"
+              onChange={(e) => handleUpload(e, "video_cv")}
+              className="hidden"
+              disabled={uploading}
+            />
+          </label>
+        )}
+        {videoCvs.length >= 1 && (
+          <p className="mt-3 text-xs text-muted-foreground text-center">সর্বোচ্চ ১টি ভিডিও সিভি আপলোড করা হয়েছে</p>
+        )}
       </div>
     </div>
   );
