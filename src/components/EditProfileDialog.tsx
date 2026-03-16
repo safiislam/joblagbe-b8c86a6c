@@ -31,8 +31,8 @@ const EditProfileDialog = ({ open, onOpenChange }: Props) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
 
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error("Image must be under 2MB");
+    if (file.size > 300 * 1024) {
+      toast.error("ছবির সাইজ সর্বোচ্চ ৩০০KB হতে হবে");
       return;
     }
 
