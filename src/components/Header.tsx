@@ -1,4 +1,4 @@
-import { Search, Menu, X, LogOut, Shield, Home, Briefcase, Building2, BookOpen } from "lucide-react";
+import { Search, Menu, X, LogOut, Shield, Home, Briefcase, Building2, BookOpen, Download } from "lucide-react";
 import { useState, FormEvent, lazy, Suspense } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
