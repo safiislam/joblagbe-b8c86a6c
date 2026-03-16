@@ -115,6 +115,7 @@ const DashboardEbooks = () => {
       pages: e.pages ?? 0,
       is_free: e.is_free,
       price: e.price ?? 0,
+      discount_price: e.discount_price ?? null,
       download_url: e.download_url ?? "",
       book_type: e.book_type ?? "ebook",
       purchase_link: e.purchase_link ?? "",
