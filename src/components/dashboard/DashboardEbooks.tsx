@@ -251,10 +251,27 @@ const DashboardEbooks = () => {
               <Label>ফ্রি</Label>
             </div>
             {!form.is_free && (
-              <div className="flex items-center gap-2">
-                <Label>মূল্য (৳)</Label>
-                <Input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: Number(e.target.value) })} className="w-32 rounded-xl" />
-              </div>
+              <>
+                <div className="flex items-center gap-2">
+                  <Label>মূল দাম (৳)</Label>
+                  <Input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: Number(e.target.value) })} className="w-32 rounded-xl" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Label>অফার দাম (৳)</Label>
+                  <Input
+                    type="number"
+                    value={form.discount_price ?? ""}
+                    onChange={(e) => setForm({ ...form, discount_price: e.target.value ? Number(e.target.value) : null })}
+                    className="w-32 rounded-xl"
+                    placeholder="খালি রাখুন"
+                  />
+                </div>
+                {form.discount_price != null && form.discount_price < form.price && (
+                  <Badge variant="destructive" className="text-xs">
+                    -{Math.round(((form.price - form.discount_price) / form.price) * 100)}% ছাড়
+                  </Badge>
+                )}
+              </>
             )}
           </div>
 
