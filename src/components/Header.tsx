@@ -97,14 +97,17 @@ const Header = () => {
 
         <div className="flex items-center gap-2 md:hidden">
           {user ? (
-            <Link to={profileLink}>
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={profile?.avatar_url || ""} />
-                <AvatarFallback className="bg-primary text-primary-foreground text-xs font-bold">
-                  {initials}
-                </AvatarFallback>
-              </Avatar>
-            </Link>
+            <>
+              <Suspense fallback={null}><NotificationBell /></Suspense>
+              <Link to={profileLink}>
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={profile?.avatar_url || ""} />
+                  <AvatarFallback className="bg-primary text-primary-foreground text-xs font-bold">
+                    {initials}
+                  </AvatarFallback>
+                </Avatar>
+              </Link>
+            </>
           ) : (
             <>
               <Button variant="outline" size="sm" className="h-8 text-xs border-primary text-primary" asChild>
