@@ -113,6 +113,21 @@ const PostJob = () => {
       companyId = newCompany.id;
     }
 
+    // Check daily job posting limit (max 10 per day)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const { count } = await supabase
+      .from("jobs")
+      .select("id", { count: "exact", head: true })
+      .eq("company_id", companyId)
+      .gte("created_at", today.toISOString());
+
+    if ((count ?? 0) >= 10) {
+      toast.error("আপনি আজকের জন্য সর্বোচ্চ ১০টি চাকরি পোস্ট করেছেন। আগামীকাল আবার চেষ্টা করুন।");
+      setLoading(false);
+      return;
+    }
+
     const { error } = await supabase.from("jobs").insert({
       company_id: companyId,
       category_id: form.categoryId || null,
