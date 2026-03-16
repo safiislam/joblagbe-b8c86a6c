@@ -55,7 +55,7 @@ const HeroSection = () => {
 
           <h1 className="font-bangla text-3xl font-bold leading-tight text-foreground md:text-5xl lg:text-[3.5rem] animate-fade-in">
             {c.title_line1}{" "}
-            <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">{c.title_highlight}</span>
+            <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">{c.title_highlight}</span>
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-muted-foreground md:text-lg animate-fade-in" style={{ animationDelay: "0.1s" }}>
             {c.subtitle}
