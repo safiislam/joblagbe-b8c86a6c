@@ -12,6 +12,7 @@ type FooterData = {
 
 const Footer = () => {
   const { data } = useSiteContent<FooterData>("footer");
+  const { logoUrl } = useBrandSettings();
   const desc = data?.description || "Bangladesh's trusted job portal connecting talent with opportunity.";
   const email = data?.contact_email || "support@joblagbe.com";
   const phone = data?.contact_phone || "+880 1XXX-XXXXXX";
