@@ -337,6 +337,95 @@ const DashboardSiteContent = () => {
             <SaveBtn sectionKey="footer" />
           </div>
         </TabsContent>
+
+        {/* Install Page Content */}
+        <TabsContent value="install_page" className="space-y-4">
+          <div className="rounded-xl border bg-card p-5 space-y-4">
+            <p className="text-xs text-muted-foreground">Install পেজে দেখানো কন্টেন্ট কাস্টমাইজ করুন</p>
+            <div>
+              <Label>Page Title</Label>
+              <Input className="mt-1" value={editData.install_page?.title || ""} onChange={(e) => updateField("install_page", "title", e.target.value)} placeholder="অ্যাপ ইনস্টল করুন" />
+            </div>
+            <div>
+              <Label>Subtitle</Label>
+              <Textarea className="mt-1" value={editData.install_page?.subtitle || ""} onChange={(e) => updateField("install_page", "subtitle", e.target.value)} placeholder="Job লাগবে অ্যাপ আপনার ফোনে ইনস্টল করুন..." />
+            </div>
+            <div>
+              <Label>Installed Message</Label>
+              <Input className="mt-1" value={editData.install_page?.installed_title || ""} onChange={(e) => updateField("install_page", "installed_title", e.target.value)} placeholder="অ্যাপ ইতিমধ্যে ইনস্টল হয়েছে! 🎉" />
+            </div>
+            <div>
+              <Label>Installed Description</Label>
+              <Textarea className="mt-1" value={editData.install_page?.installed_desc || ""} onChange={(e) => updateField("install_page", "installed_desc", e.target.value)} placeholder="আপনি হোম স্ক্রিন থেকে Job লাগবে অ্যাপ ওপেন করতে পারবেন।" />
+            </div>
+            <div>
+              <Label>Install Button Text</Label>
+              <Input className="mt-1" value={editData.install_page?.install_btn || ""} onChange={(e) => updateField("install_page", "install_btn", e.target.value)} placeholder="এখনই ইনস্টল করুন" />
+            </div>
+
+            <h3 className="font-semibold text-sm pt-2">Benefits List</h3>
+            {(editData.install_page?.benefits || []).map((b: string, i: number) => (
+              <div key={i} className="flex items-center gap-2">
+                <Input value={b} onChange={(e) => {
+                  const items = [...(editData.install_page?.benefits || [])];
+                  items[i] = e.target.value;
+                  updateField("install_page", "benefits", items);
+                }} />
+                <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={() => {
+                  const items = [...(editData.install_page?.benefits || [])];
+                  items.splice(i, 1);
+                  updateField("install_page", "benefits", items);
+                }}>
+                  <Trash2 className="h-3 w-3 text-destructive" />
+                </Button>
+              </div>
+            ))}
+            <Button variant="outline" size="sm" className="gap-1.5" onClick={() => {
+              const items = [...(editData.install_page?.benefits || []), ""];
+              updateField("install_page", "benefits", items);
+            }}>
+              <Plus className="h-3 w-3" /> Add Benefit
+            </Button>
+            <SaveBtn sectionKey="install_page" />
+          </div>
+        </TabsContent>
+
+        {/* PWA Settings */}
+        <TabsContent value="pwa_settings" className="space-y-4">
+          <div className="rounded-xl border bg-card p-5 space-y-4">
+            <p className="text-xs text-muted-foreground">PWA manifest ও থিম সেটিংস (পরিবর্তন করলে রিবিল্ড প্রয়োজন)</p>
+            <div>
+              <Label>App Name</Label>
+              <Input className="mt-1" value={editData.pwa_settings?.app_name || ""} onChange={(e) => updateField("pwa_settings", "app_name", e.target.value)} placeholder="Job লাগবে - চাকরি খুঁজুন" />
+            </div>
+            <div>
+              <Label>Short Name</Label>
+              <Input className="mt-1" value={editData.pwa_settings?.short_name || ""} onChange={(e) => updateField("pwa_settings", "short_name", e.target.value)} placeholder="Job লাগবে" />
+            </div>
+            <div>
+              <Label>Description</Label>
+              <Textarea className="mt-1" value={editData.pwa_settings?.description || ""} onChange={(e) => updateField("pwa_settings", "description", e.target.value)} placeholder="বাংলাদেশের বিশ্বস্ত চাকরির পোর্টাল..." />
+            </div>
+            <div>
+              <Label>Theme Color (hex)</Label>
+              <div className="flex items-center gap-2 mt-1">
+                <Input value={editData.pwa_settings?.theme_color || "#1d4ed8"} onChange={(e) => updateField("pwa_settings", "theme_color", e.target.value)} placeholder="#1d4ed8" />
+                <div className="h-9 w-9 rounded-md border shrink-0" style={{ backgroundColor: editData.pwa_settings?.theme_color || "#1d4ed8" }} />
+              </div>
+            </div>
+            <div>
+              <Label>Background Color (hex)</Label>
+              <div className="flex items-center gap-2 mt-1">
+                <Input value={editData.pwa_settings?.bg_color || "#ffffff"} onChange={(e) => updateField("pwa_settings", "bg_color", e.target.value)} placeholder="#ffffff" />
+                <div className="h-9 w-9 rounded-md border shrink-0" style={{ backgroundColor: editData.pwa_settings?.bg_color || "#ffffff" }} />
+              </div>
+            </div>
+            <div className="rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground">
+              ⚠️ PWA manifest সেটিংস সেভ করা হবে ডাটাবেসে। তবে এগুলো কার্যকর হতে অ্যাপ রিবিল্ড ও রিপাবলিশ করতে হবে।
+            </div>
+            <SaveBtn sectionKey="pwa_settings" />
+          </div>
+        </TabsContent>
       </Tabs>
     </div>
   );
