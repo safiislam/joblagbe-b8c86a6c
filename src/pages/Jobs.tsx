@@ -14,6 +14,11 @@ import { getJobDisplayTag } from "@/lib/jobTag";
 
 const Jobs = () => {
   const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const [search, setSearch] = useState(searchParams.get("q") || "");
   const [jobType, setJobType] = useState("all");
   const [location, setLocation] = useState(searchParams.get("location") || "all");
