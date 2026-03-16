@@ -65,7 +65,7 @@ const Login = () => {
       <div className="w-full max-w-md rounded-2xl border bg-card p-8 shadow-elevated">
         <div className="mb-8 flex flex-col items-center text-center">
           <Link to="/">
-            <img src={logo} alt="Job Lagbe" width={40} height={40} className="h-10 w-auto" />
+            <img src={logoUrl} alt="Job Lagbe" width={40} height={40} className="h-10 w-auto" />
           </Link>
           <h2 className="mt-4 text-xl font-bold">{showForgot ? "Reset Password" : "Welcome Back"}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
