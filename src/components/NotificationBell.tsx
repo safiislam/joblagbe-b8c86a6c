@@ -257,9 +257,12 @@ const NotificationBell = () => {
                         {formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}
                       </p>
                       {n.link && (
-                        <span className="text-[10px] text-primary flex items-center gap-0.5">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleNotifClick(n); }}
+                          className="text-[11px] text-primary font-medium flex items-center gap-0.5 hover:underline"
+                        >
                           <ExternalLink className="h-2.5 w-2.5" /> View
-                        </span>
+                        </button>
                       )}
                     </div>
                   </div>
