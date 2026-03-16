@@ -63,7 +63,7 @@ const PostJob = () => {
   const handleLogoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 2 * 1024 * 1024) { toast.error("Logo must be under 2MB"); return; }
+    if (file.size > 300 * 1024) { toast.error("লোগো সর্বোচ্চ ৩০০KB হতে হবে"); return; }
     setLogoFile(file);
     setLogoPreview(URL.createObjectURL(file));
   };
