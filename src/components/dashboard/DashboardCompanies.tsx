@@ -29,8 +29,14 @@ const DashboardCompanies = () => {
     },
   });
 
+  const sendNotification = async (userId: string, type: string, resourceId: string, title: string, message: string) => {
+    try {
+      await supabase.functions.invoke("notify", { body: { type, resource_id: resourceId, user_id: userId, title, message } });
+    } catch (err) { console.error("Notification failed:", err); }
+  };
+
   const handleVerification = useMutation({
-    mutationFn: async ({ requestId, companyId, approve }: { requestId: string; companyId: string; approve: boolean }) => {
+    mutationFn: async ({ requestId, companyId, approve, userId }: { requestId: string; companyId: string; approve: boolean; userId: string }) => {
       const { error: reqErr } = await supabase
         .from("verification_requests")
         .update({ status: approve ? "approved" : "rejected", updated_at: new Date().toISOString() })
@@ -43,6 +49,15 @@ const DashboardCompanies = () => {
           .update({ is_verified: true })
           .eq("id", companyId);
         if (compErr) throw compErr;
+      }
+
+      // Notify employer about verification result
+      const req = verificationRequests?.find((r: any) => r.id === requestId);
+      const companyName = req?.companies?.name || "Your company";
+      if (approve) {
+        await sendNotification(userId, "verification_approved", companyId, "🛡️ Company Verified!", `Congratulations! "${companyName}" is now verified.`);
+      } else {
+        await sendNotification(userId, "verification_rejected", companyId, "⚠️ Verification Rejected", `Verification for "${companyName}" was not approved. Please update your profile and try again.`);
       }
     },
     onSuccess: (_, { approve }) => {
