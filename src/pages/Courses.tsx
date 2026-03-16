@@ -6,10 +6,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Search, BookOpen, Clock, ExternalLink, ShoppingCart } from "lucide-react";
+import { Search, BookOpen, Clock, ExternalLink, ShoppingCart, Eye, User, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PaymentDialog from "@/components/PaymentDialog";
 import { getJobDisplayTag } from "@/lib/jobTag";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 const Courses = () => {
   useEffect(() => { window.scrollTo(0, 0); }, []);
@@ -18,6 +25,7 @@ const Courses = () => {
   const [category, setCategory] = useState("all");
   const [priceFilter, setPriceFilter] = useState("all");
   const [paymentCourse, setPaymentCourse] = useState<{ id: string; title: string; price: number } | null>(null);
+  const [detailCourse, setDetailCourse] = useState<any>(null);
 
   const { data: courses, isLoading } = useQuery({
     queryKey: ["all-courses"],
@@ -38,6 +46,32 @@ const Courses = () => {
     const matchPrice = priceFilter === "all" || (priceFilter === "free" ? c.is_free : !c.is_free);
     return matchSearch && matchCat && matchPrice;
   });
+
+  const PriceDisplay = ({ course, size = "sm" }: { course: any; size?: "sm" | "lg" }) => {
+    if (course.is_free) {
+      return <Badge variant="default" className={size === "lg" ? "text-sm px-3 py-1" : "text-xs"}>ফ্রি</Badge>;
+    }
+
+    const hasDiscount = course.discount_price && Number(course.discount_price) < Number(course.price);
+
+    return (
+      <div className="flex items-center gap-2">
+        {hasDiscount ? (
+          <>
+            <span className={`line-through text-muted-foreground ${size === "lg" ? "text-base" : "text-xs"}`}>৳{course.price}</span>
+            <span className={`font-bold text-primary ${size === "lg" ? "text-xl" : "text-sm"}`}>৳{course.discount_price}</span>
+            <Badge variant="destructive" className="text-[10px]">
+              {Math.round((1 - Number(course.discount_price) / Number(course.price)) * 100)}% ছাড়
+            </Badge>
+          </>
+        ) : (
+          <span className={`font-bold ${size === "lg" ? "text-xl" : "text-sm"}`}>৳{course.price}</span>
+        )}
+      </div>
+    );
+  };
+
+  const getFinalPrice = (course: any) => Number(course.discount_price || course.price || 0);
 
   return (
     <div className="min-h-screen bg-background">
@@ -88,46 +122,50 @@ const Courses = () => {
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filtered.map((course) => (
               <div key={course.id} className="group flex flex-col rounded-2xl border bg-card shadow-card overflow-hidden transition-all hover:-translate-y-1 hover:shadow-elevated">
-                <div className="flex h-36 items-center justify-center bg-accent/10">
+                <div className="flex h-36 items-center justify-center bg-accent/10 relative">
                   {course.thumbnail_url ? (
                     <img src={course.thumbnail_url} alt={course.title} className="h-full w-full object-cover" />
                   ) : (
                     <BookOpen className="h-12 w-12 text-accent/40" />
                   )}
+                  {(() => { const dt = getJobDisplayTag(null, course.created_at); return dt ? <Badge className="absolute top-2 right-2 bg-accent/90 text-accent-foreground text-[10px]">{dt}</Badge> : null; })()}
                 </div>
                 <div className="flex flex-1 flex-col p-5">
                   <div className="flex items-center gap-2 mb-2 flex-wrap">
                     <Badge variant="secondary" className="text-xs">{course.category}</Badge>
-                    <Badge variant={course.is_free ? "default" : "outline"} className="text-xs">
-                      {course.is_free ? "ফ্রি" : `৳${course.price}`}
-                    </Badge>
-                    {(() => { const dt = getJobDisplayTag(null, course.created_at); return dt ? <Badge className="bg-accent/15 text-accent border-accent/20 text-[10px]">{dt}</Badge> : null; })()}
                   </div>
-                  <h3 className="font-bold text-lg font-bangla group-hover:text-primary transition-colors">{course.title}</h3>
-                  {course.description && <p className="mt-2 text-sm text-muted-foreground font-bangla line-clamp-2">{course.description}</p>}
-                  <div className="mt-auto pt-4 flex items-center justify-between">
+                  <h3 className="font-bold text-lg font-bangla group-hover:text-primary transition-colors line-clamp-2">{course.title}</h3>
+
+                  <div className="mt-2">
+                    <PriceDisplay course={course} />
+                  </div>
+
+                  <div className="mt-auto pt-4 flex items-center justify-between gap-2">
                     <span className="flex items-center gap-1 text-xs text-muted-foreground">
                       <Clock className="h-3 w-3" /> {course.duration ?? "—"}
                     </span>
-                    {course.is_free ? (
-                      course.link ? (
-                        <Button size="sm" variant="outline" className="gap-1" asChild>
-                          <a href={course.link} target="_blank" rel="noopener noreferrer">
-                            শুরু করুন <ExternalLink className="h-3 w-3" />
-                          </a>
-                        </Button>
-                      ) : (
-                        <Button size="sm" variant="outline" disabled>শীঘ্রই আসছে</Button>
-                      )
-                    ) : (
-                      <Button
-                        size="sm"
-                        className="gap-1"
-                        onClick={() => setPaymentCourse({ id: course.id, title: course.title, price: Number(course.discount_price || course.price || 0) })}
-                      >
-                        <ShoppingCart className="h-3 w-3" /> কিনুন ৳{course.discount_price || course.price}
+                    <div className="flex items-center gap-2">
+                      <Button size="sm" variant="outline" className="gap-1 text-xs" onClick={() => setDetailCourse(course)}>
+                        <Eye className="h-3 w-3" /> বিস্তারিত
                       </Button>
-                    )}
+                      {course.is_free ? (
+                        course.link ? (
+                          <Button size="sm" className="gap-1 text-xs" asChild>
+                            <a href={course.link} target="_blank" rel="noopener noreferrer">
+                              শুরু করুন <ExternalLink className="h-3 w-3" />
+                            </a>
+                          </Button>
+                        ) : null
+                      ) : (
+                        <Button
+                          size="sm"
+                          className="gap-1 text-xs"
+                          onClick={() => setPaymentCourse({ id: course.id, title: course.title, price: getFinalPrice(course) })}
+                        >
+                          <ShoppingCart className="h-3 w-3" /> কিনুন
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -140,6 +178,82 @@ const Courses = () => {
           </div>
         )}
       </div>
+
+      {/* Course Details Dialog */}
+      <Dialog open={!!detailCourse} onOpenChange={(open) => { if (!open) setDetailCourse(null); }}>
+        <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="font-bangla text-xl leading-relaxed">{detailCourse?.title}</DialogTitle>
+            <DialogDescription>
+              <Badge variant="secondary" className="text-xs">{detailCourse?.category}</Badge>
+            </DialogDescription>
+          </DialogHeader>
+
+          {detailCourse?.thumbnail_url && (
+            <div className="rounded-xl overflow-hidden">
+              <img src={detailCourse.thumbnail_url} alt={detailCourse.title} className="w-full h-48 object-cover" />
+            </div>
+          )}
+
+          <div className="space-y-4">
+            {/* Price Section */}
+            <div className="rounded-xl bg-secondary/50 p-4">
+              <p className="text-xs text-muted-foreground mb-1 font-bangla">মূল্য</p>
+              <PriceDisplay course={detailCourse || {}} size="lg" />
+            </div>
+
+            {/* Info Grid */}
+            <div className="grid grid-cols-2 gap-3">
+              {detailCourse?.duration && (
+                <div className="flex items-center gap-2 text-sm">
+                  <Clock className="h-4 w-4 text-muted-foreground" />
+                  <span className="font-bangla">{detailCourse.duration}</span>
+                </div>
+              )}
+              {detailCourse?.provider && (
+                <div className="flex items-center gap-2 text-sm">
+                  <User className="h-4 w-4 text-muted-foreground" />
+                  <span>{detailCourse.provider}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Description */}
+            {detailCourse?.description && (
+              <div>
+                <p className="text-xs font-medium text-muted-foreground mb-1 font-bangla">বিবরণ</p>
+                <p className="text-sm leading-relaxed font-bangla whitespace-pre-line">{detailCourse.description}</p>
+              </div>
+            )}
+
+            {/* Actions */}
+            <div className="flex gap-3 pt-2">
+              {detailCourse?.is_free ? (
+                detailCourse?.link ? (
+                  <Button className="flex-1 gap-1" asChild>
+                    <a href={detailCourse.link} target="_blank" rel="noopener noreferrer">
+                      শুরু করুন <ExternalLink className="h-4 w-4" />
+                    </a>
+                  </Button>
+                ) : (
+                  <Button className="flex-1" disabled>শীঘ্রই আসছে</Button>
+                )
+              ) : (
+                <Button
+                  className="flex-1 gap-1"
+                  onClick={() => {
+                    setDetailCourse(null);
+                    setPaymentCourse({ id: detailCourse.id, title: detailCourse.title, price: getFinalPrice(detailCourse) });
+                  }}
+                >
+                  <ShoppingCart className="h-4 w-4" /> কিনুন ৳{getFinalPrice(detailCourse)}
+                </Button>
+              )}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <PaymentDialog
         open={!!paymentCourse}
         onOpenChange={(open) => { if (!open) setPaymentCourse(null); }}
