@@ -84,9 +84,6 @@ const Index = () => {
       </Suspense>
       <Footer />
       <Suspense fallback={null}>
-        <AIChatWidget />
-      </Suspense>
-      <Suspense fallback={null}>
         <PopupBannerModal />
       </Suspense>
     </div>
