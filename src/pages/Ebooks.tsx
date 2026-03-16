@@ -264,7 +264,7 @@ const BookCard = ({ book, onBuy, onView }: { book: Ebook; onBuy: (book: Ebook) =
               ) : null
             ) : (
               <Button size="sm" className="gap-1 text-xs" onClick={() => onBuy(book)}>
-                <ShoppingCart className="h-3.5 w-3.5" /> ৳{book.price}
+                <ShoppingCart className="h-3.5 w-3.5" /> ৳{book.discount_price != null && book.discount_price < (book.price ?? 0) ? book.discount_price : book.price}
               </Button>
             )}
           </div>
