@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { checkRateLimit, RATE_LIMITS } from "@/hooks/useRateLimit";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
