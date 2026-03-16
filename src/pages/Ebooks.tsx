@@ -22,6 +22,7 @@ type Ebook = {
   pages: number | null;
   is_free: boolean;
   price: number | null;
+  discount_price: number | null;
   cover_image_url: string | null;
   download_url: string | null;
   created_at: string;
