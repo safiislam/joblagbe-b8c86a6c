@@ -101,7 +101,7 @@ const ResumeUpload = () => {
         <h3 className="font-bold flex items-center gap-2">
           <FileText className="h-4 w-4 text-primary" /> Resume / CV
         </h3>
-        <p className="mt-1 text-xs text-muted-foreground">Upload multiple resumes (PDF, DOC — max 5MB each)</p>
+        <p className="mt-1 text-xs text-muted-foreground">Upload up to 2 resumes (PDF, DOC — max 5MB each)</p>
 
         {isLoading ? (
           <div className="mt-3 text-sm text-muted-foreground">Loading...</div>
