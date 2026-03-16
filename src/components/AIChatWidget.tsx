@@ -32,6 +32,11 @@ const AIChatWidget = () => {
   const send = async () => {
     const text = input.trim();
     if (!text || isLoading) return;
+
+    // Rate limit check
+    const allowed = await checkRateLimit(RATE_LIMITS.CHAT_MESSAGE);
+    if (!allowed) return;
+
     setInput("");
 
     const userMsg: Msg = { role: "user", content: text };

@@ -128,6 +128,8 @@ const ApplyJobDialog = ({
 
     setApplying(true);
     try {
+      const allowed = await checkRateLimit(RATE_LIMITS.JOB_APPLICATION, user.id);
+      if (!allowed) { setApplying(false); return; }
       const { error } = await supabase.from("applications").insert({
         job_id: jobId,
         user_id: user.id,
