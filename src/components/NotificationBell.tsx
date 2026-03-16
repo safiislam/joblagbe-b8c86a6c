@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Bell, Check, CheckCheck, Trash2, ExternalLink } from "lucide-react";
+import { Bell, Check, CheckCheck, Trash2, ExternalLink, Mail, CheckCircle2, XCircle, Star, PartyPopper, ClipboardList, ShieldCheck, AlertTriangle, Info, type LucideIcon } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -48,18 +48,18 @@ const playNotificationSound = () => {
   }
 };
 
-const typeIcons: Record<string, string> = {
-  new_application: "📩",
-  job_approved: "✅",
-  job_rejected: "❌",
-  application_shortlisted: "⭐",
-  application_accepted: "🎉",
-  application_rejected: "📋",
-  course_approved: "✅",
-  course_rejected: "❌",
-  verification_approved: "🛡️",
-  verification_rejected: "⚠️",
-  info: "ℹ️",
+const typeConfig: Record<string, { icon: LucideIcon; color: string }> = {
+  new_application: { icon: Mail, color: "text-blue-500" },
+  job_approved: { icon: CheckCircle2, color: "text-green-500" },
+  job_rejected: { icon: XCircle, color: "text-destructive" },
+  application_shortlisted: { icon: Star, color: "text-yellow-500" },
+  application_accepted: { icon: CheckCircle2, color: "text-green-500" },
+  application_rejected: { icon: XCircle, color: "text-destructive" },
+  course_approved: { icon: CheckCircle2, color: "text-green-500" },
+  course_rejected: { icon: XCircle, color: "text-destructive" },
+  verification_approved: { icon: ShieldCheck, color: "text-green-500" },
+  verification_rejected: { icon: AlertTriangle, color: "text-yellow-500" },
+  info: { icon: Info, color: "text-muted-foreground" },
 };
 
 const NotificationBell = () => {
@@ -234,7 +234,15 @@ const NotificationBell = () => {
                   onClick={() => handleNotifClick(n)}
                 >
                   {/* Type icon */}
-                  <span className="text-lg shrink-0 mt-0.5">{typeIcons[n.type] || typeIcons.info}</span>
+                  {(() => {
+                    const cfg = typeConfig[n.type] || typeConfig.info;
+                    const Icon = cfg.icon;
+                    return (
+                      <span className={`shrink-0 mt-0.5 flex h-8 w-8 items-center justify-center rounded-full bg-secondary ${cfg.color}`}>
+                        <Icon className="h-4 w-4" />
+                      </span>
+                    );
+                  })()}
                   
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
@@ -249,9 +257,12 @@ const NotificationBell = () => {
                         {formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}
                       </p>
                       {n.link && (
-                        <span className="text-[10px] text-primary flex items-center gap-0.5">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleNotifClick(n); }}
+                          className="text-[11px] text-primary font-medium flex items-center gap-0.5 hover:underline"
+                        >
                           <ExternalLink className="h-2.5 w-2.5" /> View
-                        </span>
+                        </button>
                       )}
                     </div>
                   </div>
