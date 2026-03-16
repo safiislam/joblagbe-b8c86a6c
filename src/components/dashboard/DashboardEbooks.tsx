@@ -19,6 +19,7 @@ const emptyForm = {
   pages: 0,
   is_free: true,
   price: 0,
+  discount_price: null as number | null,
   download_url: "",
   book_type: "ebook" as string,
   purchase_link: "",
