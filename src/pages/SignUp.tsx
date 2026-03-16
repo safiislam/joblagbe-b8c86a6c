@@ -12,13 +12,15 @@ import logo from "@/assets/logo.png";
 
 const SignUp = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  const [emailOrPhone, setEmailOrPhone] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [phone, setPhone] = useState("");
   const [role, setRole] = useState<"seeker" | "employer">("seeker");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+
+  const isEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  const isPhone = (value: string) => /^01\d{9}$/.test(value.replace(/[\s-]/g, ""));
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
