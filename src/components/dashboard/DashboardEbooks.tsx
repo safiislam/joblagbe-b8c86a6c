@@ -86,6 +86,7 @@ const DashboardEbooks = () => {
     const payload = {
       ...form,
       price: form.is_free ? 0 : form.price,
+      discount_price: form.is_free ? null : (form.discount_price || null),
       pages: form.pages || null,
       purchase_link: form.purchase_link || null,
       cover_image_url: form.cover_image_url || null,
