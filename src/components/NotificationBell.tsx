@@ -234,7 +234,15 @@ const NotificationBell = () => {
                   onClick={() => handleNotifClick(n)}
                 >
                   {/* Type icon */}
-                  <span className="text-lg shrink-0 mt-0.5">{typeIcons[n.type] || typeIcons.info}</span>
+                  {(() => {
+                    const cfg = typeConfig[n.type] || typeConfig.info;
+                    const Icon = cfg.icon;
+                    return (
+                      <span className={`shrink-0 mt-0.5 flex h-8 w-8 items-center justify-center rounded-full bg-secondary ${cfg.color}`}>
+                        <Icon className="h-4 w-4" />
+                      </span>
+                    );
+                  })()}
                   
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
