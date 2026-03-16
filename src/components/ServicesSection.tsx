@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useState } from "react";
+import { checkRateLimit, RATE_LIMITS } from "@/hooks/useRateLimit";
 import PaymentDialog from "@/components/PaymentDialog";
 import {
   Dialog,
@@ -55,6 +56,8 @@ const ServicesSection = () => {
 
     setSubmitting(true);
     try {
+      const allowed = await checkRateLimit(RATE_LIMITS.SERVICE_ORDER, user?.id);
+      if (!allowed) { setSubmitting(false); return; }
       const orderId = crypto.randomUUID();
       const { error } = await supabase.from("service_orders").insert({
         id: orderId,
