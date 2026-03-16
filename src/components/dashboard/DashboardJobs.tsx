@@ -63,8 +63,16 @@ const DashboardJobs = () => {
   };
 
   const handleReject = async (jobId: string) => {
+    const job = adminJobs?.find(j => j.id === jobId);
     const { error } = await supabase.from("jobs").update({ is_active: false, is_approved: false }).eq("id", jobId);
     if (error) { toast.error(error.message); return; }
+    // Notify employer about rejection
+    if (job) {
+      const { data: comp } = await supabase.from("companies").select("user_id, name").eq("name", job.companies?.name ?? "").maybeSingle();
+      if (comp?.user_id) {
+        await sendNotification(comp.user_id, "job_rejected", jobId, "❌ Job Not Approved", `Your job "${job.title}" was not approved. Please review and resubmit.`);
+      }
+    }
     toast.success("Job rejected"); refreshAll();
   };
 
