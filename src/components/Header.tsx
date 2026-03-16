@@ -59,6 +59,7 @@ const Header = () => {
           <Button variant="ghost" size="sm" asChild><Link to="/jobs">Jobs</Link></Button>
           <Button variant="ghost" size="sm" asChild><Link to="/companies">Companies</Link></Button>
           <Button variant="ghost" size="sm" asChild><Link to="/blog">Blog</Link></Button>
+          <Button variant="ghost" size="sm" className="gap-1" asChild><Link to="/install"><Download className="h-3.5 w-3.5" /> Install</Link></Button>
           {user && profile?.role === "employer" && (
             <Button variant="ghost" size="sm" asChild><Link to="/post-job">Post Job</Link></Button>
           )}
