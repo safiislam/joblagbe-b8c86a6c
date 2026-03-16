@@ -65,6 +65,9 @@ const App = () => (
               </Routes>
             </div>
             <MobileBottomNav />
+            <Suspense fallback={null}>
+              <AIChatWidget />
+            </Suspense>
           </Suspense>
         </BrowserRouter>
       </TooltipProvider>
