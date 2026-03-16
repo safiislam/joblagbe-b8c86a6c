@@ -221,27 +221,21 @@ const BookCard = ({ book, onBuy, onView }: { book: Ebook; onBuy: (book: Ebook) =
         </div>
       </div>
       <div className="flex flex-1 flex-col p-5">
-        <div className="flex items-center gap-2 mb-2 flex-wrap">
-          <Badge variant="secondary" className="text-xs">{book.category}</Badge>
-          <PriceDisplay book={book} />
-          {(() => {
-            const dt = getJobDisplayTag(null, book.created_at);
-            return dt ? <Badge className="bg-accent/15 text-accent border-accent/20 text-[10px]">{dt}</Badge> : null;
-          })()}
-        </div>
         <h3
           className="font-bold text-lg font-bangla group-hover:text-primary transition-colors line-clamp-2 cursor-pointer"
           onClick={() => onView(book)}
         >
           {book.title}
         </h3>
-        {book.description && (
-          <p className="mt-2 text-sm text-muted-foreground font-bangla line-clamp-2">{book.description}</p>
-        )}
+        <div className="flex items-center gap-2 mt-2 flex-wrap">
+          <PriceDisplay book={book} />
+          {(() => {
+            const dt = getJobDisplayTag(null, book.created_at);
+            return dt ? <Badge className="bg-accent/15 text-accent border-accent/20 text-[10px]">{dt}</Badge> : null;
+          })()}
+        </div>
         <div className="mt-auto pt-4 flex items-center justify-between">
-          <span className="flex items-center gap-1 text-xs text-muted-foreground">
-            <FileText className="h-3 w-3" /> {book.author ?? "—"} {book.pages ? `· ${book.pages} পৃষ্ঠা` : ""}
-          </span>
+          <div />
           <div className="flex items-center gap-1.5">
             <Button size="sm" variant="outline" className="gap-1 text-xs" onClick={() => onView(book)}>
               <Eye className="h-3.5 w-3.5" /> বিস্তারিত
