@@ -100,23 +100,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setTimeout(async () => {
           const profileData = await fetchProfile(session.user.id);
           await syncPendingSignupRole(session.user.id, profileData?.role);
-          checkAdmin(session.user.id);
+          await checkAdmin(session.user.id);
+          setLoading(false);
         }, 0);
       } else {
         setProfile(null);
         setIsAdmin(false);
+        setLoading(false);
       }
-      setLoading(false);
     });
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        fetchProfile(session.user.id).then((profileData) => {
-          syncPendingSignupRole(session.user.id, profileData?.role);
-        });
-        checkAdmin(session.user.id);
+        const profileData = await fetchProfile(session.user.id);
+        await syncPendingSignupRole(session.user.id, profileData?.role);
+        await checkAdmin(session.user.id);
       }
       setLoading(false);
     });
