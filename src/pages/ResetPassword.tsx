@@ -13,6 +13,7 @@ const ResetPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [isRecovery, setIsRecovery] = useState(false);
+  const { logoUrl } = useBrandSettings();
 
   useEffect(() => {
     // Check for recovery token in URL hash
