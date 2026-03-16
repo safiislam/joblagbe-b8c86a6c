@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Briefcase, Search } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import logo from "@/assets/logo.png";
+import { useBrandSettings } from "@/hooks/useBrandSettings";
 
 const SignUp = () => {
   const navigate = useNavigate();
