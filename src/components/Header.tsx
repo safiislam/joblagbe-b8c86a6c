@@ -145,6 +145,10 @@ const Header = () => {
             <Button variant="ghost" className="justify-start" asChild onClick={() => setMobileOpen(false)}>
               <Link to="/blog"><BookOpen className="mr-2 h-4 w-4" /> Blog</Link>
             </Button>
+            <Button variant="ghost" className="justify-start" asChild onClick={() => setMobileOpen(false)}>
+              <Link to="/install"><Download className="mr-2 h-4 w-4" /> Install App</Link>
+            </Button>
+            </Button>
             {user && profile?.role === "employer" && (
               <Button variant="ghost" className="justify-start" asChild onClick={() => setMobileOpen(false)}>
                 <Link to="/post-job">Post Job</Link>
