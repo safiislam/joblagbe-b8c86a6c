@@ -273,6 +273,7 @@ export type Database = {
           cover_image_url: string | null
           created_at: string
           description: string | null
+          discount_price: number | null
           download_url: string | null
           id: string
           is_free: boolean
@@ -288,6 +289,7 @@ export type Database = {
           cover_image_url?: string | null
           created_at?: string
           description?: string | null
+          discount_price?: number | null
           download_url?: string | null
           id?: string
           is_free?: boolean
@@ -303,6 +305,7 @@ export type Database = {
           cover_image_url?: string | null
           created_at?: string
           description?: string | null
+          discount_price?: number | null
           download_url?: string | null
           id?: string
           is_free?: boolean

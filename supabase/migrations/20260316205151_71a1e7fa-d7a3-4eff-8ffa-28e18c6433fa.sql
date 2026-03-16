@@ -1,0 +1,1 @@
+ALTER TABLE public.ebooks ADD COLUMN IF NOT EXISTS discount_price numeric DEFAULT NULL;
