@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import { MessageCircle, X, Send, Bot, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
+import { checkRateLimit, RATE_LIMITS } from "@/hooks/useRateLimit";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
