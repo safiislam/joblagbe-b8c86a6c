@@ -101,7 +101,7 @@ const DashboardSiteContent = () => {
         <TabsList className="flex-wrap h-auto gap-1">
           <TabsTrigger value="announcement">📢 Announcement</TabsTrigger>
           <TabsTrigger value="hero">🏠 Hero</TabsTrigger>
-          <TabsTrigger value="fraud_warning">⚠️ Fraud Warning</TabsTrigger>
+          
           <TabsTrigger value="category_section">📂 Categories</TabsTrigger>
           <TabsTrigger value="quick_links">🔗 Quick Links</TabsTrigger>
           <TabsTrigger value="services">🛠️ Services</TabsTrigger>
