@@ -20,7 +20,7 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "og-logo.jpg"],
+      includeAssets: ["favicon.ico", "og-logo.jpg", "pwa-192x192.png", "pwa-512x512.png"],
       workbox: {
         navigateFallbackDenylist: [/^\/~oauth/],
         globPatterns: ["**/*.{js,css,html,ico,png,svg,jpg,webp}"],
@@ -33,9 +33,19 @@ export default defineConfig(({ mode }) => ({
               expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 365 },
             },
           },
+          {
+            urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "supabase-api",
+              expiration: { maxEntries: 50, maxAgeSeconds: 60 * 5 },
+              networkTimeoutSeconds: 10,
+            },
+          },
         ],
       },
       manifest: {
+        id: "/",
         name: "Job লাগবে - চাকরি খুঁজুন",
         short_name: "Job লাগবে",
         description: "বাংলাদেশের বিশ্বস্ত চাকরির পোর্টাল। হাজারো চাকরি থেকে আপনার স্বপ্নের ক্যারিয়ার খুঁজুন।",
@@ -44,13 +54,22 @@ export default defineConfig(({ mode }) => ({
         display: "standalone",
         orientation: "portrait",
         scope: "/",
-        start_url: "/",
+        start_url: "/?source=pwa",
         categories: ["business", "employment"],
         lang: "bn",
         icons: [
           { src: "/pwa-192x192.png", sizes: "192x192", type: "image/png" },
           { src: "/pwa-512x512.png", sizes: "512x512", type: "image/png" },
           { src: "/pwa-512x512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+        ],
+        screenshots: [
+          {
+            src: "/og-logo.jpg",
+            sizes: "1200x630",
+            type: "image/jpeg",
+            form_factor: "wide",
+            label: "Job লাগবে - হোমপেজ",
+          },
         ],
       },
     }),
