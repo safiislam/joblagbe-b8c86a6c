@@ -113,7 +113,7 @@ const DashboardCompanies = () => {
                     variant="outline"
                     className="gap-1 text-destructive border-destructive/30 hover:bg-destructive hover:text-destructive-foreground"
                     disabled={handleVerification.isPending}
-                    onClick={() => handleVerification.mutate({ requestId: req.id, companyId: req.company_id, approve: false })}
+                    onClick={() => handleVerification.mutate({ requestId: req.id, companyId: req.company_id, approve: false, userId: req.user_id })}
                   >
                     <XCircle className="h-3.5 w-3.5" /> Reject
                   </Button>
