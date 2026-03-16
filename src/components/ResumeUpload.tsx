@@ -126,23 +126,28 @@ const ResumeUpload = () => {
           </div>
         )}
 
-        <label className="mt-3 flex cursor-pointer items-center gap-2 rounded-xl border-2 border-dashed border-primary/20 p-4 transition-colors hover:border-primary/40 hover:bg-primary/5">
-          {uploading && uploadType === "resume" ? (
-            <Loader2 className="h-5 w-5 animate-spin text-primary" />
-          ) : (
-            <Plus className="h-5 w-5 text-primary" />
-          )}
-          <span className="text-sm text-muted-foreground">
-            {uploading && uploadType === "resume" ? "Uploading..." : "Add resume"}
-          </span>
-          <input
-            type="file"
-            accept=".pdf,.doc,.docx"
-            onChange={(e) => handleUpload(e, "resume")}
-            className="hidden"
-            disabled={uploading}
-          />
-        </label>
+        {resumes.length < 2 && (
+          <label className="mt-3 flex cursor-pointer items-center gap-2 rounded-xl border-2 border-dashed border-primary/20 p-4 transition-colors hover:border-primary/40 hover:bg-primary/5">
+            {uploading && uploadType === "resume" ? (
+              <Loader2 className="h-5 w-5 animate-spin text-primary" />
+            ) : (
+              <Plus className="h-5 w-5 text-primary" />
+            )}
+            <span className="text-sm text-muted-foreground">
+              {uploading && uploadType === "resume" ? "Uploading..." : `Add resume (${resumes.length}/2)`}
+            </span>
+            <input
+              type="file"
+              accept=".pdf,.doc,.docx"
+              onChange={(e) => handleUpload(e, "resume")}
+              className="hidden"
+              disabled={uploading}
+            />
+          </label>
+        )}
+        {resumes.length >= 2 && (
+          <p className="mt-3 text-xs text-muted-foreground text-center">সর্বোচ্চ ২টি সিভি আপলোড করা হয়েছে</p>
+        )}
       </div>
 
       {/* Video CV Section */}
