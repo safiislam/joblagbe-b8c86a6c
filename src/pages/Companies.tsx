@@ -8,6 +8,8 @@ import { Building2, MapPin, Globe } from "lucide-react";
 import VerifiedBadge from "@/components/VerifiedBadge";
 
 const Companies = () => {
+  useEffect(() => { window.scrollTo(0, 0); }, []);
+
   const { data: companies, isLoading } = useQuery({
     queryKey: ["all-companies"],
     queryFn: async () => {

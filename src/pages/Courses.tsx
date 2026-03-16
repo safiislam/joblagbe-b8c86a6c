@@ -12,6 +12,8 @@ import PaymentDialog from "@/components/PaymentDialog";
 import { getJobDisplayTag } from "@/lib/jobTag";
 
 const Courses = () => {
+  useEffect(() => { window.scrollTo(0, 0); }, []);
+
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [priceFilter, setPriceFilter] = useState("all");

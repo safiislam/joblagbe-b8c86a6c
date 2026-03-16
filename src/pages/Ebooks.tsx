@@ -110,6 +110,7 @@ const EmptyState = ({ message }: { message: string }) => (
 );
 
 const Ebooks = () => {
+  useEffect(() => { window.scrollTo(0, 0); }, []);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [priceFilter, setPriceFilter] = useState("all");

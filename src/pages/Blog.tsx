@@ -10,6 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { getJobDisplayTag } from "@/lib/jobTag";
 
 const Blog = () => {
+  useEffect(() => { window.scrollTo(0, 0); }, []);
+
   const { data: posts, isLoading } = useQuery({
     queryKey: ["blog-posts"],
     queryFn: async () => {
