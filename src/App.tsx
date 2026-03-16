@@ -8,6 +8,8 @@ import { lazy, Suspense } from "react";
 import { MobileBottomNav } from "@/components/Header";
 import Index from "./pages/Index";
 
+const AIChatWidget = lazy(() => import("@/components/AIChatWidget"));
+
 const Login = lazy(() => import("./pages/Login"));
 const SignUp = lazy(() => import("./pages/SignUp"));
 const PostJob = lazy(() => import("./pages/PostJob"));
