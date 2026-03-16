@@ -122,19 +122,25 @@ const Install = () => {
           </div>
         ) : (
           <div className="space-y-5">
-            {/* One-click install button (Android Chrome / Desktop Chrome) */}
-            {deferredPrompt && (
+            {/* One-click install button — always show on Android/Desktop, use prompt if available */}
+            {(platform === "android" || platform === "desktop") && (
               <div className="rounded-2xl border-2 border-primary/30 bg-primary/5 p-6 text-center shadow-sm">
                 <p className="text-sm text-muted-foreground mb-3">এক ক্লিকে ইনস্টল করুন</p>
-                <Button
-                  onClick={handleInstall}
-                  size="lg"
-                  disabled={installing}
-                  className="gap-2 text-base px-10 h-12 font-semibold"
-                >
-                  <Download className="h-5 w-5" />
-                  {installing ? "ইনস্টল হচ্ছে..." : c.install_btn}
-                </Button>
+                {deferredPrompt ? (
+                  <Button
+                    onClick={handleInstall}
+                    size="lg"
+                    disabled={installing}
+                    className="gap-2 text-base px-10 h-12 font-semibold"
+                  >
+                    <Download className="h-5 w-5" />
+                    {installing ? "ইনস্টল হচ্ছে..." : c.install_btn}
+                  </Button>
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    ব্রাউজারের মেনু থেকে <strong>"Install app"</strong> বা <strong>"Add to Home Screen"</strong> অপশনটি ব্যবহার করুন।
+                  </p>
+                )}
               </div>
             )}
 
