@@ -104,7 +104,7 @@ const DashboardCompanies = () => {
                     variant="outline"
                     className="gap-1 text-primary border-primary/30 hover:bg-primary hover:text-primary-foreground"
                     disabled={handleVerification.isPending}
-                    onClick={() => handleVerification.mutate({ requestId: req.id, companyId: req.company_id, approve: true })}
+                    onClick={() => handleVerification.mutate({ requestId: req.id, companyId: req.company_id, approve: true, userId: req.user_id })}
                   >
                     <CheckCircle className="h-3.5 w-3.5" /> Approve
                   </Button>
