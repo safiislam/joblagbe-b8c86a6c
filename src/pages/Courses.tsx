@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Search, BookOpen, Clock, ExternalLink, ShoppingCart, Eye, User, Tag } from "lucide-react";
+import { Search, BookOpen, Clock, ExternalLink, ShoppingCart, Eye, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PaymentDialog from "@/components/PaymentDialog";
 import { getJobDisplayTag } from "@/lib/jobTag";
