@@ -177,16 +177,6 @@ const DashboardSiteContent = () => {
           </div>
         </TabsContent>
 
-        {/* Fraud Warning */}
-        <TabsContent value="fraud_warning" className="space-y-4">
-          <div className="rounded-xl border bg-card p-5 space-y-4">
-            <div>
-              <Label>Warning Message</Label>
-              <Textarea className="mt-1" value={editData.fraud_warning?.message || ""} onChange={(e) => updateField("fraud_warning", "message", e.target.value)} />
-            </div>
-            <SaveBtn sectionKey="fraud_warning" />
-          </div>
-        </TabsContent>
 
         {/* Category Section */}
         <TabsContent value="category_section" className="space-y-4">
