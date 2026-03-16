@@ -327,7 +327,7 @@ const DashboardEbooks = () => {
                   {e.book_type === "hardcopy" ? "হার্ড কপি" : "ই-বুক"}
                 </Badge>
                 <Badge variant={e.is_free ? "default" : "outline"} className="text-[10px] shrink-0">
-                  {e.is_free ? "ফ্রি" : `৳${e.price}`}
+                  {e.is_free ? "ফ্রি" : e.discount_price != null && e.discount_price < e.price ? `৳${e.discount_price} (৳${e.price})` : `৳${e.price}`}
                 </Badge>
               </div>
               <p className="text-xs text-muted-foreground mt-0.5 truncate">
