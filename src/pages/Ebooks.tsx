@@ -38,15 +38,13 @@ const PriceDisplay = ({ book, size = "sm" }: { book: Ebook; size?: "sm" | "lg" }
     );
   }
 
-  const hasDiscount = book.price && book.price > 0;
+  const price = book.price ?? 0;
 
   return (
     <div className="flex items-center gap-2">
-      {hasDiscount && (
-        <span className={`font-bold text-primary ${size === "lg" ? "text-2xl" : "text-base"}`}>
-          ৳{book.price}
-        </span>
-      )}
+      <span className={`font-bold text-primary ${size === "lg" ? "text-2xl" : "text-base"}`}>
+        ৳{price}
+      </span>
     </div>
   );
 };
