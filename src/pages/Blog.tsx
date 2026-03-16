@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useQuery } from "@tanstack/react-query";
@@ -9,6 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { getJobDisplayTag } from "@/lib/jobTag";
 
 const Blog = () => {
+  useEffect(() => { window.scrollTo(0, 0); }, []);
+
   const { data: posts, isLoading } = useQuery({
     queryKey: ["blog-posts"],
     queryFn: async () => {
