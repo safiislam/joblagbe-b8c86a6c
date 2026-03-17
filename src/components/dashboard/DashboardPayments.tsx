@@ -15,7 +15,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Plus, Pencil, Trash2, Smartphone, CreditCard, Search,
-  CheckCircle2, XCircle, Clock, Download, Loader2,
+  CheckCircle2, XCircle, Clock, Download, Loader2, Upload, X,
 } from "lucide-react";
 
 type PaymentSetting = {
@@ -112,6 +112,29 @@ const DashboardPayments = () => {
     });
     setEditItem(s);
     setShowForm(true);
+  };
+
+  const [iconUploading, setIconUploading] = useState(false);
+
+  const handleIconUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) { toast.error("শুধু ছবি আপলোড করুন"); return; }
+    if (file.size > 2 * 1024 * 1024) { toast.error("ফাইল সাইজ ২MB এর কম হতে হবে"); return; }
+    setIconUploading(true);
+    try {
+      const ext = file.name.split(".").pop() || "png";
+      const path = `payment-icons/${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage.from("site-assets").upload(path, file, { upsert: true });
+      if (upErr) throw upErr;
+      const { data: urlData } = supabase.storage.from("site-assets").getPublicUrl(path);
+      setForm(f => ({ ...f, icon_url: urlData.publicUrl }));
+      toast.success("আইকন আপলোড হয়েছে");
+    } catch (err: any) {
+      toast.error(err.message || "আপলোড ব্যর্থ");
+    } finally {
+      setIconUploading(false);
+    }
   };
 
   const saveMethod = async () => {
@@ -402,13 +425,21 @@ const DashboardPayments = () => {
               <Input type="number" value={form.sort_order} onChange={(e) => setForm(f => ({ ...f, sort_order: parseInt(e.target.value) || 0 }))} className="mt-1 rounded-xl w-24" />
             </div>
             <div>
-              <label className="text-sm font-medium">আইকন URL (ঐচ্ছিক)</label>
-              <Input value={form.icon_url} onChange={(e) => setForm(f => ({ ...f, icon_url: e.target.value }))} placeholder="https://example.com/icon.png" className="mt-1 rounded-xl" />
-              {form.icon_url && (
-                <div className="mt-2 flex items-center gap-2">
-                  <img src={form.icon_url} alt="Preview" className="h-8 w-8 rounded object-contain border" />
-                  <span className="text-xs text-muted-foreground">প্রিভিউ</span>
+              <label className="text-sm font-medium">আইকন ছবি (ঐচ্ছিক)</label>
+              {form.icon_url ? (
+                <div className="mt-2 flex items-center gap-3 p-3 rounded-xl border bg-accent/5">
+                  <img src={form.icon_url} alt="Icon" className="h-10 w-10 rounded-lg object-contain border" />
+                  <span className="text-sm text-muted-foreground flex-1 truncate">{form.icon_url.split("/").pop()}</span>
+                  <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-destructive" onClick={() => setForm(f => ({ ...f, icon_url: "" }))}>
+                    <X className="h-4 w-4" />
+                  </Button>
                 </div>
+              ) : (
+                <label className="mt-1 flex items-center justify-center gap-2 p-4 rounded-xl border-2 border-dashed cursor-pointer hover:border-primary/40 hover:bg-accent/5 transition-colors">
+                  {iconUploading ? <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /> : <Upload className="h-5 w-5 text-muted-foreground" />}
+                  <span className="text-sm text-muted-foreground">{iconUploading ? "আপলোড হচ্ছে..." : "ছবি আপলোড করুন"}</span>
+                  <input type="file" accept="image/*" className="hidden" onChange={handleIconUpload} disabled={iconUploading} />
+                </label>
               )}
             </div>
           </div>
