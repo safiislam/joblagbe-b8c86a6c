@@ -15,7 +15,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Plus, Pencil, Trash2, Smartphone, CreditCard, Search,
-  CheckCircle2, XCircle, Clock, Download, Loader2,
+  CheckCircle2, XCircle, Clock, Download, Loader2, Upload, X,
 } from "lucide-react";
 
 type PaymentSetting = {
