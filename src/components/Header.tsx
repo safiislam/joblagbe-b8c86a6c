@@ -60,7 +60,14 @@ const Header = () => {
 
         <nav className="hidden items-center gap-1.5 md:flex">
           <Button variant="ghost" size="sm" asChild><Link to="/">Home</Link></Button>
-          <Button variant="ghost" size="sm" className="gap-1" asChild><Link to="/install"><Download className="h-3.5 w-3.5" /> Install</Link></Button>
+          {canInstall && (
+            <Button variant="ghost" size="sm" className="gap-1" onClick={async () => {
+              const ok = await install();
+              if (ok) toast.success("অ্যাপ ইনস্টল হচ্ছে!");
+            }}>
+              <Download className="h-3.5 w-3.5" /> Install
+            </Button>
+          )}
           {user && profile?.role === "employer" && (
             <Button variant="ghost" size="sm" asChild><Link to="/post-job">Post Job</Link></Button>
           )}
