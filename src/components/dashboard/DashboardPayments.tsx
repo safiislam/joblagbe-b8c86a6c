@@ -114,6 +114,29 @@ const DashboardPayments = () => {
     setShowForm(true);
   };
 
+  const [iconUploading, setIconUploading] = useState(false);
+
+  const handleIconUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) { toast.error("শুধু ছবি আপলোড করুন"); return; }
+    if (file.size > 2 * 1024 * 1024) { toast.error("ফাইল সাইজ ২MB এর কম হতে হবে"); return; }
+    setIconUploading(true);
+    try {
+      const ext = file.name.split(".").pop() || "png";
+      const path = `payment-icons/${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage.from("site-assets").upload(path, file, { upsert: true });
+      if (upErr) throw upErr;
+      const { data: urlData } = supabase.storage.from("site-assets").getPublicUrl(path);
+      setForm(f => ({ ...f, icon_url: urlData.publicUrl }));
+      toast.success("আইকন আপলোড হয়েছে");
+    } catch (err: any) {
+      toast.error(err.message || "আপলোড ব্যর্থ");
+    } finally {
+      setIconUploading(false);
+    }
+  };
+
   const saveMethod = async () => {
     if (!form.method_name.trim()) { toast.error("মেথডের নাম দিন"); return; }
     setSaving(true);
