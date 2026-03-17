@@ -423,6 +423,7 @@ export type Database = {
           account_name: string | null
           account_number: string | null
           created_at: string
+          icon_url: string | null
           id: string
           instructions: string | null
           is_active: boolean
@@ -435,6 +436,7 @@ export type Database = {
           account_name?: string | null
           account_number?: string | null
           created_at?: string
+          icon_url?: string | null
           id?: string
           instructions?: string | null
           is_active?: boolean
@@ -447,6 +449,7 @@ export type Database = {
           account_name?: string | null
           account_number?: string | null
           created_at?: string
+          icon_url?: string | null
           id?: string
           instructions?: string | null
           is_active?: boolean

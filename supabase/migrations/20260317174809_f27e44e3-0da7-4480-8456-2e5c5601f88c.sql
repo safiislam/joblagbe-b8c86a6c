@@ -1,0 +1,1 @@
+ALTER TABLE public.payment_settings ADD COLUMN IF NOT EXISTS icon_url text DEFAULT NULL;
