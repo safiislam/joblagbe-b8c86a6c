@@ -126,6 +126,7 @@ const DashboardPayments = () => {
         instructions: form.instructions.trim() || null,
         is_active: form.is_active,
         sort_order: form.sort_order,
+        icon_url: form.icon_url.trim() || null,
       };
 
       if (editItem) {
