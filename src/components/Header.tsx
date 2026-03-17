@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
 import { useBrandSettings } from "@/hooks/useBrandSettings";
+import { usePwaInstall } from "@/hooks/usePwaInstall";
+import { toast } from "sonner";
 
 const NotificationBell = lazy(() => import("@/components/NotificationBell"));
 
