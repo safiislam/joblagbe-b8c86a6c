@@ -30,6 +30,7 @@ type PaymentSetting = {
   instructions: string | null;
   is_active: boolean;
   sort_order: number;
+  icon_url: string | null;
 };
 
 const PaymentDialog = ({ open, onOpenChange, itemType, itemId, itemTitle, amount, onSuccess }: PaymentDialogProps) => {
