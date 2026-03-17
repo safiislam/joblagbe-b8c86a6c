@@ -30,6 +30,7 @@ type PaymentSetting = {
   instructions: string | null;
   is_active: boolean;
   sort_order: number;
+  icon_url: string | null;
 };
 
 const PaymentDialog = ({ open, onOpenChange, itemType, itemId, itemTitle, amount, onSuccess }: PaymentDialogProps) => {
@@ -115,8 +116,12 @@ const PaymentDialog = ({ open, onOpenChange, itemType, itemId, itemTitle, amount
                   onClick={() => setSelectedMethod(m)}
                   className="flex items-center gap-3 p-3 rounded-xl border bg-card hover:bg-accent/10 hover:border-primary/30 transition-all text-left"
                 >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                    <Smartphone className="h-5 w-5" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary overflow-hidden">
+                    {m.icon_url ? (
+                      <img src={m.icon_url} alt={m.method_name} className="h-8 w-8 object-contain" />
+                    ) : (
+                      <Smartphone className="h-5 w-5" />
+                    )}
                   </div>
                   <div>
                     <p className="font-semibold text-sm">{m.method_name}</p>

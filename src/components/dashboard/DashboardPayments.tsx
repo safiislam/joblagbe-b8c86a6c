@@ -27,6 +27,7 @@ type PaymentSetting = {
   instructions: string | null;
   is_active: boolean;
   sort_order: number;
+  icon_url: string | null;
 };
 
 type Payment = {
@@ -53,6 +54,7 @@ const emptyForm = {
   instructions: "",
   is_active: true,
   sort_order: 0,
+  icon_url: "",
 };
 
 const statusColors: Record<string, string> = {
@@ -106,6 +108,7 @@ const DashboardPayments = () => {
       instructions: s.instructions ?? "",
       is_active: s.is_active,
       sort_order: s.sort_order,
+      icon_url: s.icon_url ?? "",
     });
     setEditItem(s);
     setShowForm(true);
@@ -123,6 +126,7 @@ const DashboardPayments = () => {
         instructions: form.instructions.trim() || null,
         is_active: form.is_active,
         sort_order: form.sort_order,
+        icon_url: form.icon_url.trim() || null,
       };
 
       if (editItem) {
@@ -231,7 +235,14 @@ const DashboardPayments = () => {
               <TableBody>
                 {settings?.map((s) => (
                   <TableRow key={s.id}>
-                    <TableCell className="font-medium">{s.method_name}</TableCell>
+                    <TableCell className="font-medium flex items-center gap-2">
+                      {s.icon_url ? (
+                        <img src={s.icon_url} alt={s.method_name} className="h-6 w-6 rounded object-contain" />
+                      ) : (
+                        <Smartphone className="h-4 w-4 text-muted-foreground" />
+                      )}
+                      {s.method_name}
+                    </TableCell>
                     <TableCell>
                       <Badge variant="secondary" className="text-xs">{s.method_type === "mobile_banking" ? "মোবাইল ব্যাংকিং" : s.method_type}</Badge>
                     </TableCell>
@@ -389,6 +400,16 @@ const DashboardPayments = () => {
             <div>
               <label className="text-sm font-medium">ক্রম</label>
               <Input type="number" value={form.sort_order} onChange={(e) => setForm(f => ({ ...f, sort_order: parseInt(e.target.value) || 0 }))} className="mt-1 rounded-xl w-24" />
+            </div>
+            <div>
+              <label className="text-sm font-medium">আইকন URL (ঐচ্ছিক)</label>
+              <Input value={form.icon_url} onChange={(e) => setForm(f => ({ ...f, icon_url: e.target.value }))} placeholder="https://example.com/icon.png" className="mt-1 rounded-xl" />
+              {form.icon_url && (
+                <div className="mt-2 flex items-center gap-2">
+                  <img src={form.icon_url} alt="Preview" className="h-8 w-8 rounded object-contain border" />
+                  <span className="text-xs text-muted-foreground">প্রিভিউ</span>
+                </div>
+              )}
             </div>
           </div>
           <div className="flex gap-3 pt-2">
