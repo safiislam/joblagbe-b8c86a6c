@@ -401,6 +401,16 @@ const DashboardPayments = () => {
               <label className="text-sm font-medium">ক্রম</label>
               <Input type="number" value={form.sort_order} onChange={(e) => setForm(f => ({ ...f, sort_order: parseInt(e.target.value) || 0 }))} className="mt-1 rounded-xl w-24" />
             </div>
+            <div>
+              <label className="text-sm font-medium">আইকন URL (ঐচ্ছিক)</label>
+              <Input value={form.icon_url} onChange={(e) => setForm(f => ({ ...f, icon_url: e.target.value }))} placeholder="https://example.com/icon.png" className="mt-1 rounded-xl" />
+              {form.icon_url && (
+                <div className="mt-2 flex items-center gap-2">
+                  <img src={form.icon_url} alt="Preview" className="h-8 w-8 rounded object-contain border" />
+                  <span className="text-xs text-muted-foreground">প্রিভিউ</span>
+                </div>
+              )}
+            </div>
           </div>
           <div className="flex gap-3 pt-2">
             <Button variant="outline" className="rounded-xl" onClick={() => setShowForm(false)}>বাতিল</Button>
