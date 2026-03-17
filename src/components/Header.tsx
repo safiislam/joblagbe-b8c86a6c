@@ -15,6 +15,7 @@ const Header = () => {
   const [headerSearch, setHeaderSearch] = useState("");
   const { user, profile, isAdmin, signOut } = useAuth();
   const { logoUrl } = useBrandSettings();
+  const { canInstall, install } = usePwaInstall();
   const navigate = useNavigate();
   const location = useLocation();
 
