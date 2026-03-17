@@ -235,7 +235,14 @@ const DashboardPayments = () => {
               <TableBody>
                 {settings?.map((s) => (
                   <TableRow key={s.id}>
-                    <TableCell className="font-medium">{s.method_name}</TableCell>
+                    <TableCell className="font-medium flex items-center gap-2">
+                      {s.icon_url ? (
+                        <img src={s.icon_url} alt={s.method_name} className="h-6 w-6 rounded object-contain" />
+                      ) : (
+                        <Smartphone className="h-4 w-4 text-muted-foreground" />
+                      )}
+                      {s.method_name}
+                    </TableCell>
                     <TableCell>
                       <Badge variant="secondary" className="text-xs">{s.method_type === "mobile_banking" ? "মোবাইল ব্যাংকিং" : s.method_type}</Badge>
                     </TableCell>
