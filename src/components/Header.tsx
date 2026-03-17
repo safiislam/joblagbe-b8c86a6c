@@ -144,9 +144,15 @@ const Header = () => {
             <Button variant="ghost" className="justify-start" asChild onClick={() => setMobileOpen(false)}>
               <Link to="/"><Home className="mr-2 h-4 w-4" /> Home</Link>
             </Button>
-            <Button variant="ghost" className="justify-start" asChild onClick={() => setMobileOpen(false)}>
-              <Link to="/install"><Download className="mr-2 h-4 w-4" /> Install App</Link>
-            </Button>
+            {canInstall && (
+              <Button variant="ghost" className="justify-start" onClick={async () => {
+                setMobileOpen(false);
+                const ok = await install();
+                if (ok) toast.success("অ্যাপ ইনস্টল হচ্ছে!");
+              }}>
+                <Download className="mr-2 h-4 w-4" /> Install App
+              </Button>
+            )}
             {user && profile?.role === "employer" && (
               <Button variant="ghost" className="justify-start" asChild onClick={() => setMobileOpen(false)}>
                 <Link to="/post-job">Post Job</Link>
