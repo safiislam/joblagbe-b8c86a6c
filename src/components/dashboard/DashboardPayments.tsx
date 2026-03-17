@@ -54,6 +54,7 @@ const emptyForm = {
   instructions: "",
   is_active: true,
   sort_order: 0,
+  icon_url: "",
 };
 
 const statusColors: Record<string, string> = {
