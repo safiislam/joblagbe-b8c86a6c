@@ -108,6 +108,7 @@ const DashboardPayments = () => {
       instructions: s.instructions ?? "",
       is_active: s.is_active,
       sort_order: s.sort_order,
+      icon_url: s.icon_url ?? "",
     });
     setEditItem(s);
     setShowForm(true);
