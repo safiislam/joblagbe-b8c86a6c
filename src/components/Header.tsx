@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
 import { useBrandSettings } from "@/hooks/useBrandSettings";
+import { usePwaInstall } from "@/hooks/usePwaInstall";
+import { toast } from "sonner";
 
 const NotificationBell = lazy(() => import("@/components/NotificationBell"));
 
@@ -13,6 +15,7 @@ const Header = () => {
   const [headerSearch, setHeaderSearch] = useState("");
   const { user, profile, isAdmin, signOut } = useAuth();
   const { logoUrl } = useBrandSettings();
+  const { canInstall, install } = usePwaInstall();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -57,7 +60,14 @@ const Header = () => {
 
         <nav className="hidden items-center gap-1.5 md:flex">
           <Button variant="ghost" size="sm" asChild><Link to="/">Home</Link></Button>
-          <Button variant="ghost" size="sm" className="gap-1" asChild><Link to="/install"><Download className="h-3.5 w-3.5" /> Install</Link></Button>
+          {canInstall && (
+            <Button variant="ghost" size="sm" className="gap-1" onClick={async () => {
+              const ok = await install();
+              if (ok) toast.success("অ্যাপ ইনস্টল হচ্ছে!");
+            }}>
+              <Download className="h-3.5 w-3.5" /> Install
+            </Button>
+          )}
           {user && profile?.role === "employer" && (
             <Button variant="ghost" size="sm" asChild><Link to="/post-job">Post Job</Link></Button>
           )}
@@ -134,9 +144,15 @@ const Header = () => {
             <Button variant="ghost" className="justify-start" asChild onClick={() => setMobileOpen(false)}>
               <Link to="/"><Home className="mr-2 h-4 w-4" /> Home</Link>
             </Button>
-            <Button variant="ghost" className="justify-start" asChild onClick={() => setMobileOpen(false)}>
-              <Link to="/install"><Download className="mr-2 h-4 w-4" /> Install App</Link>
-            </Button>
+            {canInstall && (
+              <Button variant="ghost" className="justify-start" onClick={async () => {
+                setMobileOpen(false);
+                const ok = await install();
+                if (ok) toast.success("অ্যাপ ইনস্টল হচ্ছে!");
+              }}>
+                <Download className="mr-2 h-4 w-4" /> Install App
+              </Button>
+            )}
             {user && profile?.role === "employer" && (
               <Button variant="ghost" className="justify-start" asChild onClick={() => setMobileOpen(false)}>
                 <Link to="/post-job">Post Job</Link>
