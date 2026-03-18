@@ -154,9 +154,12 @@ const SeekerDashboard = () => {
 
         {/* Tabs */}
         <Tabs defaultValue="applications" className="mt-6">
-          <TabsList className="w-full grid grid-cols-3 h-11">
+          <TabsList className="w-full grid grid-cols-4 h-11">
             <TabsTrigger value="applications" className="gap-1.5 text-xs sm:text-sm">
               <Briefcase className="h-3.5 w-3.5" /> Applications
+            </TabsTrigger>
+            <TabsTrigger value="orders" className="gap-1.5 text-xs sm:text-sm">
+              <ShoppingBag className="h-3.5 w-3.5" /> Orders
             </TabsTrigger>
             <TabsTrigger value="saved" className="gap-1.5 text-xs sm:text-sm">
               <Bookmark className="h-3.5 w-3.5" /> Saved Jobs
