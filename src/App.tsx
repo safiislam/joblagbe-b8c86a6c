@@ -72,6 +72,7 @@ const App = () => (
               <AIChatWidget />
               <AffiliatePopupLazy />
             </Suspense>
+          </Suspense>
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
