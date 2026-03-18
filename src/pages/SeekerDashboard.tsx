@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
   Briefcase, Clock, CheckCircle, XCircle, FileText, MapPin,
-  Building2, Bookmark, Mail, Phone, Pencil,
+  Building2, Bookmark, Mail, Phone, Pencil, ShoppingBag,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
