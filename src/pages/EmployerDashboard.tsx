@@ -457,6 +457,11 @@ const EmployerDashboard = () => {
             </div>
           </TabsContent>
 
+          {/* ORDERS TAB */}
+          <TabsContent value="orders">
+            <MyServiceOrders />
+          </TabsContent>
+
           {/* COURSES TAB */}
           <TabsContent value="courses">
             <div className="rounded-2xl border bg-card shadow-card">
