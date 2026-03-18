@@ -26,6 +26,8 @@ const placementLabels: Record<string, string> = {
   sidebar: "Sidebar Ad",
   in_content: "In-Content Ad",
   popup: "Popup Banner",
+  sticky_banner: "📱 Sticky Banner",
+  carousel: "📱 Carousel",
 };
 
 const categoryOptions = ["general", "tech", "education", "lifestyle", "tools", "books"];
@@ -136,6 +138,7 @@ const DashboardAffiliates = () => {
     total: products?.length ?? 0,
     active: products?.filter(p => p.is_active).length ?? 0,
     sidebar: products?.filter(p => p.placement === "sidebar" || p.placement === "in_content").length ?? 0,
+    mobile: products?.filter(p => ["sticky_banner", "carousel"].includes(p.placement)).length ?? 0,
     popup: products?.filter(p => p.placement === "popup").length ?? 0,
   };
 
@@ -149,11 +152,12 @@ const DashboardAffiliates = () => {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         {[
           { label: "Total", value: stats.total, color: "text-foreground" },
           { label: "Active", value: stats.active, color: "text-success" },
           { label: "Sidebar/Content", value: stats.sidebar, color: "text-primary" },
+          { label: "📱 Mobile", value: stats.mobile, color: "text-accent-foreground" },
           { label: "Popup", value: stats.popup, color: "text-warning" },
         ].map(s => (
           <div key={s.label} className="rounded-xl border bg-card p-4 text-center">
@@ -283,6 +287,8 @@ const DashboardAffiliates = () => {
                     <SelectItem value="sidebar">Sidebar Ad</SelectItem>
                     <SelectItem value="in_content">In-Content Ad</SelectItem>
                     <SelectItem value="popup">Popup Banner</SelectItem>
+                    <SelectItem value="sticky_banner">📱 Sticky Banner</SelectItem>
+                    <SelectItem value="carousel">📱 Carousel</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
