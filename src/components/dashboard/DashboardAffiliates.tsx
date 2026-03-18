@@ -152,7 +152,7 @@ const DashboardAffiliates = () => {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         {[
           { label: "Total", value: stats.total, color: "text-foreground" },
           { label: "Active", value: stats.active, color: "text-success" },
