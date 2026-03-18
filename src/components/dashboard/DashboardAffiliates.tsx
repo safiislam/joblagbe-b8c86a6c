@@ -138,6 +138,7 @@ const DashboardAffiliates = () => {
     total: products?.length ?? 0,
     active: products?.filter(p => p.is_active).length ?? 0,
     sidebar: products?.filter(p => p.placement === "sidebar" || p.placement === "in_content").length ?? 0,
+    mobile: products?.filter(p => ["sticky_banner", "carousel"].includes(p.placement)).length ?? 0,
     popup: products?.filter(p => p.placement === "popup").length ?? 0,
   };
 
