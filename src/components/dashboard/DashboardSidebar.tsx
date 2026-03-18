@@ -38,6 +38,7 @@ const trackingItems = [
 const settingsItems = [
   { title: "Site Content", url: "/dashboard/site-content", icon: PenSquare },
   { title: "Popup Banners", url: "/dashboard/popups", icon: Megaphone },
+  { title: "Affiliate Products", url: "/dashboard/affiliates", icon: Tag },
 ];
 
 interface DashboardSidebarProps {

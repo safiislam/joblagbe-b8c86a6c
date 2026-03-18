@@ -88,6 +88,7 @@ const Dashboard = () => {
               <Route path="chat-logs" element={<DashboardChatLogs />} />
               <Route path="site-content" element={<DashboardSiteContent />} />
               <Route path="popups" element={<DashboardPopups />} />
+              <Route path="affiliates" element={<DashboardAffiliates />} />
             </Routes>
           </main>
         </div>

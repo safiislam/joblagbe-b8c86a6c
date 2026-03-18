@@ -70,6 +70,8 @@ const App = () => (
             <MobileBottomNav />
             <Suspense fallback={null}>
               <AIChatWidget />
+              <AffiliatePopupLazy />
+            </Suspense>
             </Suspense>
           </Suspense>
         </BrowserRouter>
