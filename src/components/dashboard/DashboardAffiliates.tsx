@@ -287,6 +287,8 @@ const DashboardAffiliates = () => {
                     <SelectItem value="sidebar">Sidebar Ad</SelectItem>
                     <SelectItem value="in_content">In-Content Ad</SelectItem>
                     <SelectItem value="popup">Popup Banner</SelectItem>
+                    <SelectItem value="sticky_banner">📱 Sticky Banner</SelectItem>
+                    <SelectItem value="carousel">📱 Carousel</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
