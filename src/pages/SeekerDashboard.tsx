@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import Header from "@/components/Header";
+import MyServiceOrders from "@/components/MyServiceOrders";
 import EditProfileDialog from "@/components/EditProfileDialog";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
   Briefcase, Clock, CheckCircle, XCircle, FileText, MapPin,
-  Building2, Bookmark, Mail, Phone, Pencil,
+  Building2, Bookmark, Mail, Phone, Pencil, ShoppingBag,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -153,9 +154,12 @@ const SeekerDashboard = () => {
 
         {/* Tabs */}
         <Tabs defaultValue="applications" className="mt-6">
-          <TabsList className="w-full grid grid-cols-3 h-11">
+          <TabsList className="w-full grid grid-cols-4 h-11">
             <TabsTrigger value="applications" className="gap-1.5 text-xs sm:text-sm">
               <Briefcase className="h-3.5 w-3.5" /> Applications
+            </TabsTrigger>
+            <TabsTrigger value="orders" className="gap-1.5 text-xs sm:text-sm">
+              <ShoppingBag className="h-3.5 w-3.5" /> Orders
             </TabsTrigger>
             <TabsTrigger value="saved" className="gap-1.5 text-xs sm:text-sm">
               <Bookmark className="h-3.5 w-3.5" /> Saved Jobs
@@ -209,6 +213,10 @@ const SeekerDashboard = () => {
                 </div>
               )}
             </div>
+          </TabsContent>
+
+          <TabsContent value="orders" className="mt-4">
+            <MyServiceOrders />
           </TabsContent>
 
           <TabsContent value="saved" className="mt-4">
