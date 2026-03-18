@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      affiliate_products: {
+        Row: {
+          affiliate_link: string
+          category: string
+          created_at: string
+          description: string | null
+          discount_price: number | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          placement: string
+          price: number | null
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          affiliate_link: string
+          category?: string
+          created_at?: string
+          description?: string | null
+          discount_price?: number | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          placement?: string
+          price?: number | null
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          affiliate_link?: string
+          category?: string
+          created_at?: string
+          description?: string | null
+          discount_price?: number | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          placement?: string
+          price?: number | null
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       applications: {
         Row: {
           cover_letter: string | null

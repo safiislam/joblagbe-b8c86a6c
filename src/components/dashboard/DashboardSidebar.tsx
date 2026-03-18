@@ -1,7 +1,7 @@
 import {
   BarChart3, Briefcase, Building2, Users, FileText, BookOpen,
   GraduationCap, BookMarked, MessageSquare, ShoppingCart, Activity,
-  Mail, Home, Settings, Shield, PenSquare, Megaphone, CreditCard
+  Mail, Home, Settings, Shield, PenSquare, Megaphone, CreditCard, Tag
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -38,6 +38,7 @@ const trackingItems = [
 const settingsItems = [
   { title: "Site Content", url: "/dashboard/site-content", icon: PenSquare },
   { title: "Popup Banners", url: "/dashboard/popups", icon: Megaphone },
+  { title: "Affiliate Products", url: "/dashboard/affiliates", icon: Tag },
 ];
 
 interface DashboardSidebarProps {
