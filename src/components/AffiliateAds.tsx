@@ -80,6 +80,179 @@ export const AffiliateSidebarAd = ({ placement = "sidebar" }: { placement?: "sid
   );
 };
 
+// Mobile In-Content Ad (insert between list items)
+export const AffiliateInContentAd = () => {
+  const { data: products } = useQuery({
+    queryKey: ["affiliate-in-content"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("affiliate_products")
+        .select("*")
+        .eq("is_active", true)
+        .in("placement", ["in_content", "sidebar"])
+        .order("sort_order", { ascending: true })
+        .limit(1);
+      return (data as unknown as AffiliateProduct[]) ?? [];
+    },
+  });
+
+  const p = products?.[0];
+  if (!p) return null;
+
+  return (
+    <a
+      href={p.affiliate_link}
+      target="_blank"
+      rel="noopener noreferrer sponsored"
+      className="block lg:hidden rounded-2xl border border-dashed border-primary/20 bg-primary/5 p-4 transition-all hover:border-primary/40"
+    >
+      <div className="flex items-center gap-3">
+        {p.image_url && (
+          <img src={p.image_url} alt={p.title} className="h-16 w-16 rounded-xl object-cover shrink-0" />
+        )}
+        <div className="flex-1 min-w-0">
+          <Badge variant="secondary" className="text-[10px] mb-1">স্পন্সর্ড</Badge>
+          <p className="font-semibold text-sm line-clamp-1">{p.title}</p>
+          <div className="flex items-center gap-2 mt-1">
+            {p.discount_price ? (
+              <>
+                <span className="text-xs line-through text-muted-foreground">৳{p.price}</span>
+                <span className="text-sm font-bold text-primary">৳{p.discount_price}</span>
+              </>
+            ) : p.price && p.price > 0 ? (
+              <span className="text-sm font-bold">৳{p.price}</span>
+            ) : null}
+            <span className="text-xs text-primary flex items-center gap-0.5 ml-auto">
+              দেখুন <ExternalLink className="h-3 w-3" />
+            </span>
+          </div>
+        </div>
+      </div>
+    </a>
+  );
+};
+
+// Mobile Carousel (horizontal scroll)
+export const AffiliateCarousel = () => {
+  const { data: products } = useQuery({
+    queryKey: ["affiliate-carousel"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("affiliate_products")
+        .select("*")
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true })
+        .limit(10);
+      return (data as unknown as AffiliateProduct[]) ?? [];
+    },
+  });
+
+  if (!products || products.length === 0) return null;
+
+  return (
+    <div className="lg:hidden py-6">
+      <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-1 flex items-center gap-1.5">
+        ✨ স্পন্সর্ড ডিলস
+      </h3>
+      <div className="flex gap-3 overflow-x-auto pb-3 snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
+        {products.map(p => (
+          <a
+            key={p.id}
+            href={p.affiliate_link}
+            target="_blank"
+            rel="noopener noreferrer sponsored"
+            className="snap-start shrink-0 w-48 rounded-xl border bg-card shadow-sm overflow-hidden hover:shadow-md transition-shadow"
+          >
+            {p.image_url && (
+              <img src={p.image_url} alt={p.title} className="h-28 w-full object-cover" />
+            )}
+            <div className="p-2.5">
+              <p className="font-semibold text-xs line-clamp-2">{p.title}</p>
+              <div className="mt-1.5 flex items-center gap-1">
+                {p.discount_price ? (
+                  <>
+                    <span className="text-[10px] line-through text-muted-foreground">৳{p.price}</span>
+                    <span className="text-xs font-bold text-primary">৳{p.discount_price}</span>
+                  </>
+                ) : p.price && p.price > 0 ? (
+                  <span className="text-xs font-bold">৳{p.price}</span>
+                ) : null}
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+      <p className="text-[10px] text-muted-foreground/50 text-center">বিজ্ঞাপন</p>
+    </div>
+  );
+};
+
+// Sticky Bottom Banner (mobile only)
+export const AffiliateStickyBanner = () => {
+  const [dismissed, setDismissed] = useState(false);
+
+  const { data: products } = useQuery({
+    queryKey: ["affiliate-sticky"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("affiliate_products")
+        .select("*")
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true })
+        .limit(5);
+      return (data as unknown as AffiliateProduct[]) ?? [];
+    },
+  });
+
+  const [current, setCurrent] = useState(0);
+  const p = products?.[current];
+
+  // Rotate every 10s
+  useEffect(() => {
+    if (!products || products.length <= 1) return;
+    const timer = setInterval(() => setCurrent(c => (c + 1) % products.length), 10000);
+    return () => clearInterval(timer);
+  }, [products]);
+
+  if (dismissed || !p) return null;
+
+  return (
+    <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden animate-in slide-in-from-bottom duration-300">
+      <div className="bg-card border-t shadow-lg">
+        <a
+          href={p.affiliate_link}
+          target="_blank"
+          rel="noopener noreferrer sponsored"
+          className="flex items-center gap-3 p-2.5 pr-10"
+        >
+          {p.image_url && (
+            <img src={p.image_url} alt={p.title} className="h-10 w-10 rounded-lg object-cover shrink-0" />
+          )}
+          <div className="flex-1 min-w-0">
+            <p className="text-[10px] text-muted-foreground">স্পন্সর্ড</p>
+            <p className="text-xs font-semibold line-clamp-1">{p.title}</p>
+          </div>
+          <div className="shrink-0 text-right">
+            {p.discount_price ? (
+              <span className="text-sm font-bold text-primary">৳{p.discount_price}</span>
+            ) : p.price && p.price > 0 ? (
+              <span className="text-sm font-bold">৳{p.price}</span>
+            ) : (
+              <span className="text-xs text-primary font-medium">দেখুন →</span>
+            )}
+          </div>
+        </a>
+        <button
+          onClick={(e) => { e.preventDefault(); setDismissed(true); }}
+          className="absolute top-1 right-1 p-1.5 text-muted-foreground hover:text-foreground"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+    </div>
+  );
+};
+
 // Popup Ad Component
 export const AffiliatePopup = () => {
   const [visible, setVisible] = useState(false);

@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 
 const AIChatWidget = lazy(() => import("@/components/AIChatWidget"));
 const AffiliatePopupLazy = lazy(() => import("@/components/AffiliateAds").then(m => ({ default: m.AffiliatePopup })));
+const AffiliateStickyBannerLazy = lazy(() => import("@/components/AffiliateAds").then(m => ({ default: m.AffiliateStickyBanner })));
 
 const Login = lazy(() => import("./pages/Login"));
 const SignUp = lazy(() => import("./pages/SignUp"));
@@ -71,6 +72,7 @@ const App = () => (
             <Suspense fallback={null}>
               <AIChatWidget />
               <AffiliatePopupLazy />
+              <AffiliateStickyBannerLazy />
             </Suspense>
           </Suspense>
         </BrowserRouter>

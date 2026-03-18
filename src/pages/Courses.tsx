@@ -10,7 +10,7 @@ import { Search, BookOpen, Clock, ExternalLink, ShoppingCart, Eye, User } from "
 import { Button } from "@/components/ui/button";
 import PaymentDialog from "@/components/PaymentDialog";
 import { getJobDisplayTag } from "@/lib/jobTag";
-import { AffiliateSidebarAd } from "@/components/AffiliateAds";
+import { AffiliateSidebarAd, AffiliateInContentAd, AffiliateCarousel } from "@/components/AffiliateAds";
 import {
   Dialog,
   DialogContent,
@@ -122,58 +122,62 @@ const Courses = () => {
                 ))}
               </div>
             ) : filtered && filtered.length > 0 ? (
-              <div className="grid gap-6 md:grid-cols-2">
-                {filtered.map((course) => (
-                  <div key={course.id} className="group flex flex-col rounded-2xl border bg-card shadow-card overflow-hidden transition-all hover:-translate-y-1 hover:shadow-elevated">
-                    <div className="flex h-36 items-center justify-center bg-accent/10 relative">
-                      {course.thumbnail_url ? (
-                        <img src={course.thumbnail_url} alt={course.title} className="h-full w-full object-cover" />
-                      ) : (
-                        <BookOpen className="h-12 w-12 text-accent/40" />
-                      )}
-                      {(() => { const dt = getJobDisplayTag(null, course.created_at); return dt ? <Badge className="absolute top-2 right-2 bg-accent/90 text-accent-foreground text-[10px]">{dt}</Badge> : null; })()}
-                    </div>
-                    <div className="flex flex-1 flex-col p-5">
-                      <div className="flex items-center gap-2 mb-2 flex-wrap">
-                        <Badge variant="secondary" className="text-xs">{course.category}</Badge>
-                      </div>
-                      <h3 className="font-bold text-lg font-bangla group-hover:text-primary transition-colors line-clamp-2">{course.title}</h3>
-
-                      <div className="mt-2">
-                        <PriceDisplay course={course} />
-                      </div>
-
-                      <div className="mt-auto pt-4 flex items-center justify-between gap-2">
-                        <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                          <Clock className="h-3 w-3" /> {course.duration ?? "—"}
-                        </span>
-                        <div className="flex items-center gap-2">
-                          <Button size="sm" variant="outline" className="gap-1 text-xs" onClick={() => setDetailCourse(course)}>
-                            <Eye className="h-3 w-3" /> বিস্তারিত
-                          </Button>
-                          {course.is_free ? (
-                            course.link ? (
-                              <Button size="sm" className="gap-1 text-xs" asChild>
-                                <a href={course.link} target="_blank" rel="noopener noreferrer">
-                                  শুরু করুন <ExternalLink className="h-3 w-3" />
-                                </a>
-                              </Button>
-                            ) : null
+              <>
+                <div className="grid gap-6 md:grid-cols-2">
+                  {filtered.map((course, index) => (
+                    <div key={course.id}>
+                      <div className="group flex flex-col rounded-2xl border bg-card shadow-card overflow-hidden transition-all hover:-translate-y-1 hover:shadow-elevated h-full">
+                        <div className="flex h-36 items-center justify-center bg-accent/10 relative">
+                          {course.thumbnail_url ? (
+                            <img src={course.thumbnail_url} alt={course.title} className="h-full w-full object-cover" />
                           ) : (
-                            <Button
-                              size="sm"
-                              className="gap-1 text-xs"
-                              onClick={() => setPaymentCourse({ id: course.id, title: course.title, price: getFinalPrice(course) })}
-                            >
-                              <ShoppingCart className="h-3 w-3" /> কিনুন
-                            </Button>
+                            <BookOpen className="h-12 w-12 text-accent/40" />
                           )}
+                          {(() => { const dt = getJobDisplayTag(null, course.created_at); return dt ? <Badge className="absolute top-2 right-2 bg-accent/90 text-accent-foreground text-[10px]">{dt}</Badge> : null; })()}
+                        </div>
+                        <div className="flex flex-1 flex-col p-5">
+                          <div className="flex items-center gap-2 mb-2 flex-wrap">
+                            <Badge variant="secondary" className="text-xs">{course.category}</Badge>
+                          </div>
+                          <h3 className="font-bold text-lg font-bangla group-hover:text-primary transition-colors line-clamp-2">{course.title}</h3>
+                          <div className="mt-2">
+                            <PriceDisplay course={course} />
+                          </div>
+                          <div className="mt-auto pt-4 flex items-center justify-between gap-2">
+                            <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                              <Clock className="h-3 w-3" /> {course.duration ?? "—"}
+                            </span>
+                            <div className="flex items-center gap-2">
+                              <Button size="sm" variant="outline" className="gap-1 text-xs" onClick={() => setDetailCourse(course)}>
+                                <Eye className="h-3 w-3" /> বিস্তারিত
+                              </Button>
+                              {course.is_free ? (
+                                course.link ? (
+                                  <Button size="sm" className="gap-1 text-xs" asChild>
+                                    <a href={course.link} target="_blank" rel="noopener noreferrer">
+                                      শুরু করুন <ExternalLink className="h-3 w-3" />
+                                    </a>
+                                  </Button>
+                                ) : null
+                              ) : (
+                                <Button
+                                  size="sm"
+                                  className="gap-1 text-xs"
+                                  onClick={() => setPaymentCourse({ id: course.id, title: course.title, price: getFinalPrice(course) })}
+                                >
+                                  <ShoppingCart className="h-3 w-3" /> কিনুন
+                                </Button>
+                              )}
+                            </div>
+                          </div>
                         </div>
                       </div>
+                      {(index + 1) % 4 === 0 && <div className="mt-4"><AffiliateInContentAd /></div>}
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+                <AffiliateCarousel />
+              </>
             ) : (
               <div className="flex flex-col items-center py-20 text-muted-foreground">
                 <BookOpen className="mb-3 h-12 w-12 opacity-30" />

@@ -8,7 +8,7 @@ import { formatDistanceToNow } from "date-fns";
 import { BookOpen, ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { getJobDisplayTag } from "@/lib/jobTag";
-import { AffiliateSidebarAd } from "@/components/AffiliateAds";
+import { AffiliateSidebarAd, AffiliateInContentAd, AffiliateCarousel } from "@/components/AffiliateAds";
 
 const Blog = () => {
   useEffect(() => { window.scrollTo(0, 0); }, []);
@@ -43,34 +43,39 @@ const Blog = () => {
                 ))}
               </div>
             ) : posts && posts.length > 0 ? (
-              <div className="grid gap-6 md:grid-cols-2">
-                {posts.map((post) => (
-                  <Link
-                    key={post.id}
-                    to={`/blog/${post.slug}`}
-                    className="group rounded-2xl border bg-card shadow-card overflow-hidden transition-all hover:-translate-y-1 hover:shadow-elevated"
-                  >
-                    {post.cover_image_url ? (
-                      <img src={post.cover_image_url} alt={post.title} className="h-44 w-full object-cover" />
-                    ) : (
-                      <div className="flex h-44 items-center justify-center bg-primary/5">
-                        <BookOpen className="h-12 w-12 text-primary/30" />
-                      </div>
-                    )}
-                    <div className="p-5">
-                      <div className="flex items-center gap-2">
-                        <p className="text-xs text-muted-foreground">{post.author_name} · {formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}</p>
-                        {(() => { const dt = getJobDisplayTag(null, post.created_at); return dt ? <Badge className="bg-accent/15 text-accent border-accent/20 text-[10px]">{dt}</Badge> : null; })()}
-                      </div>
-                      <h3 className="mt-2 font-bold text-lg leading-snug group-hover:text-primary transition-colors">{post.title}</h3>
-                      {post.excerpt && <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{post.excerpt}</p>}
-                      <span className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary">
-                        পড়ুন <ArrowRight className="h-3.5 w-3.5" />
-                      </span>
+              <>
+                <div className="grid gap-6 md:grid-cols-2">
+                  {posts.map((post, index) => (
+                    <div key={post.id}>
+                      <Link
+                        to={`/blog/${post.slug}`}
+                        className="group rounded-2xl border bg-card shadow-card overflow-hidden transition-all hover:-translate-y-1 hover:shadow-elevated block h-full"
+                      >
+                        {post.cover_image_url ? (
+                          <img src={post.cover_image_url} alt={post.title} className="h-44 w-full object-cover" />
+                        ) : (
+                          <div className="flex h-44 items-center justify-center bg-primary/5">
+                            <BookOpen className="h-12 w-12 text-primary/30" />
+                          </div>
+                        )}
+                        <div className="p-5">
+                          <div className="flex items-center gap-2">
+                            <p className="text-xs text-muted-foreground">{post.author_name} · {formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}</p>
+                            {(() => { const dt = getJobDisplayTag(null, post.created_at); return dt ? <Badge className="bg-accent/15 text-accent border-accent/20 text-[10px]">{dt}</Badge> : null; })()}
+                          </div>
+                          <h3 className="mt-2 font-bold text-lg leading-snug group-hover:text-primary transition-colors">{post.title}</h3>
+                          {post.excerpt && <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{post.excerpt}</p>}
+                          <span className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary">
+                            পড়ুন <ArrowRight className="h-3.5 w-3.5" />
+                          </span>
+                        </div>
+                      </Link>
+                      {(index + 1) % 4 === 0 && <div className="mt-4"><AffiliateInContentAd /></div>}
                     </div>
-                  </Link>
-                ))}
-              </div>
+                  ))}
+                </div>
+                <AffiliateCarousel />
+              </>
             ) : (
               <div className="flex flex-col items-center py-20 text-muted-foreground">
                 <BookOpen className="mb-3 h-12 w-12 opacity-30" />
