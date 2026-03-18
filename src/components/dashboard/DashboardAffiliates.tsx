@@ -157,6 +157,7 @@ const DashboardAffiliates = () => {
           { label: "Total", value: stats.total, color: "text-foreground" },
           { label: "Active", value: stats.active, color: "text-success" },
           { label: "Sidebar/Content", value: stats.sidebar, color: "text-primary" },
+          { label: "📱 Mobile", value: stats.mobile, color: "text-accent-foreground" },
           { label: "Popup", value: stats.popup, color: "text-warning" },
         ].map(s => (
           <div key={s.label} className="rounded-xl border bg-card p-4 text-center">
