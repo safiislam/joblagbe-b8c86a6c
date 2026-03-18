@@ -8,6 +8,7 @@ import { formatDistanceToNow } from "date-fns";
 import { BookOpen, ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { getJobDisplayTag } from "@/lib/jobTag";
+import { AffiliateSidebarAd } from "@/components/AffiliateAds";
 
 const Blog = () => {
   useEffect(() => { window.scrollTo(0, 0); }, []);
