@@ -215,6 +215,10 @@ const SeekerDashboard = () => {
             </div>
           </TabsContent>
 
+          <TabsContent value="orders" className="mt-4">
+            <MyServiceOrders />
+          </TabsContent>
+
           <TabsContent value="saved" className="mt-4">
             <div className="rounded-2xl border bg-card shadow-card divide-y">
               {savedJobs && savedJobs.length > 0 ? (
