@@ -11,7 +11,7 @@ import VerifiedBadge from "@/components/VerifiedBadge";
 import { formatDistanceToNow } from "date-fns";
 import { Link, useSearchParams } from "react-router-dom";
 import { getJobDisplayTag } from "@/lib/jobTag";
-import { AffiliateSidebarAd } from "@/components/AffiliateAds";
+import { AffiliateSidebarAd, AffiliateInContentAd, AffiliateCarousel } from "@/components/AffiliateAds";
 
 const Jobs = () => {
   const [searchParams] = useSearchParams();
