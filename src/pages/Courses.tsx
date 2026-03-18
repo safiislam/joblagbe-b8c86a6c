@@ -10,6 +10,7 @@ import { Search, BookOpen, Clock, ExternalLink, ShoppingCart, Eye, User } from "
 import { Button } from "@/components/ui/button";
 import PaymentDialog from "@/components/PaymentDialog";
 import { getJobDisplayTag } from "@/lib/jobTag";
+import { AffiliateSidebarAd } from "@/components/AffiliateAds";
 import {
   Dialog,
   DialogContent,
