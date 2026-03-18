@@ -26,6 +26,8 @@ const placementLabels: Record<string, string> = {
   sidebar: "Sidebar Ad",
   in_content: "In-Content Ad",
   popup: "Popup Banner",
+  sticky_banner: "📱 Sticky Banner",
+  carousel: "📱 Carousel",
 };
 
 const categoryOptions = ["general", "tech", "education", "lifestyle", "tools", "books"];
