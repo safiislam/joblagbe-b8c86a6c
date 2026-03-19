@@ -366,6 +366,7 @@ export type Database = {
       }
       jobs: {
         Row: {
+          application_deadline: string | null
           category_id: string | null
           company_id: string
           created_at: string
@@ -383,6 +384,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          application_deadline?: string | null
           category_id?: string | null
           company_id: string
           created_at?: string
@@ -400,6 +402,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          application_deadline?: string | null
           category_id?: string | null
           company_id?: string
           created_at?: string

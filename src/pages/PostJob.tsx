@@ -1,5 +1,6 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { format, addDays, addMonths } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import Header from "@/components/Header";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Clock, AlertTriangle, Upload, Building2 } from "lucide-react";
+import { Clock, AlertTriangle, Upload, Building2, CalendarIcon } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -33,8 +37,11 @@ const PostJob = () => {
     categoryId: "",
     description: "",
     requirements: "",
-    
   });
+  const [deadline, setDeadline] = useState<Date | undefined>(undefined);
+
+  const minDeadline = useMemo(() => addDays(new Date(), 1), []);
+  const maxDeadline = useMemo(() => addMonths(new Date(), 1), []);
 
   const { data: company } = useQuery({
     queryKey: ["my-company", user?.id],
@@ -140,7 +147,8 @@ const PostJob = () => {
       description: form.description,
       requirements: form.requirements.split("\n").filter(Boolean),
       is_approved: false,
-    });
+      application_deadline: deadline ? deadline.toISOString() : null,
+    } as any);
 
     setLoading(false);
     if (error) {
@@ -297,7 +305,35 @@ const PostJob = () => {
                   ))}
                 </SelectContent>
               </Select>
-            </div>
+           </div>
+          <div>
+            <Label>Application Deadline</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full mt-1.5 justify-start text-left font-normal rounded-xl",
+                    !deadline && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {deadline ? format(deadline, "dd MMM yyyy") : "ডেডলাইন নির্বাচন করুন"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={deadline}
+                  onSelect={setDeadline}
+                  disabled={(date) => date < minDeadline || date > maxDeadline}
+                  initialFocus
+                  className={cn("p-3 pointer-events-auto")}
+                />
+              </PopoverContent>
+            </Popover>
+            <p className="mt-1 text-xs text-muted-foreground">সর্বোচ্চ ১ মাস। ডেডলাইনের পর আবেদন স্বয়ংক্রিয়ভাবে বন্ধ হয়ে যাবে।</p>
+          </div>
           </div>
           <div>
             <Label>Description</Label>

@@ -279,6 +279,12 @@ const JobDetail = () => {
 
               <p className="mt-3 text-xs text-muted-foreground">
                 প্রকাশিত: {format(new Date(job.created_at), "dd MMM yyyy")}
+                {(job as any).application_deadline && (
+                  <span className={`ml-3 font-semibold ${new Date((job as any).application_deadline) < new Date() ? "text-destructive" : "text-accent"}`}>
+                    • ডেডলাইন: {format(new Date((job as any).application_deadline), "dd MMM yyyy")}
+                    {new Date((job as any).application_deadline) < new Date() && " (মেয়াদ শেষ)"}
+                  </span>
+                )}
               </p>
             </div>
 
@@ -321,8 +327,23 @@ const JobDetail = () => {
               ) : (
                 <>
                   <h3 className="font-bold font-bangla text-lg mb-2">এখনই আবেদন করুন</h3>
+                  {(job as any).application_deadline && new Date((job as any).application_deadline) < new Date() ? (
+                    <div className="text-center py-4">
+                      <Clock className="mx-auto h-10 w-10 text-destructive mb-2" />
+                      <p className="font-semibold text-destructive font-bangla">আবেদনের সময়সীমা শেষ</p>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        ডেডলাইন: {format(new Date((job as any).application_deadline), "dd MMM yyyy")}
+                      </p>
+                    </div>
+                  ) : (
+                  <>
                   <p className="text-sm text-muted-foreground mb-4">
                     এই পদে আবেদন করতে নিচের বাটনে ক্লিক করুন
+                    {(job as any).application_deadline && (
+                      <span className="block mt-1 text-accent font-medium">
+                        ডেডলাইন: {format(new Date((job as any).application_deadline), "dd MMM yyyy")}
+                      </span>
+                    )}
                   </p>
 
                   {showApplyForm ? (
@@ -426,6 +447,8 @@ const JobDetail = () => {
                     >
                       আবেদন করুন
                     </Button>
+                  )}
+                  </>
                   )}
                 </>
               )}

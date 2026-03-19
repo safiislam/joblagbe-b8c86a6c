@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { useNavigate, Link } from "react-router-dom";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, format } from "date-fns";
 import SaveJobButton from "@/components/SaveJobButton";
 import ShareJobButton from "@/components/ShareJobButton";
 import VerifiedBadge from "@/components/VerifiedBadge";
@@ -147,6 +147,11 @@ const JobCard = ({
             <Clock className="h-3 w-3 shrink-0" />
             {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}
           </span>
+          {(job as any).application_deadline && (
+            <span className={`flex items-center gap-1 font-medium ${new Date((job as any).application_deadline) < new Date() ? "text-destructive" : "text-accent"}`}>
+              ডেডলাইন: {format(new Date((job as any).application_deadline), "dd MMM")}
+            </span>
+          )}
         </div>
       </div>
     </div>
