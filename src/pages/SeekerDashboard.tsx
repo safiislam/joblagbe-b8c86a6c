@@ -25,6 +25,7 @@ type ApplicationRow = {
   status: string;
   created_at: string;
   cover_letter: string | null;
+  job_id: string;
   jobs: {
     title: string;
     location: string;
