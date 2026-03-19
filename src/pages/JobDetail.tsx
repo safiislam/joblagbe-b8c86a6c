@@ -279,6 +279,12 @@ const JobDetail = () => {
 
               <p className="mt-3 text-xs text-muted-foreground">
                 প্রকাশিত: {format(new Date(job.created_at), "dd MMM yyyy")}
+                {(job as any).application_deadline && (
+                  <span className={`ml-3 font-semibold ${new Date((job as any).application_deadline) < new Date() ? "text-destructive" : "text-accent"}`}>
+                    • ডেডলাইন: {format(new Date((job as any).application_deadline), "dd MMM yyyy")}
+                    {new Date((job as any).application_deadline) < new Date() && " (মেয়াদ শেষ)"}
+                  </span>
+                )}
               </p>
             </div>
 
