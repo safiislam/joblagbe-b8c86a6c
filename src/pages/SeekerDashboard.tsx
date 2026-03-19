@@ -172,49 +172,77 @@ const SeekerDashboard = () => {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="applications" className="mt-4">
+          <TabsContent value="applications" className="mt-4 space-y-3">
+            {/* Status Filter */}
+            {applications && applications.length > 0 && (
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {[
+                  { key: "all", label: "সকল", count: counts.total },
+                  { key: "pending", label: "অপেক্ষমান", count: counts.pending },
+                  { key: "shortlisted", label: "শর্টলিস্ট", count: applications?.filter(a => a.status === "shortlisted").length ?? 0 },
+                  { key: "accepted", label: "গৃহীত", count: counts.accepted },
+                  { key: "rejected", label: "প্রত্যাখ্যাত", count: applications?.filter(a => a.status === "rejected").length ?? 0 },
+                ].map((f) => (
+                  <button
+                    key={f.key}
+                    onClick={() => setAppStatusFilter(f.key)}
+                    className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium border transition-all ${
+                      appStatusFilter === f.key
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-card border-border hover:bg-secondary"
+                    }`}
+                  >
+                    {f.label} ({f.count})
+                  </button>
+                ))}
+              </div>
+            )}
+
             <div className="rounded-2xl border bg-card shadow-card divide-y">
               {isLoading ? (
                 <div className="p-8 text-center text-muted-foreground">Loading...</div>
-              ) : applications && applications.length > 0 ? (
-                applications.map((app) => {
-                  const config = statusConfig[app.status] || statusConfig.pending;
-                  const StatusIcon = config.icon;
-                  return (
-                    <div key={app.id} className="p-4">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <h3 className="font-semibold text-sm">{app.jobs?.title ?? "Unknown Job"}</h3>
-                            <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${config.color}`}>
-                              <StatusIcon className="mr-1 h-3 w-3" /> {config.label}
-                            </Badge>
-                          </div>
-                          <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
-                            <span className="flex items-center gap-1">
-                              <Building2 className="h-3 w-3" />{app.jobs?.companies?.name}
-                              {(app.jobs?.companies as any)?.is_verified && <VerifiedBadge className="h-3 w-3" />}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <MapPin className="h-3 w-3" />{app.jobs?.location}
-                            </span>
-                            <span>{formatDistanceToNow(new Date(app.created_at), { addSuffix: true })}</span>
+              ) : (() => {
+                const filteredApps = applications?.filter(a => appStatusFilter === "all" || a.status === appStatusFilter);
+                return filteredApps && filteredApps.length > 0 ? (
+                  filteredApps.map((app) => {
+                    const config = statusConfig[app.status] || statusConfig.pending;
+                    const StatusIcon = config.icon;
+                    return (
+                      <Link to={`/jobs/${(app as any).job_id || ''}`} key={app.id} className="block p-4 hover:bg-secondary/30 transition-colors">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h3 className="font-semibold text-sm">{app.jobs?.title ?? "Unknown Job"}</h3>
+                              <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 ${config.color}`}>
+                                <StatusIcon className="mr-1 h-3 w-3" /> {config.label}
+                              </Badge>
+                            </div>
+                            <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
+                              <span className="flex items-center gap-1">
+                                <Building2 className="h-3 w-3" />{app.jobs?.companies?.name}
+                                {(app.jobs?.companies as any)?.is_verified && <VerifiedBadge className="h-3 w-3" />}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <MapPin className="h-3 w-3" />{app.jobs?.location}
+                              </span>
+                              <span>{formatDistanceToNow(new Date(app.created_at), { addSuffix: true })}</span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  );
-                })
-              ) : (
-                <div className="flex flex-col items-center py-14 text-muted-foreground">
-                  <FileText className="mb-3 h-10 w-10 opacity-30" />
-                  <p className="font-medium">No applications yet</p>
-                  <p className="mt-1 text-sm">Browse jobs and apply to get started!</p>
-                  <Button className="mt-4" asChild>
-                    <Link to="/#jobs">Browse Jobs</Link>
-                  </Button>
-                </div>
-              )}
+                      </Link>
+                    );
+                  })
+                ) : (
+                  <div className="flex flex-col items-center py-14 text-muted-foreground">
+                    <FileText className="mb-3 h-10 w-10 opacity-30" />
+                    <p className="font-medium">{appStatusFilter !== "all" ? "এই ক্যাটাগরিতে কোনো আবেদন নেই" : "No applications yet"}</p>
+                    <p className="mt-1 text-sm">Browse jobs and apply to get started!</p>
+                    <Button className="mt-4" asChild>
+                      <Link to="/#jobs">Browse Jobs</Link>
+                    </Button>
+                  </div>
+                );
+              })()}
             </div>
           </TabsContent>
 
