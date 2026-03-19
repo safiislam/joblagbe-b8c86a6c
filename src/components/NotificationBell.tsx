@@ -211,7 +211,7 @@ const NotificationBell = () => {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-11 z-50 w-[340px] rounded-2xl border bg-card shadow-elevated animate-fade-in" style={{ animationDuration: "0.15s" }}>
+        <div className="fixed inset-x-3 top-14 z-50 sm:absolute sm:inset-x-auto sm:right-0 sm:top-11 w-auto sm:w-[340px] rounded-2xl border bg-card shadow-elevated animate-fade-in" style={{ animationDuration: "0.15s" }}>
           {/* Header */}
           <div className="flex items-center justify-between border-b px-4 py-3">
             <h3 className="font-bold text-sm">Notifications</h3>
