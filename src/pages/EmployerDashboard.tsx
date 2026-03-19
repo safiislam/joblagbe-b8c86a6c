@@ -177,9 +177,9 @@ const EmployerDashboard = () => {
         .eq("job_id", selectedJobId!);
       if (!data || data.length === 0) return [];
       const userIds = data.map(a => a.user_id);
-      const { data: profiles } = await supabase.from("profiles").select("user_id, full_name, resume_url").in("user_id", userIds);
-      const profileMap: Record<string, { full_name: string | null; resume_url: string | null }> = {};
-      profiles?.forEach(p => { profileMap[p.user_id] = { full_name: p.full_name, resume_url: p.resume_url }; });
+      const { data: profiles } = await supabase.from("profiles").select("user_id, full_name, phone, resume_url").in("user_id", userIds);
+      const profileMap: Record<string, { full_name: string | null; phone: string | null; resume_url: string | null }> = {};
+      profiles?.forEach(p => { profileMap[p.user_id] = { full_name: p.full_name, phone: p.phone, resume_url: p.resume_url }; });
       return data.map(a => ({ ...a, profiles: profileMap[a.user_id] || { full_name: null, resume_url: null } })) as ApplicationRow[];
     },
     enabled: !!selectedJobId,
