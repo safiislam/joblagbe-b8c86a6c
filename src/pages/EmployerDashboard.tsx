@@ -33,6 +33,7 @@ const CompanyEditForm = ({ company, queryClient }: { company: any; queryClient: 
     website: company.website || "",
     location: company.location || "",
     description: company.description || "",
+    trade_license: company.trade_license || "",
   });
   const [saving, setSaving] = useState(false);
 
@@ -45,7 +46,8 @@ const CompanyEditForm = ({ company, queryClient }: { company: any; queryClient: 
       website: form.website.trim() || null,
       location: form.location.trim() || null,
       description: form.description.trim() || null,
-    }).eq("id", company.id);
+      trade_license: form.trade_license.trim() || null,
+    } as any).eq("id", company.id);
     setSaving(false);
     if (error) { toast.error("আপডেট করতে সমস্যা হয়েছে"); return; }
     toast.success("কোম্পানি তথ্য আপডেট হয়েছে!");
@@ -71,6 +73,10 @@ const CompanyEditForm = ({ company, queryClient }: { company: any; queryClient: 
         <div className="space-y-1.5">
           <Label htmlFor="co-location">অবস্থান</Label>
           <Input id="co-location" value={form.location} onChange={e => setForm(f => ({ ...f, location: e.target.value }))} placeholder="Dhaka, Bangladesh" />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="co-trade">ট্রেড লাইসেন্স নম্বর</Label>
+          <Input id="co-trade" value={form.trade_license} onChange={e => setForm(f => ({ ...f, trade_license: e.target.value }))} placeholder="e.g. TRAD-2024-XXXXX" />
         </div>
       </div>
       <div className="space-y-1.5">

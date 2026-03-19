@@ -197,6 +197,7 @@ export type Database = {
           logo_url: string | null
           name: string
           phone: string | null
+          trade_license: string | null
           updated_at: string
           user_id: string | null
           website: string | null
@@ -210,6 +211,7 @@ export type Database = {
           logo_url?: string | null
           name: string
           phone?: string | null
+          trade_license?: string | null
           updated_at?: string
           user_id?: string | null
           website?: string | null
@@ -223,6 +225,7 @@ export type Database = {
           logo_url?: string | null
           name?: string
           phone?: string | null
+          trade_license?: string | null
           updated_at?: string
           user_id?: string | null
           website?: string | null
