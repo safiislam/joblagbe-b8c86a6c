@@ -119,18 +119,8 @@ const EmployerDashboard = () => {
     enabled: !!company,
   });
 
-  const { data: myCourses } = useQuery({
-    queryKey: ["employer-courses", user?.id],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("courses")
-        .select("*")
-        .eq("user_id", user!.id)
-        .order("created_at", { ascending: false });
-      return data ?? [];
-    },
-    enabled: !!user,
-  });
+
+
 
   const { data: verificationStatus } = useQuery({
     queryKey: ["verification-status", company?.id],
