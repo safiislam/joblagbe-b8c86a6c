@@ -305,7 +305,35 @@ const PostJob = () => {
                   ))}
                 </SelectContent>
               </Select>
-            </div>
+           </div>
+          <div>
+            <Label>Application Deadline</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full mt-1.5 justify-start text-left font-normal rounded-xl",
+                    !deadline && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {deadline ? format(deadline, "dd MMM yyyy") : "ডেডলাইন নির্বাচন করুন"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={deadline}
+                  onSelect={setDeadline}
+                  disabled={(date) => date < minDeadline || date > maxDeadline}
+                  initialFocus
+                  className={cn("p-3 pointer-events-auto")}
+                />
+              </PopoverContent>
+            </Popover>
+            <p className="mt-1 text-xs text-muted-foreground">সর্বোচ্চ ১ মাস। ডেডলাইনের পর আবেদন স্বয়ংক্রিয়ভাবে বন্ধ হয়ে যাবে।</p>
+          </div>
           </div>
           <div>
             <Label>Description</Label>
