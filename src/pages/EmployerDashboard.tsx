@@ -33,6 +33,7 @@ const CompanyEditForm = ({ company, queryClient }: { company: any; queryClient: 
     website: company.website || "",
     location: company.location || "",
     description: company.description || "",
+    trade_license: company.trade_license || "",
   });
   const [saving, setSaving] = useState(false);
 
