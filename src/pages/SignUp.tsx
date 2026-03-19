@@ -27,6 +27,11 @@ const SignUp = () => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!agreedToTerms) {
+      toast.error("You must agree to the Terms & Conditions and Privacy Policy.");
+      return;
+    }
+
     const trimmed = emailOrPhone.trim();
     
     if (!isEmail(trimmed) && !isPhone(trimmed)) {
