@@ -400,35 +400,90 @@ const EmployerDashboard = () => {
 
               <div className="lg:col-span-3">
                 <div className="rounded-2xl border bg-card shadow-card">
-                  <div className="border-b p-4"><h2 className="font-bold text-lg">{selectedJobId ? "Applicants" : "Select a job to view applicants"}</h2></div>
-                  <div className="divide-y">
-                    {selectedJobId ? (
-                      applicants && applicants.length > 0 ? applicants.map((app) => (
+                  <div className="border-b p-4 space-y-3">
+                    <h2 className="font-bold text-lg">{selectedJobId ? "Applicants" : "Select a job to view applicants"}</h2>
+                    {selectedJobId && applicants && applicants.length > 0 && (
+                      <div className="flex flex-col gap-2 sm:flex-row">
+                        <div className="relative flex-1">
+                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                          <Input
+                            placeholder="Search applicants..."
+                            value={applicantSearch}
+                            onChange={(e) => setApplicantSearch(e.target.value)}
+                            className="pl-9 h-9 text-sm"
+                          />
+                        </div>
+                        <Select value={applicantStatusFilter} onValueChange={setApplicantStatusFilter}>
+                          <SelectTrigger className="w-full sm:w-36 h-9 text-sm">
+                            <Filter className="h-3 w-3 mr-1" />
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">All</SelectItem>
+                            <SelectItem value="pending">Pending</SelectItem>
+                            <SelectItem value="shortlisted">Shortlisted</SelectItem>
+                            <SelectItem value="accepted">Accepted</SelectItem>
+                            <SelectItem value="rejected">Rejected</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                  </div>
+                  <div className="divide-y max-h-[600px] overflow-y-auto">
+                    {selectedJobId ? (() => {
+                      const filteredApplicants = applicants?.filter((app) => {
+                        const matchStatus = applicantStatusFilter === "all" || app.status === applicantStatusFilter;
+                        const matchSearch = !applicantSearch || app.profiles?.full_name?.toLowerCase().includes(applicantSearch.toLowerCase());
+                        return matchStatus && matchSearch;
+                      });
+
+                      return filteredApplicants && filteredApplicants.length > 0 ? filteredApplicants.map((app) => (
                         <div key={app.id} className="p-4">
                           <div className="flex items-start justify-between gap-3">
                             <div className="min-w-0 flex-1">
-                              <p className="font-semibold">{app.profiles?.full_name || "Anonymous"}</p>
-                              <p className="text-xs text-muted-foreground">Applied {formatDistanceToNow(new Date(app.created_at), { addSuffix: true })}</p>
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <User className="h-4 w-4 text-muted-foreground shrink-0" />
+                                <p className="font-semibold">{app.profiles?.full_name || "Anonymous"}</p>
+                              </div>
+                              <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
+                                <span>Applied {formatDistanceToNow(new Date(app.created_at), { addSuffix: true })}</span>
+                                {app.profiles?.phone && (
+                                  <span className="flex items-center gap-1">
+                                    <Phone className="h-3 w-3" /> {app.profiles.phone}
+                                  </span>
+                                )}
+                              </div>
                             </div>
-                            <Badge variant="outline" className={app.status === "accepted" ? "border-success text-success" : app.status === "rejected" ? "border-destructive text-destructive" : app.status === "shortlisted" ? "border-primary text-primary" : "border-accent text-accent"}>{app.status}</Badge>
+                            <Badge variant="outline" className={
+                              app.status === "accepted" ? "border-success text-success" :
+                              app.status === "rejected" ? "border-destructive text-destructive" :
+                              app.status === "shortlisted" ? "border-primary text-primary" :
+                              "border-accent text-accent"
+                            }>{app.status}</Badge>
                           </div>
-                          {app.cover_letter && <p className="mt-2 text-sm text-muted-foreground bg-secondary/50 rounded-xl p-3">{app.cover_letter}</p>}
+                          {app.cover_letter && <p className="mt-2 text-sm text-muted-foreground bg-secondary/50 rounded-xl p-3 whitespace-pre-wrap">{app.cover_letter}</p>}
                           {app.profiles?.resume_url && (
                             <a href={supabase.storage.from("resumes").getPublicUrl(app.profiles.resume_url).data.publicUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex items-center gap-1.5 text-xs text-primary hover:underline"><FileText className="h-3.5 w-3.5" /> View Resume</a>
                           )}
                           <div className="mt-3 flex flex-wrap gap-2">
-                            {app.status !== "shortlisted" && (
-                              <Button size="sm" variant="outline" className="gap-1.5 text-primary border-primary hover:bg-primary hover:text-primary-foreground" disabled={updateStatus.isPending} onClick={() => updateStatus.mutate({ appId: app.id, status: "shortlisted", seekerUserId: app.user_id })}><UserCheck className="h-3.5 w-3.5" /> Shortlist</Button>
+                            {app.status !== "shortlisted" && app.status !== "accepted" && (
+                              <Button size="sm" variant="outline" className="gap-1.5 text-primary border-primary/30 hover:bg-primary hover:text-primary-foreground" disabled={updateStatus.isPending} onClick={() => updateStatus.mutate({ appId: app.id, status: "shortlisted", seekerUserId: app.user_id })}><UserCheck className="h-3.5 w-3.5" /> Shortlist</Button>
+                            )}
+                            {app.status !== "accepted" && (
+                              <Button size="sm" variant="outline" className="gap-1.5 text-success border-success/30 hover:bg-success hover:text-white" disabled={updateStatus.isPending} onClick={() => updateStatus.mutate({ appId: app.id, status: "accepted", seekerUserId: app.user_id })}><CheckCircle className="h-3.5 w-3.5" /> Accept</Button>
                             )}
                             {app.status !== "rejected" && (
-                              <Button size="sm" variant="outline" className="gap-1.5 text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground" disabled={updateStatus.isPending} onClick={() => updateStatus.mutate({ appId: app.id, status: "rejected", seekerUserId: app.user_id })}><XCircle className="h-3.5 w-3.5" /> Reject</Button>
+                              <Button size="sm" variant="outline" className="gap-1.5 text-destructive border-destructive/30 hover:bg-destructive hover:text-destructive-foreground" disabled={updateStatus.isPending} onClick={() => updateStatus.mutate({ appId: app.id, status: "rejected", seekerUserId: app.user_id })}><XCircle className="h-3.5 w-3.5" /> Reject</Button>
                             )}
                           </div>
                         </div>
                       )) : (
-                        <div className="flex flex-col items-center py-14 text-muted-foreground"><Users className="mb-2 h-8 w-8 opacity-30" /><p className="text-sm">No applicants yet</p></div>
-                      )
-                    ) : (
+                        <div className="flex flex-col items-center py-14 text-muted-foreground">
+                          <Users className="mb-2 h-8 w-8 opacity-30" />
+                          <p className="text-sm">{applicantSearch || applicantStatusFilter !== "all" ? "No matching applicants" : "No applicants yet"}</p>
+                        </div>
+                      );
+                    })() : (
                       <div className="flex flex-col items-center py-14 text-muted-foreground"><Eye className="mb-2 h-8 w-8 opacity-30" /><p className="text-sm">Click on a job to see who applied</p></div>
                     )}
                   </div>
