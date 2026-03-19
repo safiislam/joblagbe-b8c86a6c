@@ -215,23 +215,8 @@ const EmployerDashboard = () => {
     onError: () => toast.error("Failed to end job"),
   });
 
-  const handleSubmitCourse = async () => {
-    if (!courseForm.title || !courseForm.category) { toast.error("Title and category required"); return; }
-    const { thumbnail_url, discount_price, ...rest } = courseForm;
-    const { error } = await supabase.from("courses").insert({
-      ...rest,
-      price: courseForm.is_free ? 0 : courseForm.price,
-      thumbnail_url: thumbnail_url || null,
-      discount_price: courseForm.is_free ? null : (discount_price > 0 ? discount_price : null),
-      user_id: user!.id,
-      is_approved: false,
-    } as any);
-    if (error) { toast.error(error.message); return; }
-    toast.success("Course submitted for approval!");
-    setShowCourseForm(false);
-    setCourseForm({ title: "", description: "", category: "", provider: "", duration: "", is_free: true, price: 0, discount_price: 0, link: "", thumbnail_url: "" });
-    queryClient.invalidateQueries({ queryKey: ["employer-courses"] });
-  };
+
+
 
   if (loading || !user) return null;
 
