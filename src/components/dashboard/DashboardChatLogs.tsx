@@ -245,7 +245,15 @@ const DashboardChatLogs = () => {
                 >
                   {msg.role === "assistant" ? (
                     <div className="prose prose-sm max-w-none [&_p]:mb-1 [&_p]:mt-0 [&_ul]:my-1 [&_li]:my-0 [&_a]:text-primary [&_a]:underline">
-                      <ReactMarkdown>{msg.content}</ReactMarkdown>
+                      <ReactMarkdown
+                        components={{
+                          a: ({ href, children }) => (
+                            <a href={href} target="_blank" rel="noopener noreferrer" className="text-primary underline hover:opacity-80">
+                              {children}
+                            </a>
+                          ),
+                        }}
+                      >{msg.content}</ReactMarkdown>
                     </div>
                   ) : (
                     msg.content

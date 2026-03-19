@@ -36,7 +36,35 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { messages, session_id } = await req.json();
+    const { messages, session_id, save_only } = await req.json();
+
+    // Handle save-only requests (to persist assistant responses)
+    if (save_only && session_id) {
+      try {
+        const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+        const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+        const adminClient = createClient(supabaseUrl, supabaseKey);
+        
+        const { data: existing } = await adminClient
+          .from("chat_logs")
+          .select("id")
+          .eq("session_id", session_id)
+          .maybeSingle();
+
+        if (existing) {
+          await adminClient.from("chat_logs").update({
+            messages: JSON.stringify(messages),
+            updated_at: new Date().toISOString(),
+          }).eq("id", existing.id);
+        }
+      } catch (e) {
+        console.error("Save-only error:", e);
+      }
+      return new Response(JSON.stringify({ ok: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
