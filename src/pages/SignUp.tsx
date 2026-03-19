@@ -154,7 +154,22 @@ const SignUp = () => {
               </button>
             </div>
           </div>
-          <Button type="submit" disabled={loading} className="w-full bg-accent text-accent-foreground hover:bg-accent/90 font-semibold rounded-xl py-2.5">
+          {/* Terms agreement */}
+          <div className="flex items-start gap-2.5">
+            <Checkbox
+              id="terms"
+              checked={agreedToTerms}
+              onCheckedChange={(checked) => setAgreedToTerms(checked === true)}
+              className="mt-0.5"
+            />
+            <label htmlFor="terms" className="text-xs leading-relaxed text-muted-foreground cursor-pointer">
+              I agree to the{" "}
+              <Link to="/terms" target="_blank" className="text-primary underline hover:opacity-80">Terms & Conditions</Link>
+              {" "}and{" "}
+              <Link to="/privacy-policy" target="_blank" className="text-primary underline hover:opacity-80">Privacy Policy</Link>
+            </label>
+          </div>
+          <Button type="submit" disabled={loading || !agreedToTerms} className="w-full bg-accent text-accent-foreground hover:bg-accent/90 font-semibold rounded-xl py-2.5">
             {loading ? "Creating account..." : "Sign Up"}
           </Button>
         </form>
