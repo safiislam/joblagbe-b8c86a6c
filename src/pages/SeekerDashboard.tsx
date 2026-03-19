@@ -47,6 +47,7 @@ type SavedJobRow = {
 
 const statusConfig: Record<string, { icon: typeof Clock; label: string; color: string }> = {
   pending: { icon: Clock, label: "Pending", color: "bg-accent/10 text-accent border-accent/30" },
+  shortlisted: { icon: UserCheck, label: "Shortlisted", color: "bg-primary/10 text-primary border-primary/30" },
   accepted: { icon: CheckCircle, label: "Accepted", color: "bg-green-500/10 text-green-600 border-green-500/30" },
   rejected: { icon: XCircle, label: "Rejected", color: "bg-destructive/10 text-destructive border-destructive/30" },
 };
