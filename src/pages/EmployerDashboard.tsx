@@ -74,6 +74,10 @@ const CompanyEditForm = ({ company, queryClient }: { company: any; queryClient: 
           <Label htmlFor="co-location">অবস্থান</Label>
           <Input id="co-location" value={form.location} onChange={e => setForm(f => ({ ...f, location: e.target.value }))} placeholder="Dhaka, Bangladesh" />
         </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="co-trade">ট্রেড লাইসেন্স নম্বর</Label>
+          <Input id="co-trade" value={form.trade_license} onChange={e => setForm(f => ({ ...f, trade_license: e.target.value }))} placeholder="e.g. TRAD-2024-XXXXX" />
+        </div>
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="co-desc">কোম্পানি বিবরণ</Label>
