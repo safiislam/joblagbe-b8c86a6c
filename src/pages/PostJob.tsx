@@ -37,8 +37,11 @@ const PostJob = () => {
     categoryId: "",
     description: "",
     requirements: "",
-    
   });
+  const [deadline, setDeadline] = useState<Date | undefined>(undefined);
+
+  const minDeadline = useMemo(() => addDays(new Date(), 1), []);
+  const maxDeadline = useMemo(() => addMonths(new Date(), 1), []);
 
   const { data: company } = useQuery({
     queryKey: ["my-company", user?.id],
