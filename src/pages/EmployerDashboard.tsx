@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
-import { Briefcase, Plus, Users, Clock, CheckCircle, Eye, XCircle, UserCheck, FileText, GraduationCap, Upload, Building2, Ban, ImagePlus, Loader2, BadgeCheck, ShieldCheck, Save, ShoppingBag } from "lucide-react";
+import { Briefcase, Plus, Users, Clock, CheckCircle, Eye, XCircle, UserCheck, FileText, Upload, Building2, Ban, Loader2, BadgeCheck, ShieldCheck, Save, ShoppingBag } from "lucide-react";
 import MyServiceOrders from "@/components/MyServiceOrders";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,7 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
+
 
 type EmployerJob = {
   id: string; title: string; location: string; job_type: string;
@@ -90,9 +90,8 @@ const EmployerDashboard = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
-  const [showCourseForm, setShowCourseForm] = useState(false);
-  const [courseForm, setCourseForm] = useState({ title: "", description: "", category: "", provider: "", duration: "", is_free: true, price: 0, discount_price: 0, link: "", thumbnail_url: "" });
-  const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
+
+
   const [requestingVerify, setRequestingVerify] = useState(false);
   useEffect(() => {
     if (!loading && (!user || profile?.role !== "employer")) navigate("/");
@@ -120,18 +119,8 @@ const EmployerDashboard = () => {
     enabled: !!company,
   });
 
-  const { data: myCourses } = useQuery({
-    queryKey: ["employer-courses", user?.id],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("courses")
-        .select("*")
-        .eq("user_id", user!.id)
-        .order("created_at", { ascending: false });
-      return data ?? [];
-    },
-    enabled: !!user,
-  });
+
+
 
   const { data: verificationStatus } = useQuery({
     queryKey: ["verification-status", company?.id],
@@ -226,23 +215,8 @@ const EmployerDashboard = () => {
     onError: () => toast.error("Failed to end job"),
   });
 
-  const handleSubmitCourse = async () => {
-    if (!courseForm.title || !courseForm.category) { toast.error("Title and category required"); return; }
-    const { thumbnail_url, discount_price, ...rest } = courseForm;
-    const { error } = await supabase.from("courses").insert({
-      ...rest,
-      price: courseForm.is_free ? 0 : courseForm.price,
-      thumbnail_url: thumbnail_url || null,
-      discount_price: courseForm.is_free ? null : (discount_price > 0 ? discount_price : null),
-      user_id: user!.id,
-      is_approved: false,
-    } as any);
-    if (error) { toast.error(error.message); return; }
-    toast.success("Course submitted for approval!");
-    setShowCourseForm(false);
-    setCourseForm({ title: "", description: "", category: "", provider: "", duration: "", is_free: true, price: 0, discount_price: 0, link: "", thumbnail_url: "" });
-    queryClient.invalidateQueries({ queryKey: ["employer-courses"] });
-  };
+
+
 
   if (loading || !user) return null;
 
@@ -310,7 +284,7 @@ const EmployerDashboard = () => {
             { label: "Total Jobs", value: totalJobs, icon: Briefcase, color: "text-primary" },
             { label: "Pending Approval", value: pendingJobs, icon: Clock, color: "text-accent" },
             { label: "Active", value: approvedJobs, icon: CheckCircle, color: "text-success" },
-            { label: "Courses", value: myCourses?.length ?? 0, icon: GraduationCap, color: "text-primary" },
+            { label: "Ended", value: endedJobs, icon: XCircle, color: "text-destructive" },
           ].map((s) => (
             <div key={s.label} className="rounded-2xl border bg-card p-5 shadow-card">
               <s.icon className={`h-6 w-6 ${s.color}`} />
@@ -368,8 +342,8 @@ const EmployerDashboard = () => {
         <Tabs defaultValue="jobs" className="space-y-4">
           <TabsList>
             <TabsTrigger value="jobs" className="gap-1.5"><Briefcase className="h-3.5 w-3.5" /> Jobs</TabsTrigger>
-            <TabsTrigger value="orders" className="gap-1.5"><ShoppingBag className="h-3.5 w-3.5" /> Orders</TabsTrigger>
-            <TabsTrigger value="courses" className="gap-1.5"><GraduationCap className="h-3.5 w-3.5" /> Courses</TabsTrigger>
+             <TabsTrigger value="orders" className="gap-1.5"><ShoppingBag className="h-3.5 w-3.5" /> Orders</TabsTrigger>
+            <TabsTrigger value="company" className="gap-1.5"><Building2 className="h-3.5 w-3.5" /> Company</TabsTrigger>
             <TabsTrigger value="company" className="gap-1.5"><Building2 className="h-3.5 w-3.5" /> Company</TabsTrigger>
           </TabsList>
 
@@ -462,108 +436,8 @@ const EmployerDashboard = () => {
             <MyServiceOrders />
           </TabsContent>
 
-          {/* COURSES TAB */}
-          <TabsContent value="courses">
-            <div className="rounded-2xl border bg-card shadow-card">
-              <div className="flex items-center justify-between border-b p-4">
-                <h2 className="font-bold">Your Courses ({myCourses?.length ?? 0})</h2>
-                <Button size="sm" onClick={() => setShowCourseForm(!showCourseForm)} className="gap-1 bg-accent text-accent-foreground">
-                  <Plus className="h-3.5 w-3.5" /> Submit Course
-                </Button>
-              </div>
-              {showCourseForm && (
-                <div className="border-b p-4 space-y-3 bg-secondary/30">
-                  {/* Featured Image Upload */}
-                  <div>
-                    <Label>Featured Image</Label>
-                    <div className="mt-1 flex items-center gap-3">
-                      {courseForm.thumbnail_url ? (
-                        <img src={courseForm.thumbnail_url} alt="Thumbnail" className="h-20 w-32 rounded-xl object-cover border" />
-                      ) : (
-                        <div className="flex h-20 w-32 items-center justify-center rounded-xl border border-dashed border-muted-foreground/30 bg-secondary">
-                          <ImagePlus className="h-6 w-6 text-muted-foreground/50" />
-                        </div>
-                      )}
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        disabled={uploadingThumbnail}
-                        className="gap-2 rounded-xl"
-                        onClick={() => {
-                          const input = document.createElement("input");
-                          input.type = "file";
-                          input.accept = "image/*";
-                          input.onchange = async (e) => {
-                            const file = (e.target as HTMLInputElement).files?.[0];
-                            if (!file || !user) return;
-                            if (file.size > 3 * 1024 * 1024) { toast.error("Image must be under 3MB"); return; }
-                            setUploadingThumbnail(true);
-                            try {
-                              const ext = file.name.split(".").pop();
-                              const path = `${user.id}/${Date.now()}.${ext}`;
-                              const { error } = await supabase.storage.from("course-images").upload(path, file);
-                              if (error) throw error;
-                              const publicUrl = supabase.storage.from("course-images").getPublicUrl(path).data.publicUrl;
-                              setCourseForm(prev => ({ ...prev, thumbnail_url: publicUrl }));
-                              toast.success("Image uploaded!");
-                            } catch (err: any) {
-                              toast.error(err.message || "Upload failed");
-                            } finally {
-                              setUploadingThumbnail(false);
-                            }
-                          };
-                          input.click();
-                        }}
-                      >
-                        {uploadingThumbnail ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-                        {uploadingThumbnail ? "Uploading..." : "Upload Image"}
-                      </Button>
-                    </div>
-                  </div>
 
-                  <div className="grid gap-3 md:grid-cols-2">
-                    <div><Label>Title *</Label><Input value={courseForm.title} onChange={(e) => setCourseForm({ ...courseForm, title: e.target.value })} className="mt-1 rounded-xl" placeholder="Course title" /></div>
-                    <div><Label>Category *</Label><Input value={courseForm.category} onChange={(e) => setCourseForm({ ...courseForm, category: e.target.value })} className="mt-1 rounded-xl" placeholder="IT, Design, Business..." /></div>
-                  </div>
-                  <div className="grid gap-3 md:grid-cols-3">
-                    <div><Label>Provider</Label><Input value={courseForm.provider} onChange={(e) => setCourseForm({ ...courseForm, provider: e.target.value })} className="mt-1 rounded-xl" placeholder="Academy name" /></div>
-                    <div><Label>Duration</Label><Input value={courseForm.duration} onChange={(e) => setCourseForm({ ...courseForm, duration: e.target.value })} className="mt-1 rounded-xl" placeholder="4 weeks" /></div>
-                    <div><Label>Link</Label><Input value={courseForm.link} onChange={(e) => setCourseForm({ ...courseForm, link: e.target.value })} className="mt-1 rounded-xl" placeholder="https://..." /></div>
-                  </div>
-                  <div><Label>Description</Label><Textarea value={courseForm.description} onChange={(e) => setCourseForm({ ...courseForm, description: e.target.value })} rows={3} className="mt-1 rounded-xl" /></div>
-                  <div className="flex flex-wrap items-center gap-4">
-                    <div className="flex items-center gap-2"><Switch checked={courseForm.is_free} onCheckedChange={(v) => setCourseForm({ ...courseForm, is_free: v })} /><Label>Free</Label></div>
-                    {!courseForm.is_free && (
-                      <>
-                        <div><Label>Price (৳)</Label><Input type="number" value={courseForm.price} onChange={(e) => setCourseForm({ ...courseForm, price: Number(e.target.value) })} className="mt-1 w-32 rounded-xl" /></div>
-                        <div><Label>Discount Price (৳)</Label><Input type="number" value={courseForm.discount_price} onChange={(e) => setCourseForm({ ...courseForm, discount_price: Number(e.target.value) })} className="mt-1 w-32 rounded-xl" placeholder="Optional" /></div>
-                      </>
-                    )}
-                  </div>
-                  <div className="flex gap-2">
-                    <Button onClick={handleSubmitCourse} className="bg-success text-success-foreground">Submit for Approval</Button>
-                    <Button variant="ghost" onClick={() => setShowCourseForm(false)}>Cancel</Button>
-                  </div>
-                </div>
-              )}
-              <div className="divide-y">
-                {myCourses && myCourses.length > 0 ? myCourses.map((c: any) => (
-                  <div key={c.id} className="flex items-center justify-between p-4">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <p className="font-semibold text-sm">{c.title}</p>
-                        <Badge variant="outline" className={c.is_approved ? "border-success text-success text-[10px]" : "border-accent text-accent text-[10px]"}>
-                          {c.is_approved ? "Approved" : "Pending"}
-                        </Badge>
-                      </div>
-                      <p className="text-xs text-muted-foreground">{c.category} · {c.provider ?? "—"}</p>
-                    </div>
-                  </div>
-                )) : <div className="p-8 text-center text-muted-foreground">No courses submitted yet</div>}
-              </div>
-            </div>
-          </TabsContent>
+
 
 
           {/* COMPANY TAB */}
