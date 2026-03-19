@@ -130,7 +130,7 @@ const AIChatWidget = () => {
     <>
       {/* Floating button */}
       {!open && (
-        <div className="fixed bottom-20 right-5 z-50 md:bottom-20 md:right-6">
+        <div className="fixed bottom-20 right-5 z-[110] md:bottom-20 md:right-6">
           <div className="absolute inset-0 rounded-full animate-chat-glow" />
           <button
             onClick={() => setOpen(true)}
