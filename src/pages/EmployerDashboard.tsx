@@ -284,7 +284,7 @@ const EmployerDashboard = () => {
             { label: "Total Jobs", value: totalJobs, icon: Briefcase, color: "text-primary" },
             { label: "Pending Approval", value: pendingJobs, icon: Clock, color: "text-accent" },
             { label: "Active", value: approvedJobs, icon: CheckCircle, color: "text-success" },
-            { label: "Courses", value: myCourses?.length ?? 0, icon: GraduationCap, color: "text-primary" },
+            { label: "Ended", value: endedJobs, icon: XCircle, color: "text-destructive" },
           ].map((s) => (
             <div key={s.label} className="rounded-2xl border bg-card p-5 shadow-card">
               <s.icon className={`h-6 w-6 ${s.color}`} />
