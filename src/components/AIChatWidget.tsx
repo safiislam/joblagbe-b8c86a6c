@@ -143,7 +143,7 @@ const AIChatWidget = () => {
 
       {/* Chat panel */}
       {open && (
-        <div className="fixed bottom-0 right-0 z-50 flex h-[500px] w-full flex-col rounded-t-2xl border bg-card shadow-2xl sm:bottom-5 sm:right-5 sm:h-[520px] sm:w-[380px] sm:rounded-2xl md:bottom-6 md:right-6">
+        <div className="fixed bottom-0 right-0 z-[110] flex h-[500px] w-full flex-col rounded-t-2xl border bg-card shadow-2xl sm:bottom-5 sm:right-5 sm:h-[520px] sm:w-[380px] sm:rounded-2xl md:bottom-6 md:right-6">
           {/* Header */}
           <div className="flex items-center justify-between rounded-t-2xl bg-primary px-4 py-3 text-primary-foreground">
             <div className="flex items-center gap-2">
