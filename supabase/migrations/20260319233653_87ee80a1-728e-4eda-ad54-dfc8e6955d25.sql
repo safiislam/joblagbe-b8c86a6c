@@ -1,0 +1,1 @@
+ALTER TABLE public.companies ADD COLUMN trade_license text DEFAULT NULL;
