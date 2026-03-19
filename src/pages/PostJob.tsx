@@ -147,7 +147,8 @@ const PostJob = () => {
       description: form.description,
       requirements: form.requirements.split("\n").filter(Boolean),
       is_approved: false,
-    });
+      application_deadline: deadline ? deadline.toISOString() : null,
+    } as any);
 
     setLoading(false);
     if (error) {
