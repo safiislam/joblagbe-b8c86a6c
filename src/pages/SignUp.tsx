@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { Checkbox } from "@/components/ui/checkbox";
 import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,12 +20,18 @@ const SignUp = () => {
   const [role, setRole] = useState<"seeker" | "employer">("seeker");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const isEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
   const isPhone = (value: string) => /^01\d{9}$/.test(value.replace(/[\s-]/g, ""));
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!agreedToTerms) {
+      toast.error("You must agree to the Terms & Conditions and Privacy Policy.");
+      return;
+    }
+
     const trimmed = emailOrPhone.trim();
     
     if (!isEmail(trimmed) && !isPhone(trimmed)) {
@@ -60,6 +67,10 @@ const SignUp = () => {
   };
 
   const handleGoogleSignUp = async () => {
+    if (!agreedToTerms) {
+      toast.error("You must agree to the Terms & Conditions and Privacy Policy.");
+      return;
+    }
     setGoogleLoading(true);
     localStorage.setItem("pending_signup_role", role);
     const { error } = await lovable.auth.signInWithOAuth("google", {
@@ -143,7 +154,22 @@ const SignUp = () => {
               </button>
             </div>
           </div>
-          <Button type="submit" disabled={loading} className="w-full bg-accent text-accent-foreground hover:bg-accent/90 font-semibold rounded-xl py-2.5">
+          {/* Terms agreement */}
+          <div className="flex items-start gap-2.5">
+            <Checkbox
+              id="terms"
+              checked={agreedToTerms}
+              onCheckedChange={(checked) => setAgreedToTerms(checked === true)}
+              className="mt-0.5"
+            />
+            <label htmlFor="terms" className="text-xs leading-relaxed text-muted-foreground cursor-pointer">
+              I agree to the{" "}
+              <Link to="/terms" target="_blank" className="text-primary underline hover:opacity-80">Terms & Conditions</Link>
+              {" "}and{" "}
+              <Link to="/privacy-policy" target="_blank" className="text-primary underline hover:opacity-80">Privacy Policy</Link>
+            </label>
+          </div>
+          <Button type="submit" disabled={loading || !agreedToTerms} className="w-full bg-accent text-accent-foreground hover:bg-accent/90 font-semibold rounded-xl py-2.5">
             {loading ? "Creating account..." : "Sign Up"}
           </Button>
         </form>
