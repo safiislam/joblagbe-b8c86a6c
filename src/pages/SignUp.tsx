@@ -67,6 +67,10 @@ const SignUp = () => {
   };
 
   const handleGoogleSignUp = async () => {
+    if (!agreedToTerms) {
+      toast.error("You must agree to the Terms & Conditions and Privacy Policy.");
+      return;
+    }
     setGoogleLoading(true);
     localStorage.setItem("pending_signup_role", role);
     const { error } = await lovable.auth.signInWithOAuth("google", {
