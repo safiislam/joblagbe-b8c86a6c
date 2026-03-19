@@ -102,6 +102,24 @@ const AIChatWidget = () => {
           }
         }
       }
+
+      // Save final messages (including assistant response) to chat log
+      if (assistantSoFar) {
+        try {
+          await fetch(CHAT_URL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            },
+            body: JSON.stringify({
+              messages: [...allMessages.map((m) => ({ role: m.role, content: m.content })), { role: "assistant", content: assistantSoFar }],
+              session_id: sessionId,
+              save_only: true,
+            }),
+          });
+        } catch {}
+      }
     } catch {
       upsertAssistant("Sorry, I couldn't connect. Please try again.");
     }
