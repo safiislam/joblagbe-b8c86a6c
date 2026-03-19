@@ -54,6 +54,7 @@ const SeekerDashboard = () => {
   const { user, profile, loading } = useAuth();
   const navigate = useNavigate();
   const [editOpen, setEditOpen] = useState(false);
+  const [appStatusFilter, setAppStatusFilter] = useState("all");
 
   useEffect(() => {
     if (!loading && !user) navigate("/login");
