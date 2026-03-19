@@ -46,7 +46,8 @@ const CompanyEditForm = ({ company, queryClient }: { company: any; queryClient: 
       website: form.website.trim() || null,
       location: form.location.trim() || null,
       description: form.description.trim() || null,
-    }).eq("id", company.id);
+      trade_license: form.trade_license.trim() || null,
+    } as any).eq("id", company.id);
     setSaving(false);
     if (error) { toast.error("আপডেট করতে সমস্যা হয়েছে"); return; }
     toast.success("কোম্পানি তথ্য আপডেট হয়েছে!");
