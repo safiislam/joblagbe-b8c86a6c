@@ -140,16 +140,17 @@ const SeekerDashboard = () => {
               </div>
             </div>
 
-            <div className="mt-5 flex gap-3">
+            <div className="mt-5 flex gap-2 sm:gap-3">
               {[
                 { label: "Applied", value: counts.total, color: "bg-primary/10 text-primary" },
                 { label: "Pending", value: counts.pending, color: "bg-accent/10 text-accent" },
+                { label: "Shortlist", value: applications?.filter(a => a.status === "shortlisted").length ?? 0, color: "bg-blue-500/10 text-blue-600" },
                 { label: "Accepted", value: counts.accepted, color: "bg-green-500/10 text-green-600" },
                 { label: "Saved", value: counts.saved, color: "bg-secondary text-secondary-foreground" },
               ].map((s) => (
-                <div key={s.label} className={`flex-1 rounded-xl px-3 py-2.5 text-center ${s.color}`}>
+                <div key={s.label} className={`flex-1 rounded-xl px-2 py-2.5 text-center ${s.color}`}>
                   <p className="text-lg font-bold leading-none">{s.value}</p>
-                  <p className="mt-1 text-[11px] font-medium opacity-80">{s.label}</p>
+                  <p className="mt-1 text-[10px] font-medium opacity-80">{s.label}</p>
                 </div>
               ))}
             </div>
