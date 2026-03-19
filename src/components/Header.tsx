@@ -104,7 +104,20 @@ const Header = () => {
           )}
         </nav>
 
-        <div className="flex items-center gap-2 md:hidden">
+        <div className="flex items-center gap-1.5 md:hidden">
+          {location.pathname !== "/" && (
+            <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+              <Link to="/"><Home className="h-4 w-4" /></Link>
+            </Button>
+          )}
+          {canInstall && (
+            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={async () => {
+              const ok = await install();
+              if (ok) toast.success("অ্যাপ ইনস্টল হচ্ছে!");
+            }}>
+              <Download className="h-4 w-4" />
+            </Button>
+          )}
           {user ? (
             <>
               <Suspense fallback={null}><NotificationBell /></Suspense>
