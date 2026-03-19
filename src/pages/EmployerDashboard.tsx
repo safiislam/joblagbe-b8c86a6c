@@ -97,8 +97,8 @@ const EmployerDashboard = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
-
-
+  const [applicantSearch, setApplicantSearch] = useState("");
+  const [applicantStatusFilter, setApplicantStatusFilter] = useState("all");
   const [requestingVerify, setRequestingVerify] = useState(false);
   useEffect(() => {
     if (!loading && (!user || profile?.role !== "employer")) navigate("/");
