@@ -72,7 +72,7 @@ const App = () => (
             <Suspense fallback={null}>
               <AIChatWidget />
               <AffiliatePopupLazy />
-              
+              <TutorialVideoButton />
             </Suspense>
           </Suspense>
         </BrowserRouter>

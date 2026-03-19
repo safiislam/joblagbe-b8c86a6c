@@ -477,6 +477,66 @@ const DashboardSiteContent = () => {
             <SaveBtn sectionKey="pwa_settings" />
           </div>
         </TabsContent>
+
+        {/* Tutorial Videos */}
+        <TabsContent value="tutorial_videos" className="space-y-4">
+          <div className="rounded-xl border bg-card p-5 space-y-4">
+            <p className="text-xs text-muted-foreground">
+              প্রতিটি পেজের জন্য টিউটোরিয়াল ভিডিও লিংক সেট করুন। ইউজাররা পেজে একটি হেল্প বাটন দেখবে যেখান থেকে ভিডিও দেখতে পারবে।
+            </p>
+            <h3 className="font-semibold text-sm">Page Videos</h3>
+            {(editData.tutorial_videos?.videos || []).map((item: any, i: number) => (
+              <div key={i} className="rounded-lg border p-3 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-muted-foreground">Video {i + 1}</span>
+                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => removeArrayItem("tutorial_videos", "videos", i)}>
+                    <Trash2 className="h-3 w-3 text-destructive" />
+                  </Button>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="text-xs">Page Key</Label>
+                    <Select
+                      value={item.page_key || ""}
+                      onValueChange={(v) => updateNestedField("tutorial_videos", "videos", i, "page_key", v)}
+                    >
+                      <SelectTrigger className="mt-1"><SelectValue placeholder="Select page" /></SelectTrigger>
+                      <SelectContent>
+                        {[
+                          { key: "home", label: "🏠 Home" },
+                          { key: "jobs", label: "💼 Jobs" },
+                          { key: "blog", label: "📝 Blog" },
+                          { key: "courses", label: "🎓 Courses" },
+                          { key: "ebooks", label: "📚 E-Books" },
+                          { key: "companies", label: "🏢 Companies" },
+                          { key: "login", label: "🔑 Login" },
+                          { key: "signup", label: "📋 Sign Up" },
+                          { key: "post-job", label: "📤 Post Job" },
+                          { key: "my-applications", label: "📄 My Applications" },
+                          { key: "employer-dashboard", label: "💼 Employer Dashboard" },
+                        ].map((p) => (
+                          <SelectItem key={p.key} value={p.key}>{p.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-xs">Page Label (shown to user)</Label>
+                    <Input className="mt-1" placeholder="e.g. হোম পেজ টিউটোরিয়াল" value={item.page_label || ""} onChange={(e) => updateNestedField("tutorial_videos", "videos", i, "page_label", e.target.value)} />
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-xs">Video URL (YouTube / Facebook / Direct)</Label>
+                  <Input className="mt-1" placeholder="https://www.youtube.com/watch?v=..." value={item.video_url || ""} onChange={(e) => updateNestedField("tutorial_videos", "videos", i, "video_url", e.target.value)} />
+                </div>
+              </div>
+            ))}
+            <Button variant="outline" size="sm" className="gap-1.5" onClick={() => addArrayItem("tutorial_videos", "videos", { page_key: "", page_label: "", video_url: "" })}>
+              <Plus className="h-3 w-3" /> Add Video
+            </Button>
+            <SaveBtn sectionKey="tutorial_videos" />
+          </div>
+        </TabsContent>
       </Tabs>
     </div>
   );
