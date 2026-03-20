@@ -35,6 +35,19 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
 
+const GlobalOverlays = () => {
+  const location = useLocation();
+  const isAdmin = location.pathname.startsWith("/dashboard");
+
+  return (
+    <Suspense fallback={null}>
+      <AIChatWidget />
+      {!isAdmin && <AffiliatePopupLazy />}
+      <TutorialVideoButton />
+    </Suspense>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
@@ -69,11 +82,7 @@ const App = () => (
               </Routes>
             </div>
             <MobileBottomNav />
-            <Suspense fallback={null}>
-              <AIChatWidget />
-              <AffiliatePopupLazy />
-              <TutorialVideoButton />
-            </Suspense>
+            <GlobalOverlays />
           </Suspense>
         </BrowserRouter>
       </TooltipProvider>

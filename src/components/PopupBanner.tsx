@@ -73,7 +73,7 @@ const PopupBannerModal = () => {
     setOpen(false);
   }, []);
 
-  if (!open || !banners?.length) return null;
+  if (!open || !banners?.length || isAdmin) return null;
 
   const banner = banners[current];
   const total = banners.length;

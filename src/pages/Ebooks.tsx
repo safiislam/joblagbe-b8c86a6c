@@ -373,26 +373,40 @@ const Ebooks = () => {
 
         <p className="mb-4 text-sm text-muted-foreground">{filtered?.length ?? 0} টি বই পাওয়া গেছে</p>
 
-        {isLoading ? (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-64 animate-pulse rounded-2xl bg-muted" />
-            ))}
+        <div className="flex gap-8">
+          <div className="flex-1 min-w-0">
+            {isLoading ? (
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="h-64 animate-pulse rounded-2xl bg-muted" />
+                ))}
+              </div>
+            ) : filtered && filtered.length > 0 ? (
+              <>
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
+                  {filtered.map((book, index) => (
+                    <div key={book.id}>
+                      <BookCard
+                        book={book}
+                        onBuy={(b) => setPaymentBook({ id: b.id, title: b.title, price: Number(b.price || 0) })}
+                        onView={(b) => setViewBook(b)}
+                      />
+                      {(index + 1) % 4 === 0 && <div className="mt-4"><AffiliateInContentAd /></div>}
+                    </div>
+                  ))}
+                </div>
+                <AffiliateCarousel />
+              </>
+            ) : (
+              <EmptyState message="কোনো বই পাওয়া যায়নি" />
+            )}
           </div>
-        ) : filtered && filtered.length > 0 ? (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((book) => (
-              <BookCard
-                key={book.id}
-                book={book}
-                onBuy={(b) => setPaymentBook({ id: b.id, title: b.title, price: Number(b.price || 0) })}
-                onView={(b) => setViewBook(b)}
-              />
-            ))}
-          </div>
-        ) : (
-          <EmptyState message="কোনো বই পাওয়া যায়নি" />
-        )}
+
+          {/* Sidebar Ads */}
+          <aside className="hidden lg:block w-72 shrink-0 space-y-6">
+            <AffiliateSidebarAd placement="sidebar" />
+          </aside>
+        </div>
       </div>
 
       {/* Book Detail Dialog */}
