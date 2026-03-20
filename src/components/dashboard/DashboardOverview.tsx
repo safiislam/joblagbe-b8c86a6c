@@ -118,7 +118,7 @@ const DashboardOverview = () => {
       {/* Stat Cards */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         {statCards.map((c) => (
-          <div key={c.label} className="rounded-2xl border bg-card p-4 shadow-sm hover:shadow-md transition-shadow">
+          <div key={c.label} className="rounded-2xl border bg-card p-4 shadow-sm">
             <div className="flex items-center justify-between">
               <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${c.bg}`}>
                 <c.icon className={`h-4 w-4 ${c.color}`} />
@@ -305,7 +305,7 @@ const RecentActivityFeed = () => {
           const config = activityIcon[item.type] || activityIcon.signup;
           const Icon = config.icon;
           return (
-            <div key={i} className="flex items-start gap-3 px-4 py-3 hover:bg-muted/30 transition-colors">
+            <div key={i} className="flex items-start gap-3 px-4 py-3">
               <div className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${config.bg}`}>
                 <Icon className={`h-4 w-4 ${config.color}`} />
               </div>
