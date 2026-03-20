@@ -129,7 +129,7 @@ const DashboardCompanies = () => {
     { label: "মোট কোম্পানি", value: totalCompanies, icon: Building2, color: "text-foreground" },
     { label: "ভেরিফাইড", value: verifiedCount, icon: BadgeCheck, color: "text-primary" },
     { label: "আনভেরিফাইড", value: unverifiedCount, icon: ShieldOff, color: "text-muted-foreground" },
-    { label: "পেন্ডিং রিকুয়েস্ট", value: verificationRequests?.length ?? 0, icon: Clock, color: "text-amber-600" },
+    { label: "পেন্ডিং রিকুয়েস্ট", value: verificationRequests?.length ?? 0, icon: Clock, color: "text-accent-foreground" },
   ];
 
   const filters: { label: string; value: "all" | "verified" | "unverified" }[] = [
