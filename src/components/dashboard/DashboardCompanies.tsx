@@ -162,7 +162,7 @@ const DashboardCompanies = () => {
             <Clock className="h-4 w-4 text-accent-foreground" />
             <h2 className="font-bold text-sm">পেন্ডিং ভেরিফিকেশন রিকুয়েস্ট ({verificationRequests.length})</h2>
           </div>
-          <div className="divide-y divide-amber-200/30">
+          <div className="divide-y divide-accent/20">
             {verificationRequests.map((req: any) => (
               <div key={req.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4">
                 <div className="flex items-center gap-3">
