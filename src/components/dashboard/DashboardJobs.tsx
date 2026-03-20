@@ -131,7 +131,7 @@ const DashboardJobs = () => {
                 </div>
               </div>
               {expandedJob === job.id && (
-                <div className="mt-3 rounded-xl bg-secondary/50 p-4 text-sm text-muted-foreground animate-fade-in" style={{ animationDuration: "0.2s" }}>{job.description}</div>
+                <div className="mt-3 rounded-xl bg-secondary/50 p-4 text-sm text-muted-foreground">{job.description}</div>
               )}
             </div>
           )) : <div className="p-8 text-center text-muted-foreground">{jobTab === "pending" ? "No pending jobs 🎉" : "No jobs found"}</div>}
