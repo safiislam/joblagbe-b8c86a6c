@@ -157,9 +157,9 @@ const DashboardCompanies = () => {
 
       {/* Pending Verification Requests */}
       {verificationRequests && verificationRequests.length > 0 && (
-        <div className="rounded-xl border border-amber-300/40 bg-amber-50/50 dark:bg-amber-950/10 shadow-sm">
-          <div className="border-b border-amber-200/40 p-4 flex items-center gap-2">
-            <Clock className="h-4 w-4 text-amber-600" />
+        <div className="rounded-xl border border-accent/30 bg-accent/5 shadow-sm">
+          <div className="border-b border-accent/20 p-4 flex items-center gap-2">
+            <Clock className="h-4 w-4 text-accent-foreground" />
             <h2 className="font-bold text-sm">পেন্ডিং ভেরিফিকেশন রিকুয়েস্ট ({verificationRequests.length})</h2>
           </div>
           <div className="divide-y divide-amber-200/30">
