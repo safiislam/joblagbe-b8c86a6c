@@ -118,7 +118,7 @@ const DashboardOverview = () => {
       {/* Stat Cards */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         {statCards.map((c) => (
-          <div key={c.label} className="rounded-2xl border bg-card p-4 shadow-sm hover:shadow-md transition-shadow">
+          <div key={c.label} className="rounded-2xl border bg-card p-4 shadow-sm">
             <div className="flex items-center justify-between">
               <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${c.bg}`}>
                 <c.icon className={`h-4 w-4 ${c.color}`} />
