@@ -19,6 +19,8 @@ type PopupBanner = {
 
 
 const PopupBannerModal = () => {
+  const location = useLocation();
+  const isAdmin = location.pathname.startsWith("/dashboard");
   const [open, setOpen] = useState(false);
   const [current, setCurrent] = useState(0);
 
