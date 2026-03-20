@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { X, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,8 @@ type PopupBanner = {
 
 
 const PopupBannerModal = () => {
+  const location = useLocation();
+  const isAdmin = location.pathname.startsWith("/dashboard");
   const [open, setOpen] = useState(false);
   const [current, setCurrent] = useState(0);
 
@@ -70,7 +73,7 @@ const PopupBannerModal = () => {
     setOpen(false);
   }, []);
 
-  if (!open || !banners?.length) return null;
+  if (!open || !banners?.length || isAdmin) return null;
 
   const banner = banners[current];
   const total = banners.length;
