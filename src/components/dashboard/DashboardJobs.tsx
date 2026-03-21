@@ -84,6 +84,13 @@ const DashboardJobs = () => {
     toast.success(`Tag updated to ${tagValue || "None"}`); refreshAll();
   };
 
+  const handleToggleApply = async (jobId: string, currentHide: boolean) => {
+    const { error } = await supabase.from("jobs").update({ hide_apply: !currentHide }).eq("id", jobId);
+    if (error) { toast.error(error.message); return; }
+    toast.success(!currentHide ? "আবেদন বাটন লুকানো হয়েছে" : "আবেদন বাটন দেখানো হয়েছে");
+    refreshAll();
+  };
+
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-bold">Job Management</h1>
