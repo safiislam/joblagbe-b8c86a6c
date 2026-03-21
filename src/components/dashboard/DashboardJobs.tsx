@@ -5,13 +5,14 @@ import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, Eye, Tag } from "lucide-react";
+import { Check, X, Eye, Tag, EyeOff } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 
 type AdminJob = {
   id: string; title: string; location: string; job_type: string;
   is_active: boolean; is_approved: boolean; created_at: string; description: string;
-  tag: string | null;
+  tag: string | null; hide_apply: boolean;
   companies: { name: string } | null;
 };
 
