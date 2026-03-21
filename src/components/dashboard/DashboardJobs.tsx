@@ -5,13 +5,14 @@ import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, Eye, Tag } from "lucide-react";
+import { Check, X, Eye, Tag, EyeOff } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 
 type AdminJob = {
   id: string; title: string; location: string; job_type: string;
   is_active: boolean; is_approved: boolean; created_at: string; description: string;
-  tag: string | null;
+  tag: string | null; hide_apply: boolean;
   companies: { name: string } | null;
 };
 
@@ -31,7 +32,7 @@ const DashboardJobs = () => {
   const { data: adminJobs, isLoading } = useQuery({
     queryKey: ["admin-jobs", jobTab],
     queryFn: async () => {
-      let query = supabase.from("jobs").select("id, title, location, job_type, is_active, is_approved, created_at, description, tag, companies(name)").order("created_at", { ascending: false }).limit(50);
+      let query = supabase.from("jobs").select("id, title, location, job_type, is_active, is_approved, created_at, description, tag, hide_apply, companies(name)").order("created_at", { ascending: false }).limit(50);
       if (jobTab === "pending") query = query.eq("is_approved", false).eq("is_active", true);
       if (jobTab === "approved") query = query.eq("is_approved", true);
       const { data } = await query;
@@ -83,6 +84,13 @@ const DashboardJobs = () => {
     toast.success(`Tag updated to ${tagValue || "None"}`); refreshAll();
   };
 
+  const handleToggleApply = async (jobId: string, currentHide: boolean) => {
+    const { error } = await supabase.from("jobs").update({ hide_apply: !currentHide }).eq("id", jobId);
+    if (error) { toast.error(error.message); return; }
+    toast.success(!currentHide ? "আবেদন বাটন লুকানো হয়েছে" : "আবেদন বাটন দেখানো হয়েছে");
+    refreshAll();
+  };
+
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-bold">Job Management</h1>
@@ -109,6 +117,15 @@ const DashboardJobs = () => {
                   <p className="mt-0.5 text-xs text-muted-foreground">{job.companies?.name} · {job.location} · {job.job_type} · {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0 flex-wrap">
+                  <div className="flex items-center gap-1.5 rounded-md border px-2 py-1">
+                    <EyeOff className="h-3 w-3 text-muted-foreground" />
+                    <span className="text-[10px] text-muted-foreground">Apply</span>
+                    <Switch
+                      checked={!job.hide_apply}
+                      onCheckedChange={() => handleToggleApply(job.id, job.hide_apply)}
+                      className="h-4 w-7 [&>span]:h-3 [&>span]:w-3 data-[state=checked]:bg-primary data-[state=unchecked]:bg-destructive/50"
+                    />
+                  </div>
                   <Select value={job.tag || "none"} onValueChange={(v) => handleTagChange(job.id, v)}>
                     <SelectTrigger className="h-7 w-[90px] text-[10px]"><Tag className="h-3 w-3 mr-1" /><SelectValue /></SelectTrigger>
                     <SelectContent>

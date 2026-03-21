@@ -374,6 +374,7 @@ export type Database = {
           company_id: string
           created_at: string
           description: string
+          hide_apply: boolean
           id: string
           is_active: boolean
           is_approved: boolean
@@ -392,6 +393,7 @@ export type Database = {
           company_id: string
           created_at?: string
           description: string
+          hide_apply?: boolean
           id?: string
           is_active?: boolean
           is_approved?: boolean
@@ -410,6 +412,7 @@ export type Database = {
           company_id?: string
           created_at?: string
           description?: string
+          hide_apply?: boolean
           id?: string
           is_active?: boolean
           is_approved?: boolean
