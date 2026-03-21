@@ -51,13 +51,16 @@ export function useUpdateSiteContent() {
       const { data: { user } } = await supabase.auth.getUser();
       const { error } = await supabase
         .from("site_content")
-        .update({ content, updated_at: new Date().toISOString(), updated_by: user?.id })
-        .eq("section_key", sectionKey);
+        .upsert(
+          { section_key: sectionKey, content, updated_at: new Date().toISOString(), updated_by: user?.id },
+          { onConflict: "section_key" }
+        );
       if (error) throw error;
     },
     onSuccess: (_, { sectionKey }) => {
       queryClient.invalidateQueries({ queryKey: ["site-content", sectionKey] });
       queryClient.invalidateQueries({ queryKey: ["site-content-all"] });
+      queryClient.invalidateQueries({ queryKey: ["site-content-admin"] });
     },
   });
 }
