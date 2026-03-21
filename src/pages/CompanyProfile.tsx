@@ -92,7 +92,7 @@ const CompanyProfile = () => {
               <div className="space-y-3">
                 {jobs && jobs.length > 0 ? (
                   jobs.map((job) => (
-                    <div key={job.id} className="rounded-2xl border bg-card p-4 shadow-card transition-all hover:shadow-elevated">
+                    <Link to={`/jobs/${job.id}`} key={job.id} className="block rounded-2xl border bg-card p-4 shadow-card transition-all hover:shadow-elevated hover:-translate-y-0.5">
                       <div className="flex items-start justify-between gap-2">
                         <div>
                           <h3 className="font-semibold">{job.title}</h3>
@@ -108,7 +108,7 @@ const CompanyProfile = () => {
                           </Badge>
                         ) : null; })()}
                       </div>
-                    </div>
+                    </Link>
                   ))
                 ) : (
                   <div className="py-10 text-center text-muted-foreground">
