@@ -22,7 +22,7 @@ type SectionData = { section_key: string; content: Record<string, any> };
 
 const DashboardSiteContent = () => {
   const { data: sections, isLoading } = useQuery({
-    queryKey: ["site-content-all"],
+    queryKey: ["site-content-admin"],
     queryFn: async () => {
       const { data } = await supabase.from("site_content").select("section_key, content").order("section_key");
       return (data ?? []) as SectionData[];
