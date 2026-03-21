@@ -314,8 +314,9 @@ const JobDetail = () => {
 
           {/* Sidebar */}
           <div className="space-y-6">
+            {!(job as any).hide_apply && (
             <div className="rounded-2xl border bg-card p-6 shadow-card sticky top-20">
-              {(job as any).hide_apply ? null : existingApplication ? (
+              {existingApplication ? (
                 <div className="text-center">
                   <CheckCircle2 className="mx-auto h-12 w-12 text-primary mb-3" />
                   <h3 className="font-bold font-bangla text-lg">আবেদন সম্পন্ন</h3>
