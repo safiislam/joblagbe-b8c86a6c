@@ -454,6 +454,7 @@ const JobDetail = () => {
                 </>
               )}
             </div>
+            )}
 
             <div className="rounded-2xl border bg-card p-6 shadow-card">
               <h3 className="font-bold font-bangla text-lg mb-4">প্রতিষ্ঠানের তথ্য</h3>
