@@ -35,6 +35,7 @@ type JobRow = {
   created_at: string;
   category_id: string | null;
   company_id: string;
+  hide_apply: boolean;
   companies: { name: string; location: string | null; logo_url: string | null; is_verified: boolean } | null;
 };
 
@@ -406,12 +407,14 @@ const JobBoard = () => {
                     )}
                     <JobFraudWarning />
                     <div className="flex items-center gap-3 pt-2">
-                      <Button
-                        onClick={() => handleApply(selectedJob.id)}
-                        className="bg-accent text-accent-foreground hover:bg-accent/90 px-8 text-base font-semibold rounded-xl gap-2"
-                      >
-                        Apply Now <ArrowRight className="h-4 w-4" />
-                      </Button>
+                      {!selectedJob.hide_apply && (
+                        <Button
+                          onClick={() => handleApply(selectedJob.id)}
+                          className="bg-accent text-accent-foreground hover:bg-accent/90 px-8 text-base font-semibold rounded-xl gap-2"
+                        >
+                          Apply Now <ArrowRight className="h-4 w-4" />
+                        </Button>
+                      )}
                       <Button variant="outline" className="rounded-xl" asChild>
                         <Link to={`/jobs/${selectedJob.id}`}>View Full Details</Link>
                       </Button>
@@ -478,10 +481,12 @@ const JobBoard = () => {
               )}
               <JobFraudWarning className="mt-4" />
               <div className="mt-6 flex gap-3">
-                <Button onClick={() => handleApply(selectedJob.id)} className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90 font-semibold rounded-xl py-3 gap-2">
-                  Apply Now <ArrowRight className="h-4 w-4" />
-                </Button>
-                <Button variant="outline" className="rounded-xl" asChild>
+                {!selectedJob.hide_apply && (
+                  <Button onClick={() => handleApply(selectedJob.id)} className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90 font-semibold rounded-xl py-3 gap-2">
+                    Apply Now <ArrowRight className="h-4 w-4" />
+                  </Button>
+                )}
+                <Button variant="outline" className="rounded-xl flex-1" asChild>
                   <Link to={`/jobs/${selectedJob.id}`}>Details</Link>
                 </Button>
               </div>
