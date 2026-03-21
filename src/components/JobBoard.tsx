@@ -35,6 +35,7 @@ type JobRow = {
   created_at: string;
   category_id: string | null;
   company_id: string;
+  hide_apply: boolean;
   companies: { name: string; location: string | null; logo_url: string | null; is_verified: boolean } | null;
 };
 
