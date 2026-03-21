@@ -407,12 +407,14 @@ const JobBoard = () => {
                     )}
                     <JobFraudWarning />
                     <div className="flex items-center gap-3 pt-2">
-                      <Button
-                        onClick={() => handleApply(selectedJob.id)}
-                        className="bg-accent text-accent-foreground hover:bg-accent/90 px-8 text-base font-semibold rounded-xl gap-2"
-                      >
-                        Apply Now <ArrowRight className="h-4 w-4" />
-                      </Button>
+                      {!selectedJob.hide_apply && (
+                        <Button
+                          onClick={() => handleApply(selectedJob.id)}
+                          className="bg-accent text-accent-foreground hover:bg-accent/90 px-8 text-base font-semibold rounded-xl gap-2"
+                        >
+                          Apply Now <ArrowRight className="h-4 w-4" />
+                        </Button>
+                      )}
                       <Button variant="outline" className="rounded-xl" asChild>
                         <Link to={`/jobs/${selectedJob.id}`}>View Full Details</Link>
                       </Button>
