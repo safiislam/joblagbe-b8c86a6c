@@ -117,6 +117,15 @@ const DashboardJobs = () => {
                   <p className="mt-0.5 text-xs text-muted-foreground">{job.companies?.name} · {job.location} · {job.job_type} · {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0 flex-wrap">
+                  <div className="flex items-center gap-1.5 rounded-md border px-2 py-1">
+                    <EyeOff className="h-3 w-3 text-muted-foreground" />
+                    <span className="text-[10px] text-muted-foreground">Apply</span>
+                    <Switch
+                      checked={!job.hide_apply}
+                      onCheckedChange={() => handleToggleApply(job.id, job.hide_apply)}
+                      className="h-4 w-7 [&>span]:h-3 [&>span]:w-3 data-[state=checked]:bg-primary data-[state=unchecked]:bg-destructive/50"
+                    />
+                  </div>
                   <Select value={job.tag || "none"} onValueChange={(v) => handleTagChange(job.id, v)}>
                     <SelectTrigger className="h-7 w-[90px] text-[10px]"><Tag className="h-3 w-3 mr-1" /><SelectValue /></SelectTrigger>
                     <SelectContent>
