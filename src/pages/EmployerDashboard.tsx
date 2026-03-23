@@ -503,6 +503,11 @@ const EmployerDashboard = () => {
 
 
 
+          {/* LIBRARY TAB */}
+          <TabsContent value="library">
+            <MyLibrary />
+          </TabsContent>
+
           {/* COMPANY TAB */}
           <TabsContent value="company">
             {company ? <CompanyEditForm company={company} queryClient={queryClient} /> : (
