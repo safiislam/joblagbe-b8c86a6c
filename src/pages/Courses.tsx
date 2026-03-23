@@ -31,12 +31,19 @@ import {
 
 const Courses = () => {
   useEffect(() => { window.scrollTo(0, 0); }, []);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [priceFilter, setPriceFilter] = useState("all");
   const [paymentCourse, setPaymentCourse] = useState<{ id: string; title: string; price: number } | null>(null);
   const [detailCourse, setDetailCourse] = useState<any>(null);
+
+  const handleBuyCourse = (course: any) => {
+    if (!requireAuth(user, navigate)) return;
+    setPaymentCourse({ id: course.id, title: course.title, price: getFinalPrice(course) });
+  };
 
   const { data: courses, isLoading } = useQuery({
     queryKey: ["all-courses"],
