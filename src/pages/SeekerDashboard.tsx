@@ -160,18 +160,21 @@ const SeekerDashboard = () => {
 
         {/* Tabs */}
         <Tabs defaultValue="applications" className="mt-6">
-          <TabsList className="w-full grid grid-cols-4 h-11">
+          <TabsList className="w-full grid grid-cols-5 h-11">
             <TabsTrigger value="applications" className="gap-1.5 text-xs sm:text-sm">
-              <Briefcase className="h-3.5 w-3.5" /> Applications
+              <Briefcase className="h-3.5 w-3.5" /> <span className="hidden sm:inline">Applications</span><span className="sm:hidden">আবেদন</span>
+            </TabsTrigger>
+            <TabsTrigger value="library" className="gap-1.5 text-xs sm:text-sm">
+              <Library className="h-3.5 w-3.5" /> <span className="hidden sm:inline">Library</span><span className="sm:hidden">লাইব্রেরি</span>
             </TabsTrigger>
             <TabsTrigger value="orders" className="gap-1.5 text-xs sm:text-sm">
-              <ShoppingBag className="h-3.5 w-3.5" /> Orders
+              <ShoppingBag className="h-3.5 w-3.5" /> <span className="hidden sm:inline">Orders</span><span className="sm:hidden">অর্ডার</span>
             </TabsTrigger>
             <TabsTrigger value="saved" className="gap-1.5 text-xs sm:text-sm">
-              <Bookmark className="h-3.5 w-3.5" /> Saved Jobs
+              <Bookmark className="h-3.5 w-3.5" /> <span className="hidden sm:inline">Saved</span><span className="sm:hidden">সেভড</span>
             </TabsTrigger>
             <TabsTrigger value="resume" className="gap-1.5 text-xs sm:text-sm">
-              <FileText className="h-3.5 w-3.5" /> Resume
+              <FileText className="h-3.5 w-3.5" /> <span className="hidden sm:inline">Resume</span><span className="sm:hidden">রেজুমে</span>
             </TabsTrigger>
           </TabsList>
 
