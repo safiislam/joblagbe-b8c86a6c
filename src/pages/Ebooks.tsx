@@ -281,12 +281,19 @@ const EmptyState = ({ message }: { message: string }) => (
 
 const Ebooks = () => {
   useEffect(() => { window.scrollTo(0, 0); }, []);
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [priceFilter, setPriceFilter] = useState("all");
   const [activeTab, setActiveTab] = useState("all");
   const [paymentBook, setPaymentBook] = useState<{ id: string; title: string; price: number } | null>(null);
   const [viewBook, setViewBook] = useState<Ebook | null>(null);
+
+  const handleBuy = (b: Ebook) => {
+    if (!requireAuth(user, navigate)) return;
+    setPaymentBook({ id: b.id, title: b.title, price: Number(b.discount_price != null && b.discount_price < (b.price ?? 0) ? b.discount_price : b.price || 0) });
+  };
 
   const { data: ebooks, isLoading } = useQuery({
     queryKey: ["all-ebooks"],
