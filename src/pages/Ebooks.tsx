@@ -13,6 +13,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import PaymentDialog from "@/components/PaymentDialog";
 import { AffiliateSidebarAd, AffiliateInContentAd, AffiliateCarousel } from "@/components/AffiliateAds";
 import { getJobDisplayTag } from "@/lib/jobTag";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { requireAuth } from "@/lib/authGuard";
 
 type Ebook = {
   id: string;
