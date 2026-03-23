@@ -13,6 +13,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import PaymentDialog from "@/components/PaymentDialog";
 import { AffiliateSidebarAd, AffiliateInContentAd, AffiliateCarousel } from "@/components/AffiliateAds";
 import { getJobDisplayTag } from "@/lib/jobTag";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { requireAuth } from "@/lib/authGuard";
 
 type Ebook = {
   id: string;
@@ -278,12 +281,19 @@ const EmptyState = ({ message }: { message: string }) => (
 
 const Ebooks = () => {
   useEffect(() => { window.scrollTo(0, 0); }, []);
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [priceFilter, setPriceFilter] = useState("all");
   const [activeTab, setActiveTab] = useState("all");
   const [paymentBook, setPaymentBook] = useState<{ id: string; title: string; price: number } | null>(null);
   const [viewBook, setViewBook] = useState<Ebook | null>(null);
+
+  const handleBuy = (b: Ebook) => {
+    if (!requireAuth(user, navigate)) return;
+    setPaymentBook({ id: b.id, title: b.title, price: Number(b.discount_price != null && b.discount_price < (b.price ?? 0) ? b.discount_price : b.price || 0) });
+  };
 
   const { data: ebooks, isLoading } = useQuery({
     queryKey: ["all-ebooks"],
@@ -388,7 +398,7 @@ const Ebooks = () => {
                     <div key={book.id}>
                       <BookCard
                         book={book}
-                        onBuy={(b) => setPaymentBook({ id: b.id, title: b.title, price: Number(b.price || 0) })}
+                        onBuy={handleBuy}
                         onView={(b) => setViewBook(b)}
                       />
                       {(index + 1) % 4 === 0 && <div className="mt-4"><AffiliateInContentAd /></div>}
@@ -416,7 +426,7 @@ const Ebooks = () => {
         onOpenChange={(open) => { if (!open) setViewBook(null); }}
         onBuy={(b) => {
           setViewBook(null);
-          setPaymentBook({ id: b.id, title: b.title, price: Number(b.price || 0) });
+          handleBuy(b);
         }}
       />
 

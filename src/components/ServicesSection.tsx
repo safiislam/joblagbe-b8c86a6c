@@ -9,6 +9,8 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { checkRateLimit, RATE_LIMITS } from "@/hooks/useRateLimit";
 import PaymentDialog from "@/components/PaymentDialog";
+import { useNavigate } from "react-router-dom";
+import { requireAuth } from "@/lib/authGuard";
 import {
   Dialog,
   DialogContent,
@@ -31,6 +33,7 @@ const colorCycle = [
 const ServicesSection = () => {
   const { data } = useSiteContent<ServicesData>("services");
   const { user, profile } = useAuth();
+  const navigate = useNavigate();
   const [orderService, setOrderService] = useState<ServiceItem | null>(null);
   const [detailService, setDetailService] = useState<ServiceItem | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -42,6 +45,7 @@ const ServicesSection = () => {
   const items = data?.items || [];
 
   const openOrder = (service: ServiceItem) => {
+    if (!requireAuth(user, navigate)) return;
     setDetailService(null);
     setFormData({
       name: profile?.full_name || "",

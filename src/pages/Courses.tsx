@@ -11,6 +11,9 @@ import { Button } from "@/components/ui/button";
 import PaymentDialog from "@/components/PaymentDialog";
 import { getJobDisplayTag } from "@/lib/jobTag";
 import { AffiliateSidebarAd, AffiliateInContentAd, AffiliateCarousel } from "@/components/AffiliateAds";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { requireAuth } from "@/lib/authGuard";
 import {
   Dialog,
   DialogContent,
@@ -21,12 +24,19 @@ import {
 
 const Courses = () => {
   useEffect(() => { window.scrollTo(0, 0); }, []);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [priceFilter, setPriceFilter] = useState("all");
   const [paymentCourse, setPaymentCourse] = useState<{ id: string; title: string; price: number } | null>(null);
   const [detailCourse, setDetailCourse] = useState<any>(null);
+
+  const handleBuyCourse = (course: any) => {
+    if (!requireAuth(user, navigate)) return;
+    setPaymentCourse({ id: course.id, title: course.title, price: getFinalPrice(course) });
+  };
 
   const { data: courses, isLoading } = useQuery({
     queryKey: ["all-courses"],
@@ -163,7 +173,7 @@ const Courses = () => {
                                 <Button
                                   size="sm"
                                   className="gap-1 text-xs"
-                                  onClick={() => setPaymentCourse({ id: course.id, title: course.title, price: getFinalPrice(course) })}
+                                  onClick={() => handleBuyCourse(course)}
                                 >
                                   <ShoppingCart className="h-3 w-3" /> কিনুন
                                 </Button>
@@ -257,7 +267,7 @@ const Courses = () => {
                   className="flex-1 gap-1"
                   onClick={() => {
                     setDetailCourse(null);
-                    setPaymentCourse({ id: detailCourse.id, title: detailCourse.title, price: getFinalPrice(detailCourse) });
+                    handleBuyCourse(detailCourse);
                   }}
                 >
                   <ShoppingCart className="h-4 w-4" /> কিনুন ৳{getFinalPrice(detailCourse)}
