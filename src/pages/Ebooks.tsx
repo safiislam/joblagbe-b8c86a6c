@@ -426,7 +426,7 @@ const Ebooks = () => {
         onOpenChange={(open) => { if (!open) setViewBook(null); }}
         onBuy={(b) => {
           setViewBook(null);
-          setPaymentBook({ id: b.id, title: b.title, price: Number(b.price || 0) });
+          handleBuy(b);
         }}
       />
 
