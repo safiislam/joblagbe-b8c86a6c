@@ -398,7 +398,7 @@ const Ebooks = () => {
                     <div key={book.id}>
                       <BookCard
                         book={book}
-                        onBuy={(b) => setPaymentBook({ id: b.id, title: b.title, price: Number(b.price || 0) })}
+                        onBuy={handleBuy}
                         onView={(b) => setViewBook(b)}
                       />
                       {(index + 1) % 4 === 0 && <div className="mt-4"><AffiliateInContentAd /></div>}
