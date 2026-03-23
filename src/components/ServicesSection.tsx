@@ -9,6 +9,8 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { checkRateLimit, RATE_LIMITS } from "@/hooks/useRateLimit";
 import PaymentDialog from "@/components/PaymentDialog";
+import { useNavigate } from "react-router-dom";
+import { requireAuth } from "@/lib/authGuard";
 import {
   Dialog,
   DialogContent,
