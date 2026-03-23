@@ -401,6 +401,7 @@ const Ebooks = () => {
                         book={book}
                         onBuy={handleBuy}
                         onView={(b) => setViewBook(b)}
+                        onFreeAccess={handleFreeAccess}
                       />
                       {(index + 1) % 4 === 0 && <div className="mt-4"><AffiliateInContentAd /></div>}
                     </div>
