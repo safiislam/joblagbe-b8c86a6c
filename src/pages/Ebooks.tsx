@@ -79,11 +79,13 @@ const BookDetailDialog = ({
   open,
   onOpenChange,
   onBuy,
+  onFreeAccess,
 }: {
   book: Ebook | null;
   open: boolean;
   onOpenChange: (v: boolean) => void;
   onBuy: (book: Ebook) => void;
+  onFreeAccess: (book: Ebook, url: string) => void;
 }) => {
   if (!book) return null;
   const isHardcopy = book.book_type === "hardcopy";
