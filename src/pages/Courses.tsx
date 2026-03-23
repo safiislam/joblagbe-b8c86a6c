@@ -39,6 +39,14 @@ const Courses = () => {
     setPaymentCourse({ id: course.id, title: course.title, price: getFinalPrice(course) });
   };
 
+  const handleFreeCourseAccess = async (course: any) => {
+    if (!requireAuth(user, navigate)) return;
+    await recordFreeAccess(user!.id, "course", course.id, course.title);
+    if (course.link) {
+      window.open(course.link, "_blank", "noopener,noreferrer");
+    }
+  };
+
   const { data: courses, isLoading } = useQuery({
     queryKey: ["all-courses"],
     queryFn: async () => {
