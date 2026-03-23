@@ -246,17 +246,13 @@ const BookCard = ({ book, onBuy, onView, onFreeAccess }: { book: Ebook; onBuy: (
             {book.is_free ? (
               isHardcopy ? (
                 book.purchase_link ? (
-                  <Button size="sm" className="gap-1 bg-amber-500 hover:bg-amber-600 text-white text-xs" asChild>
-                    <a href={book.purchase_link} target="_blank" rel="noopener noreferrer">
-                      <ShoppingCart className="h-3.5 w-3.5" /> ফ্রি কপি
-                    </a>
+                  <Button size="sm" className="gap-1 bg-amber-500 hover:bg-amber-600 text-white text-xs" onClick={() => onFreeAccess(book, book.purchase_link!)}>
+                    <ShoppingCart className="h-3.5 w-3.5" /> ফ্রি কপি
                   </Button>
                 ) : null
               ) : book.download_url ? (
-                <Button size="sm" variant="default" className="gap-1 text-xs" asChild>
-                  <a href={book.download_url} target="_blank" rel="noopener noreferrer">
-                    <Download className="h-3.5 w-3.5" /> ডাউনলোড
-                  </a>
+                <Button size="sm" variant="default" className="gap-1 text-xs" onClick={() => onFreeAccess(book, book.download_url!)}>
+                  <Download className="h-3.5 w-3.5" /> ডাউনলোড
                 </Button>
               ) : null
             ) : (
