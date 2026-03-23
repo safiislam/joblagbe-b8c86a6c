@@ -430,6 +430,10 @@ const Ebooks = () => {
           setViewBook(null);
           handleBuy(b);
         }}
+        onFreeAccess={(b, url) => {
+          setViewBook(null);
+          handleFreeAccess(b, url);
+        }}
       />
 
       <PaymentDialog
