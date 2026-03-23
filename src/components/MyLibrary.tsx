@@ -152,7 +152,7 @@ const MyLibrary = () => {
 
             {/* Access button for approved items */}
             {isApproved && (
-              <div className="mt-2">
+              <div className="mt-2 flex flex-wrap gap-2">
                 {type === "ebook" && ebook?.download_url && (
                   <Button size="sm" variant="default" className="gap-1.5 text-xs h-7" asChild>
                     <a href={ebook.download_url} target="_blank" rel="noopener noreferrer">
@@ -173,6 +173,17 @@ const MyLibrary = () => {
                       <ExternalLink className="h-3 w-3" /> কোর্স শুরু করুন
                     </a>
                   </Button>
+                )}
+                {/* Fallback when no specific URL is available */}
+                {type === "ebook" && !ebook?.download_url && !(ebook?.book_type === "hardcopy" && ebook?.purchase_link) && (
+                  <Badge variant="outline" className="bg-success/15 text-success border-success/20 text-[11px] gap-1">
+                    <CheckCircle2 className="h-3 w-3" /> অ্যাক্সেস অনুমোদিত
+                  </Badge>
+                )}
+                {type === "course" && !course?.link && (
+                  <Badge variant="outline" className="bg-success/15 text-success border-success/20 text-[11px] gap-1">
+                    <CheckCircle2 className="h-3 w-3" /> অ্যাক্সেস অনুমোদিত
+                  </Badge>
                 )}
               </div>
             )}
