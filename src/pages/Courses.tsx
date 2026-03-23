@@ -261,10 +261,8 @@ const Courses = () => {
             <div className="flex gap-3 pt-2">
               {detailCourse?.is_free ? (
                 detailCourse?.link ? (
-                  <Button className="flex-1 gap-1" asChild>
-                    <a href={detailCourse.link} target="_blank" rel="noopener noreferrer">
-                      শুরু করুন <ExternalLink className="h-4 w-4" />
-                    </a>
+                  <Button className="flex-1 gap-1" onClick={() => { setDetailCourse(null); handleFreeCourseAccess(detailCourse); }}>
+                    শুরু করুন <ExternalLink className="h-4 w-4" />
                   </Button>
                 ) : (
                   <Button className="flex-1" disabled>শীঘ্রই আসছে</Button>
