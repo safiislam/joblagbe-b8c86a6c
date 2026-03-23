@@ -3,8 +3,9 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
-import { Briefcase, Plus, Users, Clock, CheckCircle, Eye, XCircle, UserCheck, FileText, Upload, Building2, Ban, Loader2, BadgeCheck, ShieldCheck, Save, ShoppingBag, Search, Filter, Phone, User } from "lucide-react";
+import { Briefcase, Plus, Users, Clock, CheckCircle, Eye, XCircle, UserCheck, FileText, Upload, Building2, Ban, Loader2, BadgeCheck, ShieldCheck, Save, ShoppingBag, Search, Filter, Phone, User, BookOpen } from "lucide-react";
 import MyServiceOrders from "@/components/MyServiceOrders";
+import MyLibrary from "@/components/MyLibrary";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
@@ -350,6 +351,7 @@ const EmployerDashboard = () => {
           <TabsList>
             <TabsTrigger value="jobs" className="gap-1.5"><Briefcase className="h-3.5 w-3.5" /> Jobs</TabsTrigger>
             <TabsTrigger value="orders" className="gap-1.5"><ShoppingBag className="h-3.5 w-3.5" /> Orders</TabsTrigger>
+            <TabsTrigger value="library" className="gap-1.5"><BookOpen className="h-3.5 w-3.5" /> Library</TabsTrigger>
             <TabsTrigger value="company" className="gap-1.5"><Building2 className="h-3.5 w-3.5" /> Company</TabsTrigger>
           </TabsList>
 
@@ -500,6 +502,11 @@ const EmployerDashboard = () => {
 
 
 
+
+          {/* LIBRARY TAB */}
+          <TabsContent value="library">
+            <MyLibrary />
+          </TabsContent>
 
           {/* COMPANY TAB */}
           <TabsContent value="company">
