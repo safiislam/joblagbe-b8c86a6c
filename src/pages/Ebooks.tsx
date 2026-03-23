@@ -16,6 +16,7 @@ import { getJobDisplayTag } from "@/lib/jobTag";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { requireAuth } from "@/lib/authGuard";
+import { recordFreeAccess } from "@/lib/freeAssetAccess";
 
 type Ebook = {
   id: string;
