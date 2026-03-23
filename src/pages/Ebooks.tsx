@@ -16,6 +16,7 @@ import { getJobDisplayTag } from "@/lib/jobTag";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { requireAuth } from "@/lib/authGuard";
+import { recordFreeAccess } from "@/lib/freeAssetAccess";
 
 type Ebook = {
   id: string;
@@ -78,11 +79,13 @@ const BookDetailDialog = ({
   open,
   onOpenChange,
   onBuy,
+  onFreeAccess,
 }: {
   book: Ebook | null;
   open: boolean;
   onOpenChange: (v: boolean) => void;
   onBuy: (book: Ebook) => void;
+  onFreeAccess: (book: Ebook, url: string) => void;
 }) => {
   if (!book) return null;
   const isHardcopy = book.book_type === "hardcopy";
@@ -132,17 +135,13 @@ const BookDetailDialog = ({
               </Button>
             )}
             {book.is_free && !isHardcopy && book.download_url && (
-              <Button className="gap-2" asChild>
-                <a href={book.download_url} target="_blank" rel="noopener noreferrer">
-                  <Download className="h-4 w-4" /> ডাউনলোড
-                </a>
+              <Button className="gap-2" onClick={() => onFreeAccess(book, book.download_url!)}>
+                <Download className="h-4 w-4" /> ডাউনলোড
               </Button>
             )}
             {book.is_free && isHardcopy && book.purchase_link && (
-              <Button className="gap-2 bg-amber-500 hover:bg-amber-600 text-white" asChild>
-                <a href={book.purchase_link} target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="h-4 w-4" /> ফ্রি কপি নিন
-                </a>
+              <Button className="gap-2 bg-amber-500 hover:bg-amber-600 text-white" onClick={() => onFreeAccess(book, book.purchase_link!)}>
+                <ExternalLink className="h-4 w-4" /> ফ্রি কপি নিন
               </Button>
             )}
           </div>
@@ -196,7 +195,7 @@ const BookDetailDialog = ({
   );
 };
 
-const BookCard = ({ book, onBuy, onView }: { book: Ebook; onBuy: (book: Ebook) => void; onView: (book: Ebook) => void }) => {
+const BookCard = ({ book, onBuy, onView, onFreeAccess }: { book: Ebook; onBuy: (book: Ebook) => void; onView: (book: Ebook) => void; onFreeAccess: (book: Ebook, url: string) => void }) => {
   const isHardcopy = book.book_type === "hardcopy";
 
   return (
@@ -247,17 +246,13 @@ const BookCard = ({ book, onBuy, onView }: { book: Ebook; onBuy: (book: Ebook) =
             {book.is_free ? (
               isHardcopy ? (
                 book.purchase_link ? (
-                  <Button size="sm" className="gap-1 bg-amber-500 hover:bg-amber-600 text-white text-xs" asChild>
-                    <a href={book.purchase_link} target="_blank" rel="noopener noreferrer">
-                      <ShoppingCart className="h-3.5 w-3.5" /> ফ্রি কপি
-                    </a>
+                  <Button size="sm" className="gap-1 bg-amber-500 hover:bg-amber-600 text-white text-xs" onClick={() => onFreeAccess(book, book.purchase_link!)}>
+                    <ShoppingCart className="h-3.5 w-3.5" /> ফ্রি কপি
                   </Button>
                 ) : null
               ) : book.download_url ? (
-                <Button size="sm" variant="default" className="gap-1 text-xs" asChild>
-                  <a href={book.download_url} target="_blank" rel="noopener noreferrer">
-                    <Download className="h-3.5 w-3.5" /> ডাউনলোড
-                  </a>
+                <Button size="sm" variant="default" className="gap-1 text-xs" onClick={() => onFreeAccess(book, book.download_url!)}>
+                  <Download className="h-3.5 w-3.5" /> ডাউনলোড
                 </Button>
               ) : null
             ) : (
@@ -293,6 +288,12 @@ const Ebooks = () => {
   const handleBuy = (b: Ebook) => {
     if (!requireAuth(user, navigate)) return;
     setPaymentBook({ id: b.id, title: b.title, price: Number(b.discount_price != null && b.discount_price < (b.price ?? 0) ? b.discount_price : b.price || 0) });
+  };
+
+  const handleFreeAccess = async (book: Ebook, url: string) => {
+    if (!requireAuth(user, navigate)) return;
+    await recordFreeAccess(user!.id, "ebook", book.id, book.title);
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   const { data: ebooks, isLoading } = useQuery({
@@ -400,6 +401,7 @@ const Ebooks = () => {
                         book={book}
                         onBuy={handleBuy}
                         onView={(b) => setViewBook(b)}
+                        onFreeAccess={handleFreeAccess}
                       />
                       {(index + 1) % 4 === 0 && <div className="mt-4"><AffiliateInContentAd /></div>}
                     </div>
@@ -427,6 +429,10 @@ const Ebooks = () => {
         onBuy={(b) => {
           setViewBook(null);
           handleBuy(b);
+        }}
+        onFreeAccess={(b, url) => {
+          setViewBook(null);
+          handleFreeAccess(b, url);
         }}
       />
 

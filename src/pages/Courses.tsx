@@ -14,6 +14,7 @@ import { AffiliateSidebarAd, AffiliateInContentAd, AffiliateCarousel } from "@/c
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { requireAuth } from "@/lib/authGuard";
+import { recordFreeAccess } from "@/lib/freeAssetAccess";
 import {
   Dialog,
   DialogContent,
@@ -36,6 +37,14 @@ const Courses = () => {
   const handleBuyCourse = (course: any) => {
     if (!requireAuth(user, navigate)) return;
     setPaymentCourse({ id: course.id, title: course.title, price: getFinalPrice(course) });
+  };
+
+  const handleFreeCourseAccess = async (course: any) => {
+    if (!requireAuth(user, navigate)) return;
+    await recordFreeAccess(user!.id, "course", course.id, course.title);
+    if (course.link) {
+      window.open(course.link, "_blank", "noopener,noreferrer");
+    }
   };
 
   const { data: courses, isLoading } = useQuery({
@@ -163,10 +172,8 @@ const Courses = () => {
                               </Button>
                               {course.is_free ? (
                                 course.link ? (
-                                  <Button size="sm" className="gap-1 text-xs" asChild>
-                                    <a href={course.link} target="_blank" rel="noopener noreferrer">
-                                      শুরু করুন <ExternalLink className="h-3 w-3" />
-                                    </a>
+                                  <Button size="sm" className="gap-1 text-xs" onClick={() => handleFreeCourseAccess(course)}>
+                                    শুরু করুন <ExternalLink className="h-3 w-3" />
                                   </Button>
                                 ) : null
                               ) : (
@@ -254,10 +261,8 @@ const Courses = () => {
             <div className="flex gap-3 pt-2">
               {detailCourse?.is_free ? (
                 detailCourse?.link ? (
-                  <Button className="flex-1 gap-1" asChild>
-                    <a href={detailCourse.link} target="_blank" rel="noopener noreferrer">
-                      শুরু করুন <ExternalLink className="h-4 w-4" />
-                    </a>
+                  <Button className="flex-1 gap-1" onClick={() => { setDetailCourse(null); handleFreeCourseAccess(detailCourse); }}>
+                    শুরু করুন <ExternalLink className="h-4 w-4" />
                   </Button>
                 ) : (
                   <Button className="flex-1" disabled>শীঘ্রই আসছে</Button>
