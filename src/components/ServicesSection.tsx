@@ -45,6 +45,7 @@ const ServicesSection = () => {
   const items = data?.items || [];
 
   const openOrder = (service: ServiceItem) => {
+    if (!requireAuth(user, navigate)) return;
     setDetailService(null);
     setFormData({
       name: profile?.full_name || "",
