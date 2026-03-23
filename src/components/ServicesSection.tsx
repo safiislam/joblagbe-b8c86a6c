@@ -33,6 +33,7 @@ const colorCycle = [
 const ServicesSection = () => {
   const { data } = useSiteContent<ServicesData>("services");
   const { user, profile } = useAuth();
+  const navigate = useNavigate();
   const [orderService, setOrderService] = useState<ServiceItem | null>(null);
   const [detailService, setDetailService] = useState<ServiceItem | null>(null);
   const [submitting, setSubmitting] = useState(false);
