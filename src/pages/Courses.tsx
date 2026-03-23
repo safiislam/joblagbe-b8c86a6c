@@ -173,7 +173,7 @@ const Courses = () => {
                                 <Button
                                   size="sm"
                                   className="gap-1 text-xs"
-                                  onClick={() => setPaymentCourse({ id: course.id, title: course.title, price: getFinalPrice(course) })}
+                                  onClick={() => handleBuyCourse(course)}
                                 >
                                   <ShoppingCart className="h-3 w-3" /> কিনুন
                                 </Button>
