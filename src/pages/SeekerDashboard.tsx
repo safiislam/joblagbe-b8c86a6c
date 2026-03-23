@@ -252,6 +252,10 @@ const SeekerDashboard = () => {
             </div>
           </TabsContent>
 
+          <TabsContent value="library" className="mt-4">
+            <MyLibrary />
+          </TabsContent>
+
           <TabsContent value="orders" className="mt-4">
             <MyServiceOrders />
           </TabsContent>
