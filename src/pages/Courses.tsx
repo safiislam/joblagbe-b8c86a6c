@@ -172,10 +172,8 @@ const Courses = () => {
                               </Button>
                               {course.is_free ? (
                                 course.link ? (
-                                  <Button size="sm" className="gap-1 text-xs" asChild>
-                                    <a href={course.link} target="_blank" rel="noopener noreferrer">
-                                      শুরু করুন <ExternalLink className="h-3 w-3" />
-                                    </a>
+                                  <Button size="sm" className="gap-1 text-xs" onClick={() => handleFreeCourseAccess(course)}>
+                                    শুরু করুন <ExternalLink className="h-3 w-3" />
                                   </Button>
                                 ) : null
                               ) : (
