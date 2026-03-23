@@ -135,17 +135,13 @@ const BookDetailDialog = ({
               </Button>
             )}
             {book.is_free && !isHardcopy && book.download_url && (
-              <Button className="gap-2" asChild>
-                <a href={book.download_url} target="_blank" rel="noopener noreferrer">
-                  <Download className="h-4 w-4" /> ডাউনলোড
-                </a>
+              <Button className="gap-2" onClick={() => onFreeAccess(book, book.download_url!)}>
+                <Download className="h-4 w-4" /> ডাউনলোড
               </Button>
             )}
             {book.is_free && isHardcopy && book.purchase_link && (
-              <Button className="gap-2 bg-amber-500 hover:bg-amber-600 text-white" asChild>
-                <a href={book.purchase_link} target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="h-4 w-4" /> ফ্রি কপি নিন
-                </a>
+              <Button className="gap-2 bg-amber-500 hover:bg-amber-600 text-white" onClick={() => onFreeAccess(book, book.purchase_link!)}>
+                <ExternalLink className="h-4 w-4" /> ফ্রি কপি নিন
               </Button>
             )}
           </div>
