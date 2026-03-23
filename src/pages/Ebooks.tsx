@@ -296,6 +296,12 @@ const Ebooks = () => {
     setPaymentBook({ id: b.id, title: b.title, price: Number(b.discount_price != null && b.discount_price < (b.price ?? 0) ? b.discount_price : b.price || 0) });
   };
 
+  const handleFreeAccess = async (book: Ebook, url: string) => {
+    if (!requireAuth(user, navigate)) return;
+    await recordFreeAccess(user!.id, "ebook", book.id, book.title);
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
   const { data: ebooks, isLoading } = useQuery({
     queryKey: ["all-ebooks"],
     queryFn: async () => {
