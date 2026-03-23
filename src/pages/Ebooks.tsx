@@ -195,7 +195,7 @@ const BookDetailDialog = ({
   );
 };
 
-const BookCard = ({ book, onBuy, onView }: { book: Ebook; onBuy: (book: Ebook) => void; onView: (book: Ebook) => void }) => {
+const BookCard = ({ book, onBuy, onView, onFreeAccess }: { book: Ebook; onBuy: (book: Ebook) => void; onView: (book: Ebook) => void; onFreeAccess: (book: Ebook, url: string) => void }) => {
   const isHardcopy = book.book_type === "hardcopy";
 
   return (
