@@ -21,13 +21,6 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
 
 const Courses = () => {
   useEffect(() => { window.scrollTo(0, 0); }, []);
