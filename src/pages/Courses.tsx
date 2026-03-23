@@ -267,7 +267,7 @@ const Courses = () => {
                   className="flex-1 gap-1"
                   onClick={() => {
                     setDetailCourse(null);
-                    setPaymentCourse({ id: detailCourse.id, title: detailCourse.title, price: getFinalPrice(detailCourse) });
+                    handleBuyCourse(detailCourse);
                   }}
                 >
                   <ShoppingCart className="h-4 w-4" /> কিনুন ৳{getFinalPrice(detailCourse)}
