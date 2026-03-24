@@ -104,7 +104,7 @@ const Contact = () => {
               </div>
               <div>
                 <p className="font-medium text-foreground">ঠিকানা</p>
-                <p className="text-sm text-muted-foreground">ঢাকা, বাংলাদেশ</p>
+                <p className="text-sm text-muted-foreground">{contactAddress}</p>
               </div>
             </div>
           </div>
