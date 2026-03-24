@@ -65,7 +65,8 @@ const Courses = () => {
     const matchSearch = !search || c.title.toLowerCase().includes(search.toLowerCase());
     const matchCat = category === "all" || c.category === category;
     const matchPrice = priceFilter === "all" || (priceFilter === "free" ? c.is_free : !c.is_free);
-    return matchSearch && matchCat && matchPrice;
+    const matchType = courseType === "all" || (c as any).course_type === courseType;
+    return matchSearch && matchCat && matchPrice && matchType;
   });
 
   const PriceDisplay = ({ course, size = "sm" }: { course: any; size?: "sm" | "lg" }) => {
