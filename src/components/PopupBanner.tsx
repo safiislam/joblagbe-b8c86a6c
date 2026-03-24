@@ -20,7 +20,9 @@ type PopupBanner = {
 
 const PopupBannerModal = () => {
   const location = useLocation();
-  const isAdmin = location.pathname.startsWith("/dashboard");
+  const hidePopup = location.pathname.startsWith("/dashboard") ||
+    location.pathname === "/login" ||
+    location.pathname === "/signup";
   const [open, setOpen] = useState(false);
   const [current, setCurrent] = useState(0);
 
@@ -73,7 +75,7 @@ const PopupBannerModal = () => {
     setOpen(false);
   }, []);
 
-  if (!open || !banners?.length || isAdmin) return null;
+  if (!open || !banners?.length || hidePopup) return null;
 
   const banner = banners[current];
   const total = banners.length;

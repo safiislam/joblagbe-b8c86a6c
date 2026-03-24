@@ -37,12 +37,14 @@ const queryClient = new QueryClient();
 
 const GlobalOverlays = () => {
   const location = useLocation();
-  const isAdmin = location.pathname.startsWith("/dashboard");
+  const hideAds = location.pathname.startsWith("/dashboard") ||
+    location.pathname === "/login" ||
+    location.pathname === "/signup";
 
   return (
     <Suspense fallback={null}>
       <AIChatWidget />
-      {!isAdmin && <AffiliatePopupLazy />}
+      {!hideAds && <AffiliatePopupLazy />}
       <TutorialVideoButton />
     </Suspense>
   );

@@ -1,3 +1,4 @@
+import { useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ExternalLink, X } from "lucide-react";
@@ -191,6 +192,8 @@ export const AffiliateCarousel = () => {
 
 // Popup Ad Component
 export const AffiliatePopup = () => {
+  const location = useLocation();
+  const hideAds = location.pathname === "/login" || location.pathname === "/signup" || location.pathname.startsWith("/dashboard");
   const [visible, setVisible] = useState(false);
   const [current, setCurrent] = useState<AffiliateProduct | null>(null);
 
@@ -232,7 +235,7 @@ export const AffiliatePopup = () => {
     return () => clearTimeout(timer);
   }, [visible]);
 
-  if (!visible || !current) return null;
+  if (!visible || !current || hideAds) return null;
 
   return (
     <div className="fixed bottom-20 right-4 z-50 w-80 max-w-[calc(100vw-2rem)] animate-in slide-in-from-right-full duration-500">
