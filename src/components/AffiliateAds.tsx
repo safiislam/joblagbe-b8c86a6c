@@ -191,6 +191,8 @@ export const AffiliateCarousel = () => {
 
 // Popup Ad Component
 export const AffiliatePopup = () => {
+  const location = useLocation();
+  const hideAds = location.pathname === "/login" || location.pathname === "/signup" || location.pathname.startsWith("/dashboard");
   const [visible, setVisible] = useState(false);
   const [current, setCurrent] = useState<AffiliateProduct | null>(null);
 
