@@ -238,7 +238,7 @@ export const AffiliatePopup = () => {
   if (!visible || !current || hideAds) return null;
 
   return (
-    <div className="fixed bottom-20 right-4 z-50 w-80 max-w-[calc(100vw-2rem)] animate-in slide-in-from-right-full duration-500">
+    <div className="fixed bottom-24 right-4 z-50 w-80 max-w-[calc(100vw-2rem)] animate-in slide-in-from-right-full duration-500">
       <div className="rounded-2xl border bg-card shadow-2xl overflow-hidden">
         <div className="flex items-start gap-1 p-1">
           <Button size="sm" variant="ghost" className="h-7 w-7 p-0 ml-auto shrink-0" onClick={() => setVisible(false)}>
