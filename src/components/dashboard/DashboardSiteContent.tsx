@@ -538,6 +538,34 @@ const DashboardSiteContent = () => {
             <SaveBtn sectionKey="tutorial_videos" />
           </div>
         </TabsContent>
+
+        {/* Contact Page */}
+        <TabsContent value="contact_page" className="space-y-4">
+          <div className="rounded-xl border bg-card p-5 space-y-4">
+            <p className="text-xs text-muted-foreground">যোগাযোগ পেজের কন্টেন্ট এডিট করুন</p>
+            <div>
+              <Label>Page Title</Label>
+              <Input className="mt-1" value={editData.contact_page?.title || ""} onChange={(e) => updateField("contact_page", "title", e.target.value)} placeholder="যোগাযোগ করুন" />
+            </div>
+            <div>
+              <Label>Subtitle</Label>
+              <Input className="mt-1" value={editData.contact_page?.subtitle || ""} onChange={(e) => updateField("contact_page", "subtitle", e.target.value)} placeholder="আমাদের সাথে যোগাযোগ করতে নিচের ফর্মটি পূরণ করুন" />
+            </div>
+            <div>
+              <Label>Email</Label>
+              <Input className="mt-1" value={editData.contact_page?.email || ""} onChange={(e) => updateField("contact_page", "email", e.target.value)} placeholder="support@joblagbe.com" />
+            </div>
+            <div>
+              <Label>Phone</Label>
+              <Input className="mt-1" value={editData.contact_page?.phone || ""} onChange={(e) => updateField("contact_page", "phone", e.target.value)} placeholder="+880 1XXX-XXXXXX" />
+            </div>
+            <div>
+              <Label>Address</Label>
+              <Input className="mt-1" value={editData.contact_page?.address || ""} onChange={(e) => updateField("contact_page", "address", e.target.value)} placeholder="ঢাকা, বাংলাদেশ" />
+            </div>
+            <SaveBtn sectionKey="contact_page" />
+          </div>
+        </TabsContent>
       </Tabs>
     </div>
   );
