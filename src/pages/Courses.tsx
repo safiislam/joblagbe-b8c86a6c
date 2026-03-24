@@ -172,6 +172,9 @@ const Courses = () => {
                         <div className="flex flex-1 flex-col p-5">
                           <div className="flex items-center gap-2 mb-2 flex-wrap">
                             <Badge variant="secondary" className="text-xs">{course.category}</Badge>
+                            <Badge variant={(course as any).course_type === "offline" ? "destructive" : "default"} className="text-[10px]">
+                              {(course as any).course_type === "offline" ? "অফলাইন" : "অনলাইন"}
+                            </Badge>
                           </div>
                           <h3 className="font-bold text-lg font-bangla group-hover:text-primary transition-colors line-clamp-2">{course.title}</h3>
                           <div className="mt-2">
