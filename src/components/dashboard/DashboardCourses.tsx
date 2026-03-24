@@ -106,6 +106,7 @@ const DashboardCourses = () => {
       discount_price: c.discount_price ?? 0,
       link: c.link ?? "",
       thumbnail_url: c.thumbnail_url ?? "",
+      course_type: c.course_type ?? "online",
     });
     setEditingId(c.id);
     setShowForm(true);
