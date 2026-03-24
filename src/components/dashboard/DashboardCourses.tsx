@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Check, X, Edit, Trash2, Eye, Search, Image } from "lucide-react";
 import {
   Dialog,
@@ -26,6 +27,7 @@ const DashboardCourses = () => {
   const [form, setForm] = useState({
     title: "", description: "", category: "", provider: "", duration: "",
     is_free: true, price: 0, discount_price: 0, link: "", thumbnail_url: "",
+    course_type: "online" as "online" | "offline",
   });
 
   const { data: courses } = useQuery({
@@ -71,6 +73,7 @@ const DashboardCourses = () => {
       price: form.is_free ? 0 : form.price,
       discount_price: form.is_free ? null : (form.discount_price || null),
       thumbnail_url: form.thumbnail_url || null,
+      course_type: form.course_type,
       is_approved: true,
     };
     if (editingId) {
@@ -89,7 +92,7 @@ const DashboardCourses = () => {
   const resetForm = () => {
     setShowForm(false);
     setEditingId(null);
-    setForm({ title: "", description: "", category: "", provider: "", duration: "", is_free: true, price: 0, discount_price: 0, link: "", thumbnail_url: "" });
+    setForm({ title: "", description: "", category: "", provider: "", duration: "", is_free: true, price: 0, discount_price: 0, link: "", thumbnail_url: "", course_type: "online" });
   };
 
   const handleEdit = (c: any) => {
@@ -104,6 +107,7 @@ const DashboardCourses = () => {
       discount_price: c.discount_price ?? 0,
       link: c.link ?? "",
       thumbnail_url: c.thumbnail_url ?? "",
+      course_type: c.course_type ?? "online",
     });
     setEditingId(c.id);
     setShowForm(true);
@@ -152,6 +156,18 @@ const DashboardCourses = () => {
           <div className="grid gap-3 md:grid-cols-2">
             <div><Label>Title *</Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="mt-1 rounded-xl" /></div>
             <div><Label>Category *</Label><Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="mt-1 rounded-xl" /></div>
+          </div>
+          <div className="grid gap-3 md:grid-cols-2">
+            <div>
+              <Label>কোর্সের ধরন *</Label>
+              <Select value={form.course_type} onValueChange={(v: "online" | "offline") => setForm({ ...form, course_type: v })}>
+                <SelectTrigger className="mt-1 rounded-xl"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="online">অনলাইন</SelectItem>
+                  <SelectItem value="offline">অফলাইন</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           <div className="grid gap-3 md:grid-cols-3">
             <div><Label>Provider</Label><Input value={form.provider} onChange={(e) => setForm({ ...form, provider: e.target.value })} className="mt-1 rounded-xl" /></div>
@@ -207,6 +223,9 @@ const DashboardCourses = () => {
                 <p className="font-semibold text-sm truncate">{c.title}</p>
                 <Badge variant={c.is_approved ? "default" : "outline"} className={`text-[10px] ${c.is_approved ? "bg-success/15 text-success border-success/20" : "border-accent text-accent"}`}>
                   {c.is_approved ? "Approved" : "Pending"}
+                </Badge>
+                <Badge variant={(c as any).course_type === "offline" ? "destructive" : "secondary"} className="text-[10px]">
+                  {(c as any).course_type === "offline" ? "অফলাইন" : "অনলাইন"}
                 </Badge>
               </div>
               <div className="flex items-center gap-2 mt-1 flex-wrap">

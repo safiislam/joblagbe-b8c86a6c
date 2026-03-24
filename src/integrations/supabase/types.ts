@@ -268,6 +268,7 @@ export type Database = {
       courses: {
         Row: {
           category: string
+          course_type: string
           created_at: string
           description: string | null
           discount_price: number | null
@@ -284,6 +285,7 @@ export type Database = {
         }
         Insert: {
           category?: string
+          course_type?: string
           created_at?: string
           description?: string | null
           discount_price?: number | null
@@ -300,6 +302,7 @@ export type Database = {
         }
         Update: {
           category?: string
+          course_type?: string
           created_at?: string
           description?: string | null
           discount_price?: number | null
