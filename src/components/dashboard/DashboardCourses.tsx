@@ -26,6 +26,7 @@ const DashboardCourses = () => {
   const [form, setForm] = useState({
     title: "", description: "", category: "", provider: "", duration: "",
     is_free: true, price: 0, discount_price: 0, link: "", thumbnail_url: "",
+    course_type: "online" as "online" | "offline",
   });
 
   const { data: courses } = useQuery({
