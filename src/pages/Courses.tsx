@@ -101,7 +101,20 @@ const Courses = () => {
       <div className="container py-10">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold font-bangla">কোর্স সমূহ</h1>
-          <p className="mt-2 text-muted-foreground">ক্যারিয়ার গড়তে দরকারি অনলাইন কোর্সসমূহ</p>
+          <p className="mt-2 text-muted-foreground">ক্যারিয়ার গড়তে দরকারি কোর্সসমূহ</p>
+          <div className="flex justify-center gap-2 mt-4">
+            {(["all", "online", "offline"] as const).map((t) => (
+              <Button
+                key={t}
+                variant={courseType === t ? "default" : "outline"}
+                size="sm"
+                onClick={() => setCourseType(t)}
+                className="font-bangla"
+              >
+                {t === "all" ? "সকল কোর্স" : t === "online" ? "অনলাইন কোর্স" : "অফলাইন কোর্স"}
+              </Button>
+            ))}
+          </div>
         </div>
 
         <div className="mb-8 flex flex-col gap-3 sm:flex-row">
