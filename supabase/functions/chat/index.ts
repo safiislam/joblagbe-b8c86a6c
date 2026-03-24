@@ -40,6 +40,7 @@ IMPORTANT - Site Routes (use ONLY these exact links):
 - Post a Job: https://joblagbe.lovable.app/post-job
 - Login: https://joblagbe.lovable.app/login
 - Sign Up: https://joblagbe.lovable.app/signup
+- Contact Us: https://joblagbe.lovable.app/contact
 - Seeker Dashboard: https://joblagbe.lovable.app/my-applications
 - Employer Dashboard: https://joblagbe.lovable.app/employer-dashboard
 - Terms: https://joblagbe.lovable.app/terms
