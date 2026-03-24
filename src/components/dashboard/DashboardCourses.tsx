@@ -72,6 +72,7 @@ const DashboardCourses = () => {
       price: form.is_free ? 0 : form.price,
       discount_price: form.is_free ? null : (form.discount_price || null),
       thumbnail_url: form.thumbnail_url || null,
+      course_type: form.course_type,
       is_approved: true,
     };
     if (editingId) {
