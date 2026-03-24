@@ -1,0 +1,1 @@
+ALTER TABLE public.courses ADD COLUMN course_type text NOT NULL DEFAULT 'online';
