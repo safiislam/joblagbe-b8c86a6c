@@ -235,7 +235,7 @@ export const AffiliatePopup = () => {
     return () => clearTimeout(timer);
   }, [visible]);
 
-  if (!visible || !current) return null;
+  if (!visible || !current || hideAds) return null;
 
   return (
     <div className="fixed bottom-20 right-4 z-50 w-80 max-w-[calc(100vw-2rem)] animate-in slide-in-from-right-full duration-500">
