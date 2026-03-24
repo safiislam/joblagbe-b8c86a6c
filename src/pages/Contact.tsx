@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSiteContent } from "@/hooks/useSiteContent";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -11,9 +12,23 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Send, Mail, Phone, MapPin } from "lucide-react";
 
+type ContactPageData = {
+  title: string;
+  subtitle: string;
+  email: string;
+  phone: string;
+  address: string;
+};
+
 const Contact = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { data: pageData } = useSiteContent<ContactPageData>("contact_page");
+  const pageTitle = pageData?.title || "যোগাযোগ করুন";
+  const pageSubtitle = pageData?.subtitle || "আমাদের সাথে যোগাযোগ করতে নিচের ফর্মটি পূরণ করুন";
+  const contactEmail = pageData?.email || "support@joblagbe.com";
+  const contactPhone = pageData?.phone || "+880 1XXX-XXXXXX";
+  const contactAddress = pageData?.address || "ঢাকা, বাংলাদেশ";
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     name: "",
@@ -58,8 +73,8 @@ const Contact = () => {
       <Header />
       <main className="container mx-auto px-4 py-10 max-w-4xl">
         <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold text-foreground mb-2">যোগাযোগ করুন</h1>
-          <p className="text-muted-foreground">আমাদের সাথে যোগাযোগ করতে নিচের ফর্মটি পূরণ করুন</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">{pageTitle}</h1>
+          <p className="text-muted-foreground">{pageSubtitle}</p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
@@ -71,7 +86,7 @@ const Contact = () => {
               </div>
               <div>
                 <p className="font-medium text-foreground">ইমেইল</p>
-                <p className="text-sm text-muted-foreground">support@joblagbe.com</p>
+                <p className="text-sm text-muted-foreground">{contactEmail}</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
@@ -80,7 +95,7 @@ const Contact = () => {
               </div>
               <div>
                 <p className="font-medium text-foreground">ফোন</p>
-                <p className="text-sm text-muted-foreground">+880 1XXX-XXXXXX</p>
+                <p className="text-sm text-muted-foreground">{contactPhone}</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
@@ -89,7 +104,7 @@ const Contact = () => {
               </div>
               <div>
                 <p className="font-medium text-foreground">ঠিকানা</p>
-                <p className="text-sm text-muted-foreground">ঢাকা, বাংলাদেশ</p>
+                <p className="text-sm text-muted-foreground">{contactAddress}</p>
               </div>
             </div>
           </div>

@@ -60,7 +60,7 @@ const Footer = () => {
             <ul className="mt-3 space-y-2.5 text-sm text-muted-foreground">
               <li className="flex items-center gap-2"><Mail className="h-4 w-4" /> {email}</li>
               <li className="flex items-center gap-2"><Phone className="h-4 w-4" /> {phone}</li>
-              <li><Link to="/blog" className="transition-colors hover:text-primary">Blog</Link></li>
+              <li><Link to="/contact" className="transition-colors hover:text-primary">Free Consultation</Link></li>
             </ul>
           </div>
         </div>
