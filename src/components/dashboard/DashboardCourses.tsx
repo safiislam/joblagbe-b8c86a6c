@@ -91,7 +91,7 @@ const DashboardCourses = () => {
   const resetForm = () => {
     setShowForm(false);
     setEditingId(null);
-    setForm({ title: "", description: "", category: "", provider: "", duration: "", is_free: true, price: 0, discount_price: 0, link: "", thumbnail_url: "" });
+    setForm({ title: "", description: "", category: "", provider: "", duration: "", is_free: true, price: 0, discount_price: 0, link: "", thumbnail_url: "", course_type: "online" });
   };
 
   const handleEdit = (c: any) => {
