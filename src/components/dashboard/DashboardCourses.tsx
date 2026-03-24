@@ -224,6 +224,9 @@ const DashboardCourses = () => {
                 <Badge variant={c.is_approved ? "default" : "outline"} className={`text-[10px] ${c.is_approved ? "bg-success/15 text-success border-success/20" : "border-accent text-accent"}`}>
                   {c.is_approved ? "Approved" : "Pending"}
                 </Badge>
+                <Badge variant={(c as any).course_type === "offline" ? "destructive" : "secondary"} className="text-[10px]">
+                  {(c as any).course_type === "offline" ? "অফলাইন" : "অনলাইন"}
+                </Badge>
               </div>
               <div className="flex items-center gap-2 mt-1 flex-wrap">
                 <span className="text-xs text-muted-foreground">{c.category}</span>
