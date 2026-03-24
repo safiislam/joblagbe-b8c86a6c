@@ -86,7 +86,7 @@ const Contact = () => {
               </div>
               <div>
                 <p className="font-medium text-foreground">ইমেইল</p>
-                <p className="text-sm text-muted-foreground">support@joblagbe.com</p>
+                <p className="text-sm text-muted-foreground">{contactEmail}</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
