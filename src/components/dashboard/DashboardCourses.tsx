@@ -156,6 +156,18 @@ const DashboardCourses = () => {
             <div><Label>Title *</Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="mt-1 rounded-xl" /></div>
             <div><Label>Category *</Label><Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="mt-1 rounded-xl" /></div>
           </div>
+          <div className="grid gap-3 md:grid-cols-2">
+            <div>
+              <Label>কোর্সের ধরন *</Label>
+              <Select value={form.course_type} onValueChange={(v: "online" | "offline") => setForm({ ...form, course_type: v })}>
+                <SelectTrigger className="mt-1 rounded-xl"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="online">অনলাইন</SelectItem>
+                  <SelectItem value="offline">অফলাইন</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
           <div className="grid gap-3 md:grid-cols-3">
             <div><Label>Provider</Label><Input value={form.provider} onChange={(e) => setForm({ ...form, provider: e.target.value })} className="mt-1 rounded-xl" /></div>
             <div><Label>Duration</Label><Input value={form.duration} onChange={(e) => setForm({ ...form, duration: e.target.value })} className="mt-1 rounded-xl" /></div>
