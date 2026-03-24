@@ -73,8 +73,8 @@ const Contact = () => {
       <Header />
       <main className="container mx-auto px-4 py-10 max-w-4xl">
         <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold text-foreground mb-2">যোগাযোগ করুন</h1>
-          <p className="text-muted-foreground">আমাদের সাথে যোগাযোগ করতে নিচের ফর্মটি পূরণ করুন</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">{pageTitle}</h1>
+          <p className="text-muted-foreground">{pageSubtitle}</p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
