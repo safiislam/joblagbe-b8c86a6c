@@ -31,6 +31,7 @@ const Courses = () => {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [priceFilter, setPriceFilter] = useState("all");
+  const [courseType, setCourseType] = useState<"all" | "online" | "offline">("all");
   const [paymentCourse, setPaymentCourse] = useState<{ id: string; title: string; price: number } | null>(null);
   const [detailCourse, setDetailCourse] = useState<any>(null);
 
