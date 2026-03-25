@@ -378,21 +378,31 @@ const EmployerDashboard = () => {
                           </div>
                           <p className="mt-0.5 text-xs text-muted-foreground">{job.location} · {job.job_type} · {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}</p>
                         </button>
-                        {job.is_active && (
+                        <div className="mt-2 flex gap-2 flex-wrap">
                           <Button
                             size="sm"
                             variant="outline"
-                            className="mt-2 gap-1.5 text-destructive border-destructive/30 hover:bg-destructive hover:text-destructive-foreground text-xs"
-                            disabled={endJob.isPending}
-                            onClick={() => {
-                              if (confirm("Are you sure you want to end this job? No one will be able to apply anymore.")) {
-                                endJob.mutate(job.id);
-                              }
-                            }}
+                            className="gap-1.5 text-xs"
+                            onClick={() => setEditingJob(job)}
                           >
-                            <Ban className="h-3 w-3" /> End Job
+                            <Pencil className="h-3 w-3" /> Edit
                           </Button>
-                        )}
+                          {job.is_active && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="gap-1.5 text-destructive border-destructive/30 hover:bg-destructive hover:text-destructive-foreground text-xs"
+                              disabled={endJob.isPending}
+                              onClick={() => {
+                                if (confirm("Are you sure you want to end this job? No one will be able to apply anymore.")) {
+                                  endJob.mutate(job.id);
+                                }
+                              }}
+                            >
+                              <Ban className="h-3 w-3" /> End Job
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     )) : (
                       <div className="flex flex-col items-center py-10 text-muted-foreground">
