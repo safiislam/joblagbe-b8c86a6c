@@ -8,7 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Pencil, Trash2, Image as ImageIcon, Upload, X, Loader2, Eye } from "lucide-react";
+import { Plus, Pencil, Trash2, Image as ImageIcon, Upload, X, Loader2, Eye, Maximize2, Minimize2 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 import { v4 as uuidv4 } from "uuid";
 
 type BlogPost = {
