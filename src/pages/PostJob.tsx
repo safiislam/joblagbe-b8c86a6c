@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
+import MultiLocationInput from "@/components/MultiLocationInput";
 
 const PostJob = () => {
   const { user } = useAuth();
@@ -30,7 +31,6 @@ const PostJob = () => {
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({
     title: "",
-    location: "",
     salaryMin: "",
     salaryMax: "",
     jobType: "Full-time",
@@ -38,6 +38,7 @@ const PostJob = () => {
     description: "",
     requirements: "",
   });
+  const [locations, setLocations] = useState<string[]>([]);
   const [deadline, setDeadline] = useState<Date | undefined>(undefined);
 
   const minDeadline = useMemo(() => addDays(new Date(), 1), []);
