@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
-import { Briefcase, Plus, Users, Clock, CheckCircle, Eye, XCircle, UserCheck, FileText, Upload, Building2, Ban, Loader2, BadgeCheck, ShieldCheck, Save, ShoppingBag, Search, Filter, Phone, User, BookOpen } from "lucide-react";
+import { Briefcase, Plus, Users, Clock, CheckCircle, Eye, XCircle, UserCheck, FileText, Upload, Building2, Ban, Loader2, BadgeCheck, ShieldCheck, Save, ShoppingBag, Search, Filter, Phone, User, BookOpen, Pencil } from "lucide-react";
 import MyServiceOrders from "@/components/MyServiceOrders";
 import MyLibrary from "@/components/MyLibrary";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -16,11 +16,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import EditJobFormDialog from "@/components/EditJobFormDialog";
 
 
 type EmployerJob = {
   id: string; title: string; location: string; job_type: string;
   is_active: boolean; is_approved: boolean; created_at: string;
+  description: string; requirements: string[] | null;
+  salary_min: number | null; salary_max: number | null;
+  category_id: string | null; application_deadline: string | null;
 };
 
 type ApplicationRow = {
@@ -98,9 +102,10 @@ const EmployerDashboard = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
-  const [applicantSearch, setApplicantSearch] = useState("");
-  const [applicantStatusFilter, setApplicantStatusFilter] = useState("all");
-  const [requestingVerify, setRequestingVerify] = useState(false);
+   const [applicantSearch, setApplicantSearch] = useState("");
+   const [applicantStatusFilter, setApplicantStatusFilter] = useState("all");
+   const [requestingVerify, setRequestingVerify] = useState(false);
+   const [editingJob, setEditingJob] = useState<EmployerJob | null>(null);
   useEffect(() => {
     if (!loading && (!user || profile?.role !== "employer")) navigate("/");
   }, [user, profile, loading, navigate]);
@@ -119,7 +124,7 @@ const EmployerDashboard = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("jobs")
-        .select("id, title, location, job_type, is_active, is_approved, created_at")
+        .select("id, title, location, job_type, is_active, is_approved, created_at, description, requirements, salary_min, salary_max, category_id, application_deadline")
         .eq("company_id", company!.id)
         .order("created_at", { ascending: false });
       return (data as unknown as EmployerJob[]) ?? [];
@@ -373,21 +378,31 @@ const EmployerDashboard = () => {
                           </div>
                           <p className="mt-0.5 text-xs text-muted-foreground">{job.location} · {job.job_type} · {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}</p>
                         </button>
-                        {job.is_active && (
+                        <div className="mt-2 flex gap-2 flex-wrap">
                           <Button
                             size="sm"
                             variant="outline"
-                            className="mt-2 gap-1.5 text-destructive border-destructive/30 hover:bg-destructive hover:text-destructive-foreground text-xs"
-                            disabled={endJob.isPending}
-                            onClick={() => {
-                              if (confirm("Are you sure you want to end this job? No one will be able to apply anymore.")) {
-                                endJob.mutate(job.id);
-                              }
-                            }}
+                            className="gap-1.5 text-xs"
+                            onClick={() => setEditingJob(job)}
                           >
-                            <Ban className="h-3 w-3" /> End Job
+                            <Pencil className="h-3 w-3" /> Edit
                           </Button>
-                        )}
+                          {job.is_active && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="gap-1.5 text-destructive border-destructive/30 hover:bg-destructive hover:text-destructive-foreground text-xs"
+                              disabled={endJob.isPending}
+                              onClick={() => {
+                                if (confirm("Are you sure you want to end this job? No one will be able to apply anymore.")) {
+                                  endJob.mutate(job.id);
+                                }
+                              }}
+                            >
+                              <Ban className="h-3 w-3" /> End Job
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     )) : (
                       <div className="flex flex-col items-center py-10 text-muted-foreground">
@@ -518,6 +533,18 @@ const EmployerDashboard = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {editingJob && (
+        <EditJobFormDialog
+          job={editingJob}
+          open={!!editingJob}
+          onOpenChange={(open) => { if (!open) setEditingJob(null); }}
+          onSuccess={() => {
+            setEditingJob(null);
+            queryClient.invalidateQueries({ queryKey: ["employer-jobs", company?.id] });
+          }}
+        />
+      )}
     </div>
   );
 };
