@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Check, X, Edit, Trash2, Eye, Search, Image } from "lucide-react";
+import { Plus, Check, X, Edit, Trash2, Eye, Search, Image, Upload, Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -24,6 +24,7 @@ const DashboardCourses = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [previewCourse, setPreviewCourse] = useState<any>(null);
+  const [uploading, setUploading] = useState(false);
   const [form, setForm] = useState({
     title: "", description: "", category: "", provider: "", duration: "",
     is_free: true, price: 0, discount_price: 0, link: "", thumbnail_url: "",
@@ -175,8 +176,37 @@ const DashboardCourses = () => {
             <div><Label>Link</Label><Input value={form.link} onChange={(e) => setForm({ ...form, link: e.target.value })} className="mt-1 rounded-xl" /></div>
           </div>
           <div>
-            <Label className="flex items-center gap-1"><Image className="h-3.5 w-3.5" /> Thumbnail URL</Label>
-            <Input value={form.thumbnail_url} onChange={(e) => setForm({ ...form, thumbnail_url: e.target.value })} placeholder="https://example.com/image.jpg" className="mt-1 rounded-xl" />
+            <Label className="flex items-center gap-1"><Image className="h-3.5 w-3.5" /> থাম্বনেইল ইমেজ</Label>
+            <div className="flex items-center gap-2 mt-1">
+              <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border bg-muted text-sm hover:bg-muted/80 transition-colors">
+                {uploading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
+                {uploading ? "আপলোড হচ্ছে..." : "ইমেজ আপলোড"}
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  disabled={uploading}
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    setUploading(true);
+                    const ext = file.name.split('.').pop();
+                    const fileName = `${Date.now()}.${ext}`;
+                    const { error } = await supabase.storage.from("course-images").upload(fileName, file);
+                    if (error) { toast.error("আপলোড ব্যর্থ: " + error.message); setUploading(false); return; }
+                    const { data: urlData } = supabase.storage.from("course-images").getPublicUrl(fileName);
+                    setForm(f => ({ ...f, thumbnail_url: urlData.publicUrl }));
+                    setUploading(false);
+                    toast.success("ইমেজ আপলোড সফল!");
+                  }}
+                />
+              </label>
+              {form.thumbnail_url && (
+                <Button type="button" variant="ghost" size="sm" className="text-destructive text-xs" onClick={() => setForm(f => ({ ...f, thumbnail_url: "" }))}>
+                  <X className="h-3 w-3 mr-1" /> সরান
+                </Button>
+              )}
+            </div>
             {form.thumbnail_url && (
               <div className="mt-2 rounded-lg overflow-hidden border w-32 h-20">
                 <img src={form.thumbnail_url} alt="Preview" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
