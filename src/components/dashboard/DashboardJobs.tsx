@@ -5,7 +5,8 @@ import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, Eye, Tag, EyeOff } from "lucide-react";
+import { Check, X, Eye, Tag, EyeOff, Trash2 } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 
@@ -91,6 +92,13 @@ const DashboardJobs = () => {
     refreshAll();
   };
 
+  const handleDelete = async (jobId: string) => {
+    const { error } = await supabase.from("jobs").delete().eq("id", jobId);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Job permanently deleted");
+    refreshAll();
+  };
+
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-bold">Job Management</h1>
@@ -145,6 +153,21 @@ const DashboardJobs = () => {
                     </>
                   )}
                   {job.is_approved && <Button size="sm" variant="ghost" onClick={() => handleReject(job.id)} className="gap-1 text-destructive text-xs"><X className="h-3 w-3" /> Deactivate</Button>}
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button size="sm" variant="ghost" className="gap-1 text-destructive text-xs"><Trash2 className="h-3 w-3" /> Delete</Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Permanently delete this job?</AlertDialogTitle>
+                        <AlertDialogDescription>"{job.title}" will be permanently deleted. This action cannot be undone.</AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => handleDelete(job.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
               {expandedJob === job.id && (
