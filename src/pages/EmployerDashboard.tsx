@@ -102,9 +102,10 @@ const EmployerDashboard = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
-  const [applicantSearch, setApplicantSearch] = useState("");
-  const [applicantStatusFilter, setApplicantStatusFilter] = useState("all");
-  const [requestingVerify, setRequestingVerify] = useState(false);
+   const [applicantSearch, setApplicantSearch] = useState("");
+   const [applicantStatusFilter, setApplicantStatusFilter] = useState("all");
+   const [requestingVerify, setRequestingVerify] = useState(false);
+   const [editingJob, setEditingJob] = useState<EmployerJob | null>(null);
   useEffect(() => {
     if (!loading && (!user || profile?.role !== "employer")) navigate("/");
   }, [user, profile, loading, navigate]);
@@ -123,7 +124,7 @@ const EmployerDashboard = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("jobs")
-        .select("id, title, location, job_type, is_active, is_approved, created_at")
+        .select("id, title, location, job_type, is_active, is_approved, created_at, description, requirements, salary_min, salary_max, category_id, application_deadline")
         .eq("company_id", company!.id)
         .order("created_at", { ascending: false });
       return (data as unknown as EmployerJob[]) ?? [];
