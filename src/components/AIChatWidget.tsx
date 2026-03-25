@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { MessageCircle, X, Send, Bot, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import ReactMarkdown from "react-markdown";
 import { checkRateLimit, RATE_LIMITS } from "@/hooks/useRateLimit";
+import { useAuth } from "@/contexts/AuthContext";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -20,6 +22,7 @@ const AIChatWidget = () => {
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const sessionId = useMemo(() => generateSessionId(), []);
+  const { user, profile } = useAuth();
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -33,7 +36,6 @@ const AIChatWidget = () => {
     const text = input.trim();
     if (!text || isLoading) return;
 
-    // Rate limit check
     const allowed = await checkRateLimit(RATE_LIMITS.CHAT_MESSAGE);
     if (!allowed) return;
 
@@ -103,7 +105,6 @@ const AIChatWidget = () => {
         }
       }
 
-      // Save final messages (including assistant response) to chat log
       if (assistantSoFar) {
         try {
           await fetch(CHAT_URL, {
@@ -125,6 +126,8 @@ const AIChatWidget = () => {
     }
     setIsLoading(false);
   };
+
+  const userInitial = profile?.full_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || "U";
 
   return (
     <>
@@ -175,11 +178,11 @@ const AIChatWidget = () => {
                   }`}
                 >
                   {m.role === "assistant" ? (
-                    <div className="prose prose-sm max-w-none [&_p]:mb-1 [&_p]:mt-0 [&_ul]:my-1 [&_li]:my-0 [&_img]:rounded-lg [&_img]:max-w-full [&_img]:my-2 [&_a]:text-primary [&_a]:underline">
+                    <div className="prose prose-sm max-w-none [&_p]:mb-1 [&_p]:mt-0 [&_ul]:my-1 [&_li]:my-0 [&_img]:rounded-lg [&_img]:max-w-full [&_img]:my-2 [&_a]:text-primary [&_a]:underline [&_a]:font-medium">
                       <ReactMarkdown
                         components={{
                           a: ({ href, children }) => (
-                            <a href={href} target="_blank" rel="noopener noreferrer" className="text-primary underline hover:opacity-80">
+                            <a href={href} target="_blank" rel="noopener noreferrer" className="text-primary underline font-medium hover:opacity-80 inline-flex items-center gap-0.5">
                               {children}
                             </a>
                           ),
@@ -194,9 +197,14 @@ const AIChatWidget = () => {
                   )}
                 </div>
                 {m.role === "user" && (
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
-                    <User className="h-3.5 w-3.5" />
-                  </div>
+                  <Avatar className="h-7 w-7 shrink-0">
+                    {profile?.avatar_url ? (
+                      <AvatarImage src={profile.avatar_url} alt={profile.full_name || "User"} />
+                    ) : null}
+                    <AvatarFallback className="bg-accent/10 text-accent text-xs font-medium">
+                      {userInitial}
+                    </AvatarFallback>
+                  </Avatar>
                 )}
               </div>
             ))}
