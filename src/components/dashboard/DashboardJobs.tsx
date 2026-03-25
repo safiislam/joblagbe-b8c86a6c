@@ -153,6 +153,21 @@ const DashboardJobs = () => {
                     </>
                   )}
                   {job.is_approved && <Button size="sm" variant="ghost" onClick={() => handleReject(job.id)} className="gap-1 text-destructive text-xs"><X className="h-3 w-3" /> Deactivate</Button>}
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button size="sm" variant="ghost" className="gap-1 text-destructive text-xs"><Trash2 className="h-3 w-3" /> Delete</Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Permanently delete this job?</AlertDialogTitle>
+                        <AlertDialogDescription>"{job.title}" will be permanently deleted. This action cannot be undone.</AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => handleDelete(job.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
               {expandedJob === job.id && (
