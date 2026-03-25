@@ -24,6 +24,7 @@ const DashboardCourses = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [previewCourse, setPreviewCourse] = useState<any>(null);
+  const [uploading, setUploading] = useState(false);
   const [form, setForm] = useState({
     title: "", description: "", category: "", provider: "", duration: "",
     is_free: true, price: 0, discount_price: 0, link: "", thumbnail_url: "",
