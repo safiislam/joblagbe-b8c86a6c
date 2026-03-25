@@ -92,6 +92,13 @@ const DashboardJobs = () => {
     refreshAll();
   };
 
+  const handleDelete = async (jobId: string) => {
+    const { error } = await supabase.from("jobs").delete().eq("id", jobId);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Job permanently deleted");
+    refreshAll();
+  };
+
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-bold">Job Management</h1>
