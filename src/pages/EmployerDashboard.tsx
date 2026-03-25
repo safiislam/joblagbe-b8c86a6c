@@ -533,6 +533,18 @@ const EmployerDashboard = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {editingJob && (
+        <EditJobFormDialog
+          job={editingJob}
+          open={!!editingJob}
+          onOpenChange={(open) => { if (!open) setEditingJob(null); }}
+          onSuccess={() => {
+            setEditingJob(null);
+            queryClient.invalidateQueries({ queryKey: ["employer-jobs", company?.id] });
+          }}
+        />
+      )}
     </div>
   );
 };
