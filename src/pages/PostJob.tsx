@@ -111,6 +111,7 @@ const PostJob = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) { toast.error("Please login first"); navigate("/login"); return; }
+    if (locations.length === 0) { toast.error("অন্তত একটি লোকেশন যোগ করুন"); return; }
 
     setLoading(true);
     let companyId = company?.id;
