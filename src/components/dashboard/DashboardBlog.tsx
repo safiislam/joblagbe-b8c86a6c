@@ -8,7 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Pencil, Trash2, Image as ImageIcon, Upload, X, Loader2, Eye } from "lucide-react";
+import { Plus, Pencil, Trash2, Image as ImageIcon, Upload, X, Loader2, Eye, Maximize2, Minimize2 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 import { v4 as uuidv4 } from "uuid";
 
 type BlogPost = {
@@ -36,6 +37,8 @@ const DashboardBlog = () => {
   const coverInputRef = useRef<HTMLInputElement>(null);
   const contentImageRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [contentTab, setContentTab] = useState<"write" | "preview">("write");
+  const [fullscreen, setFullscreen] = useState(false);
 
   const { data: posts } = useQuery({
     queryKey: ["admin-blogs"],
@@ -248,30 +251,85 @@ const DashboardBlog = () => {
             </div>
           </div>
 
-          <div>
+          <div className={fullscreen ? "fixed inset-0 z-[200] bg-background p-4 flex flex-col" : ""}>
             <div className="flex items-center justify-between mb-1">
-              <Label>Content (Markdown) *</Label>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => contentImageRef.current?.click()}
-                disabled={insertingImage}
-                className="gap-1.5 text-xs"
-              >
-                {insertingImage ? <Loader2 className="h-3 w-3 animate-spin" /> : <ImageIcon className="h-3 w-3" />}
-                Insert Image
-              </Button>
+              <div className="flex items-center gap-2">
+                <Label>Content (Markdown) *</Label>
+                <div className="flex rounded-lg border overflow-hidden text-xs">
+                  <button
+                    type="button"
+                    onClick={() => setContentTab("write")}
+                    className={`px-3 py-1 transition-colors ${contentTab === "write" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
+                  >Write</button>
+                  <button
+                    type="button"
+                    onClick={() => setContentTab("preview")}
+                    className={`px-3 py-1 transition-colors ${contentTab === "preview" ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
+                  >Preview</button>
+                </div>
+              </div>
+              <div className="flex items-center gap-1.5">
+                {contentTab === "write" && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => contentImageRef.current?.click()}
+                    disabled={insertingImage}
+                    className="gap-1.5 text-xs"
+                  >
+                    {insertingImage ? <Loader2 className="h-3 w-3 animate-spin" /> : <ImageIcon className="h-3 w-3" />}
+                    Insert Image
+                  </Button>
+                )}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setFullscreen((f) => !f)}
+                  className="gap-1.5 text-xs"
+                >
+                  {fullscreen ? <Minimize2 className="h-3 w-3" /> : <Maximize2 className="h-3 w-3" />}
+                  {fullscreen ? "Exit" : "Fullscreen"}
+                </Button>
+              </div>
               <input ref={contentImageRef} type="file" accept="image/*" className="hidden" onChange={handleContentImageInsert} />
             </div>
-            <Textarea
-              ref={textareaRef}
-              value={form.content}
-              onChange={(e) => setForm({ ...form, content: e.target.value })}
-              rows={12}
-              className="mt-1 rounded-xl font-mono text-sm"
-              placeholder="Write your blog content in Markdown...&#10;&#10;Use **bold**, *italic*, ## headings, - lists&#10;Click 'Insert Image' to add images inline"
-            />
+
+            {contentTab === "write" ? (
+              <Textarea
+                ref={textareaRef}
+                value={form.content}
+                onChange={(e) => setForm({ ...form, content: e.target.value })}
+                rows={fullscreen ? 30 : 12}
+                className={`mt-1 rounded-xl font-mono text-sm ${fullscreen ? "flex-1 resize-none" : ""}`}
+                placeholder="Write your blog content in Markdown...&#10;&#10;Use **bold**, *italic*, ## headings, - lists&#10;Click 'Insert Image' to add images inline"
+              />
+            ) : (
+              <div className={`mt-1 rounded-xl border bg-card p-4 overflow-auto prose prose-sm max-w-none ${fullscreen ? "flex-1" : "min-h-[300px] max-h-[500px]"}`}>
+                {form.content ? (
+                  <ReactMarkdown
+                    components={{
+                      img: ({ src, alt }) => (
+                        <img src={src} alt={alt || ""} className="max-w-full rounded-lg my-2" loading="lazy" />
+                      ),
+                    }}
+                  >{form.content}</ReactMarkdown>
+                ) : (
+                  <p className="text-muted-foreground italic">Nothing to preview yet...</p>
+                )}
+              </div>
+            )}
+
+            {fullscreen && (
+              <div className="flex gap-2 mt-3">
+                <Button onClick={handleSave} disabled={saving} className="bg-success text-success-foreground gap-1.5">
+                  {saving && <Loader2 className="h-4 w-4 animate-spin" />}
+                  {editingId ? "Update Post" : "Publish"}
+                </Button>
+                <Button variant="ghost" onClick={() => setFullscreen(false)}>Exit Fullscreen</Button>
+              </div>
+            )}
           </div>
 
           <div className="flex gap-2">
