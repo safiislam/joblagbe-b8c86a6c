@@ -37,6 +37,8 @@ const DashboardBlog = () => {
   const coverInputRef = useRef<HTMLInputElement>(null);
   const contentImageRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [contentTab, setContentTab] = useState<"write" | "preview">("write");
+  const [fullscreen, setFullscreen] = useState(false);
 
   const { data: posts } = useQuery({
     queryKey: ["admin-blogs"],
