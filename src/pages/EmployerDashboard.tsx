@@ -22,6 +22,9 @@ import EditJobFormDialog from "@/components/EditJobFormDialog";
 type EmployerJob = {
   id: string; title: string; location: string; job_type: string;
   is_active: boolean; is_approved: boolean; created_at: string;
+  description: string; requirements: string[] | null;
+  salary_min: number | null; salary_max: number | null;
+  category_id: string | null; application_deadline: string | null;
 };
 
 type ApplicationRow = {
