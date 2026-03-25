@@ -140,7 +140,7 @@ const PostJob = () => {
       company_id: companyId,
       category_id: form.categoryId || null,
       title: form.title,
-      location: form.location,
+      location: locations.join(", "),
       salary_min: form.salaryMin ? parseInt(form.salaryMin) : null,
       salary_max: form.salaryMax ? parseInt(form.salaryMax) : null,
       job_type: form.jobType,
@@ -187,7 +187,7 @@ const PostJob = () => {
           </p>
           <div className="mt-6 flex gap-3">
             <Button onClick={() => navigate("/employer-dashboard")} variant="outline">Go to Dashboard</Button>
-            <Button onClick={() => { setSubmitted(false); setForm({ title: "", location: "", salaryMin: "", salaryMax: "", jobType: "Full-time", categoryId: "", description: "", requirements: "" }); }} className="bg-accent text-accent-foreground">
+            <Button onClick={() => { setSubmitted(false); setForm({ title: "", salaryMin: "", salaryMax: "", jobType: "Full-time", categoryId: "", description: "", requirements: "" }); setLocations([]); }} className="bg-accent text-accent-foreground">
               Post Another Job
             </Button>
           </div>
@@ -270,8 +270,10 @@ const PostJob = () => {
               <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required placeholder="e.g. Software Engineer" className="mt-1.5 rounded-xl" />
             </div>
             <div>
-              <Label>Location</Label>
-              <Input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} required placeholder="e.g. Dhaka" className="mt-1.5 rounded-xl" />
+              <Label>Location(s)</Label>
+              <div className="mt-1.5">
+                <MultiLocationInput locations={locations} onChange={setLocations} />
+              </div>
             </div>
           </div>
           <div className="grid gap-4 md:grid-cols-3">
