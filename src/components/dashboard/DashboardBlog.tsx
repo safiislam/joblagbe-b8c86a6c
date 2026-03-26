@@ -11,7 +11,6 @@ import { Plus, Pencil, Trash2, Image as ImageIcon, Upload, X, Loader2, Eye, Maxi
 import ReactMarkdown from "react-markdown";
 import { v4 as uuidv4 } from "uuid";
 import MarkdownEditor from "@/components/MarkdownEditor";
-import { v4 as uuidv4 } from "uuid";
 
 type BlogPost = {
   id: string;
