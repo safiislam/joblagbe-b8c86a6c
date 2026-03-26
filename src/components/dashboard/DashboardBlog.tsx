@@ -7,10 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Plus, Pencil, Trash2, Image as ImageIcon, Upload, X, Loader2, Eye, Maximize2, Minimize2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { v4 as uuidv4 } from "uuid";
+import MarkdownEditor from "@/components/MarkdownEditor";
 
 type BlogPost = {
   id: string;
@@ -297,13 +297,13 @@ const DashboardBlog = () => {
             </div>
 
             {contentTab === "write" ? (
-              <Textarea
-                ref={textareaRef}
+              <MarkdownEditor
+                textareaRef={textareaRef}
                 value={form.content}
-                onChange={(e) => setForm({ ...form, content: e.target.value })}
+                onChange={(val) => setForm({ ...form, content: val })}
                 rows={fullscreen ? 30 : 12}
-                className={`mt-1 rounded-xl font-mono text-sm ${fullscreen ? "flex-1 resize-none" : ""}`}
-                placeholder="Write your blog content in Markdown...&#10;&#10;Use **bold**, *italic*, ## headings, - lists&#10;Click 'Insert Image' to add images inline"
+                className={fullscreen ? "flex-1 resize-none" : ""}
+                placeholder="Write your blog content in Markdown...&#10;&#10;Use the toolbar above for formatting&#10;Click 'Insert Image' to add images inline"
               />
             ) : (
               <div className={`mt-1 rounded-xl border bg-card p-4 overflow-auto prose prose-sm max-w-none ${fullscreen ? "flex-1" : "min-h-[300px] max-h-[500px]"}`}>
