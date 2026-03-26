@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
   Bold, Italic, Heading1, Heading2, Heading3, List, ListOrdered,
-  Quote, Code, Link2, Minus, Undo2
+  Quote, Code, Link2, Minus, Undo2, Redo2
 } from "lucide-react";
 import {
   Tooltip,
@@ -57,6 +57,45 @@ const MarkdownEditor = ({
 }: MarkdownEditorProps) => {
   const internalRef = useRef<HTMLTextAreaElement>(null);
   const taRef = (externalRef ?? internalRef) as React.RefObject<HTMLTextAreaElement>;
+  const historyRef = useRef<string[]>([value]);
+  const historyIndexRef = useRef(0);
+  const isUndoRedoRef = useRef(false);
+
+  const pushHistory = useCallback((newValue: string) => {
+    if (isUndoRedoRef.current) {
+      isUndoRedoRef.current = false;
+      return;
+    }
+    const history = historyRef.current;
+    const idx = historyIndexRef.current;
+    // Trim any future states
+    historyRef.current = history.slice(0, idx + 1);
+    historyRef.current.push(newValue);
+    // Keep max 50 states
+    if (historyRef.current.length > 50) historyRef.current.shift();
+    historyIndexRef.current = historyRef.current.length - 1;
+  }, []);
+
+  const handleUndo = useCallback(() => {
+    if (historyIndexRef.current > 0) {
+      historyIndexRef.current -= 1;
+      isUndoRedoRef.current = true;
+      onChange(historyRef.current[historyIndexRef.current]);
+    }
+  }, [onChange]);
+
+  const handleRedo = useCallback(() => {
+    if (historyIndexRef.current < historyRef.current.length - 1) {
+      historyIndexRef.current += 1;
+      isUndoRedoRef.current = true;
+      onChange(historyRef.current[historyIndexRef.current]);
+    }
+  }, [onChange]);
+
+  const handleChange = useCallback((newValue: string) => {
+    pushHistory(newValue);
+    onChange(newValue);
+  }, [onChange, pushHistory]);
 
   const applyFormat = useCallback(
     (action: FormatAction) => {
@@ -151,6 +190,23 @@ const MarkdownEditor = ({
               </Tooltip>
             );
           })}
+          <Separator orientation="vertical" className="mx-1 h-6" />
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button type="button" variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-background" onClick={handleUndo}>
+                <Undo2 className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="text-xs">Undo</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button type="button" variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-background" onClick={handleRedo}>
+                <Redo2 className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="text-xs">Redo</TooltipContent>
+          </Tooltip>
         </div>
       </TooltipProvider>
 
@@ -158,7 +214,7 @@ const MarkdownEditor = ({
       <Textarea
         ref={taRef}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => handleChange(e.target.value)}
         rows={rows}
         className={`border-0 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0 font-mono text-sm resize-y ${className}`}
         placeholder={placeholder}
