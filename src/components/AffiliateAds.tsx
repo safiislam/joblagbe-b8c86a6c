@@ -142,7 +142,7 @@ export const AffiliateCarousel = () => {
         .from("affiliate_products")
         .select("*")
         .eq("is_active", true)
-        .in("placement", ["carousel", "sidebar", "in_content"])
+        .in("placement", ["carousel", "sidebar"])
         .order("sort_order", { ascending: true })
         .limit(10);
       return (data as unknown as AffiliateProduct[]) ?? [];
