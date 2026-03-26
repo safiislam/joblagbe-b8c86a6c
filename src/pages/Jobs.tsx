@@ -56,7 +56,7 @@ const Jobs = () => {
 
   const jobTypes = [...new Set(jobs?.map((j) => j.job_type) ?? [])];
   const locations = useMemo(() => {
-    const locs = jobs?.map((j) => j.location).filter(Boolean) ?? [];
+    const locs = jobs?.flatMap((j) => j.location?.split(",").map((l) => l.trim()).filter(Boolean) ?? []) ?? [];
     return [...new Set(locs)].sort();
   }, [jobs]);
 
