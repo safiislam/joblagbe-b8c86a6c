@@ -306,15 +306,23 @@ const DashboardBlog = () => {
                 placeholder="Write your blog content in Markdown...&#10;&#10;Use the toolbar above for formatting&#10;Click 'Insert Image' to add images inline"
               />
             ) : (
-              <div className={`mt-1 rounded-xl border bg-card p-4 overflow-auto prose prose-sm max-w-none ${fullscreen ? "flex-1" : "min-h-[300px] max-h-[500px]"}`}>
+          <div className={`mt-1 rounded-xl border bg-card p-4 overflow-auto prose prose-base max-w-none
+            prose-headings:font-bold prose-headings:text-foreground
+            prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg
+            prose-p:leading-[1.8] prose-p:mb-4
+            prose-li:leading-[1.8]
+            prose-blockquote:border-l-primary prose-blockquote:bg-muted/50 prose-blockquote:py-1 prose-blockquote:px-4 prose-blockquote:rounded-r-lg
+            ${fullscreen ? "flex-1" : "min-h-[300px] max-h-[500px]"}`}>
                 {form.content ? (
                   <ReactMarkdown
                     components={{
+                      p: ({ children }) => <p>{children}</p>,
+                      br: () => <br />,
                       img: ({ src, alt }) => (
                         <img src={src} alt={alt || ""} className="max-w-full rounded-lg my-2" loading="lazy" />
                       ),
                     }}
-                  >{form.content}</ReactMarkdown>
+                  >{form.content.replace(/\n(?!\n)/g, "  \n")}</ReactMarkdown>
                 ) : (
                   <p className="text-muted-foreground italic">Nothing to preview yet...</p>
                 )}
