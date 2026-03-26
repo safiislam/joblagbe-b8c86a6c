@@ -14,7 +14,11 @@ type AdminJob = {
   id: string; title: string; location: string; job_type: string;
   is_active: boolean; is_approved: boolean; created_at: string; description: string;
   tag: string | null; hide_apply: boolean;
-  companies: { name: string } | null;
+  salary_min: number | null; salary_max: number | null;
+  application_deadline: string | null; source_url: string | null;
+  requirements: string[] | null;
+  companies: { name: string; logo_url: string | null; is_verified: boolean; phone: string | null; website: string | null } | null;
+  categories: { name: string } | null;
 };
 
 const DashboardJobs = () => {
