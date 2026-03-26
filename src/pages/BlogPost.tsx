@@ -73,8 +73,33 @@ const BlogPost = () => {
               <img src={post.cover_image_url} alt={post.title} className="mt-6 w-full rounded-2xl object-cover max-h-96" />
             )}
 
-            <div className="prose prose-lg mt-8 max-w-none text-foreground prose-headings:text-foreground prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:leading-relaxed prose-p:mb-4 prose-li:leading-relaxed prose-blockquote:border-l-primary prose-blockquote:text-muted-foreground prose-a:text-primary prose-a:underline prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-hr:border-border prose-img:rounded-xl">
-              <ReactMarkdown>{post.content}</ReactMarkdown>
+            <div className="prose prose-lg mt-8 max-w-none text-foreground
+              prose-headings:text-foreground prose-headings:font-bold prose-headings:mt-8 prose-headings:mb-4
+              prose-h1:text-3xl prose-h1:leading-tight prose-h1:border-b prose-h1:border-border prose-h1:pb-3
+              prose-h2:text-2xl prose-h2:leading-snug
+              prose-h3:text-xl prose-h3:leading-snug
+              prose-p:leading-[1.8] prose-p:mb-5 prose-p:text-foreground/90
+              prose-li:leading-[1.8] prose-li:mb-1
+              prose-ul:my-5 prose-ol:my-5
+              prose-blockquote:border-l-primary prose-blockquote:bg-muted/50 prose-blockquote:py-1 prose-blockquote:px-4 prose-blockquote:rounded-r-lg prose-blockquote:text-muted-foreground prose-blockquote:not-italic prose-blockquote:my-6
+              prose-a:text-primary prose-a:underline prose-a:underline-offset-2
+              prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-medium
+              prose-pre:bg-muted prose-pre:rounded-xl prose-pre:border prose-pre:border-border
+              prose-hr:border-border prose-hr:my-8
+              prose-img:rounded-xl prose-img:shadow-md
+              prose-strong:text-foreground prose-strong:font-bold
+            ">
+              <ReactMarkdown
+                components={{
+                  p: ({ children }) => <p>{children}</p>,
+                  br: () => <br />,
+                  img: ({ src, alt }) => (
+                    <img src={src} alt={alt || ""} className="max-w-full rounded-xl my-4" loading="lazy" />
+                  ),
+                }}
+              >
+                {post.content.replace(/\n(?!\n)/g, "  \n")}
+              </ReactMarkdown>
             </div>
           </article>
         ) : (
