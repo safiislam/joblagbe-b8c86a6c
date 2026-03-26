@@ -29,6 +29,7 @@ interface EditJobDialogProps {
     salary_max: number | null;
     category_id: string | null;
     application_deadline: string | null;
+    source_url?: string | null;
   };
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -45,6 +46,7 @@ const EditJobDialog = ({ job, open, onOpenChange, onSuccess }: EditJobDialogProp
     categoryId: job.category_id ?? "",
     description: job.description,
     requirements: job.requirements?.join("\n") ?? "",
+    sourceUrl: job.source_url ?? "",
   });
   const [locations, setLocations] = useState<string[]>(
     job.location ? job.location.split(", ").filter(Boolean) : []
@@ -85,6 +87,7 @@ const EditJobDialog = ({ job, open, onOpenChange, onSuccess }: EditJobDialogProp
         requirements: form.requirements.split("\n").filter(Boolean),
         application_deadline: deadline ? deadline.toISOString() : null,
         is_approved: false,
+        source_url: form.sourceUrl.trim() || null,
       } as any)
       .eq("id", job.id);
 
@@ -180,6 +183,11 @@ const EditJobDialog = ({ job, open, onOpenChange, onSuccess }: EditJobDialogProp
           <div>
             <Label>Requirements (one per line)</Label>
             <Textarea value={form.requirements} onChange={(e) => setForm({ ...form, requirements: e.target.value })} rows={4} className="mt-1.5 rounded-xl" />
+          </div>
+          <div>
+            <Label>Source Link (ঐচ্ছিক)</Label>
+            <Input value={form.sourceUrl} onChange={(e) => setForm({ ...form, sourceUrl: e.target.value })} placeholder="e.g. https://original-job-post.com/apply" className="mt-1.5 rounded-xl" />
+            <p className="mt-1 text-xs text-muted-foreground">মূল চাকরির বিজ্ঞপ্তির লিংক যোগ করুন</p>
           </div>
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>বাতিল</Button>

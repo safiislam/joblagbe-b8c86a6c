@@ -37,6 +37,7 @@ const PostJob = () => {
     categoryId: "",
     description: "",
     requirements: "",
+    sourceUrl: "",
   });
   const [locations, setLocations] = useState<string[]>([]);
   const [deadline, setDeadline] = useState<Date | undefined>(undefined);
@@ -150,6 +151,7 @@ const PostJob = () => {
       requirements: form.requirements.split("\n").filter(Boolean),
       is_approved: false,
       application_deadline: deadline ? deadline.toISOString() : null,
+      source_url: form.sourceUrl.trim() || null,
     } as any);
 
     setLoading(false);
@@ -188,7 +190,7 @@ const PostJob = () => {
           </p>
           <div className="mt-6 flex gap-3">
             <Button onClick={() => navigate("/employer-dashboard")} variant="outline">Go to Dashboard</Button>
-            <Button onClick={() => { setSubmitted(false); setForm({ title: "", salaryMin: "", salaryMax: "", jobType: "Full-time", categoryId: "", description: "", requirements: "" }); setLocations([]); }} className="bg-accent text-accent-foreground">
+            <Button onClick={() => { setSubmitted(false); setForm({ title: "", salaryMin: "", salaryMax: "", jobType: "Full-time", categoryId: "", description: "", requirements: "", sourceUrl: "" }); setLocations([]); }} className="bg-accent text-accent-foreground">
               Post Another Job
             </Button>
           </div>
@@ -346,6 +348,11 @@ const PostJob = () => {
           <div>
             <Label>Requirements (one per line)</Label>
             <Textarea value={form.requirements} onChange={(e) => setForm({ ...form, requirements: e.target.value })} rows={4} placeholder="Bachelor's degree in CS&#10;3+ years experience&#10;..." className="mt-1.5 rounded-xl" />
+          </div>
+          <div>
+            <Label>Source Link (ঐচ্ছিক)</Label>
+            <Input value={form.sourceUrl} onChange={(e) => setForm({ ...form, sourceUrl: e.target.value })} placeholder="e.g. https://original-job-post.com/apply" className="mt-1.5 rounded-xl" />
+            <p className="mt-1 text-xs text-muted-foreground">মূল চাকরির বিজ্ঞপ্তির লিংক যোগ করুন (যদি থাকে)</p>
           </div>
           <Button type="submit" disabled={loading || (!company && !showCompanyForm)} className="bg-accent text-accent-foreground hover:bg-accent/90 px-8 font-semibold rounded-xl">
             {loading ? "Submitting..." : "Submit for Review"}

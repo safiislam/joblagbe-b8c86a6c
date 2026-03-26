@@ -386,6 +386,7 @@ export type Database = {
           requirements: string[] | null
           salary_max: number | null
           salary_min: number | null
+          source_url: string | null
           tag: string | null
           title: string
           updated_at: string
@@ -405,6 +406,7 @@ export type Database = {
           requirements?: string[] | null
           salary_max?: number | null
           salary_min?: number | null
+          source_url?: string | null
           tag?: string | null
           title: string
           updated_at?: string
@@ -424,6 +426,7 @@ export type Database = {
           requirements?: string[] | null
           salary_max?: number | null
           salary_min?: number | null
+          source_url?: string | null
           tag?: string | null
           title?: string
           updated_at?: string
