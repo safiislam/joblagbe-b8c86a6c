@@ -2,10 +2,10 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, Eye, Tag, EyeOff, Trash2 } from "lucide-react";
+import { Check, X, Eye, Tag, EyeOff, Trash2, Building2, MapPin, Calendar, DollarSign, Link2, Phone, Globe, ShieldCheck } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
@@ -14,7 +14,11 @@ type AdminJob = {
   id: string; title: string; location: string; job_type: string;
   is_active: boolean; is_approved: boolean; created_at: string; description: string;
   tag: string | null; hide_apply: boolean;
-  companies: { name: string } | null;
+  salary_min: number | null; salary_max: number | null;
+  application_deadline: string | null; source_url: string | null;
+  requirements: string[] | null;
+  companies: { name: string; logo_url: string | null; is_verified: boolean; phone: string | null; website: string | null } | null;
+  categories: { name: string } | null;
 };
 
 const DashboardJobs = () => {
@@ -33,7 +37,7 @@ const DashboardJobs = () => {
   const { data: adminJobs, isLoading } = useQuery({
     queryKey: ["admin-jobs", jobTab],
     queryFn: async () => {
-      let query = supabase.from("jobs").select("id, title, location, job_type, is_active, is_approved, created_at, description, tag, hide_apply, companies(name)").order("created_at", { ascending: false }).limit(50);
+      let query = supabase.from("jobs").select("id, title, location, job_type, is_active, is_approved, created_at, description, tag, hide_apply, salary_min, salary_max, application_deadline, source_url, requirements, companies(name, logo_url, is_verified, phone, website), categories(name)").order("created_at", { ascending: false }).limit(50);
       if (jobTab === "pending") query = query.eq("is_approved", false).eq("is_active", true);
       if (jobTab === "approved") query = query.eq("is_approved", true);
       const { data } = await query;
@@ -171,7 +175,85 @@ const DashboardJobs = () => {
                 </div>
               </div>
               {expandedJob === job.id && (
-                <div className="mt-3 rounded-xl bg-secondary/50 p-4 text-sm text-muted-foreground">{job.description}</div>
+                <div className="mt-3 rounded-xl border bg-card p-5 space-y-4">
+                  {/* Company & Meta Info */}
+                  <div className="flex flex-wrap gap-4 items-start">
+                    {job.companies?.logo_url && (
+                      <img src={job.companies.logo_url} alt={job.companies?.name || ""} className="h-12 w-12 rounded-lg border object-contain bg-background" />
+                    )}
+                    <div className="flex-1 min-w-0 space-y-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-semibold text-foreground flex items-center gap-1.5">
+                          <Building2 className="h-3.5 w-3.5 text-muted-foreground" />
+                          {job.companies?.name || "Unknown"}
+                        </span>
+                        {job.companies?.is_verified && (
+                          <Badge variant="secondary" className="text-[10px] gap-1"><ShieldCheck className="h-3 w-3 text-primary" />Verified</Badge>
+                        )}
+                      </div>
+                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{job.location}</span>
+                        <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{job.job_type}</span>
+                        {(job.salary_min || job.salary_max) && (
+                          <span className="flex items-center gap-1">
+                            <DollarSign className="h-3 w-3" />
+                            {job.salary_min && job.salary_max
+                              ? `৳${job.salary_min.toLocaleString()} - ৳${job.salary_max.toLocaleString()}`
+                              : job.salary_min ? `৳${job.salary_min.toLocaleString()}+` : `Up to ৳${job.salary_max?.toLocaleString()}`}
+                          </span>
+                        )}
+                        {job.application_deadline && (
+                          <span className="flex items-center gap-1">
+                            <Calendar className="h-3 w-3 text-destructive" />
+                            Deadline: {format(new Date(job.application_deadline), "dd MMM yyyy")}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                        {job.companies?.phone && (
+                          <span className="flex items-center gap-1"><Phone className="h-3 w-3" />{job.companies.phone}</span>
+                        )}
+                        {job.companies?.website && (
+                          <a href={job.companies.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-primary hover:underline">
+                            <Globe className="h-3 w-3" />{job.companies.website}
+                          </a>
+                        )}
+                        {job.source_url && (
+                          <a href={job.source_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-primary hover:underline">
+                            <Link2 className="h-3 w-3" />Source Link
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Category & Tags */}
+                  <div className="flex flex-wrap gap-2">
+                    {job.categories?.name && <Badge variant="outline" className="text-[10px]">{job.categories.name}</Badge>}
+                    {job.tag && <Badge className="text-[10px]">{job.tag}</Badge>}
+                    <Badge variant={job.hide_apply ? "destructive" : "secondary"} className="text-[10px]">
+                      {job.hide_apply ? "Apply Hidden" : "Apply Visible"}
+                    </Badge>
+                  </div>
+
+                  {/* Requirements */}
+                  {job.requirements && job.requirements.length > 0 && (
+                    <div>
+                      <h4 className="text-xs font-semibold text-foreground mb-1.5">Requirements</h4>
+                      <ul className="list-disc list-inside space-y-0.5 text-xs text-muted-foreground">
+                        {job.requirements.map((req, i) => <li key={i}>{req}</li>)}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Description */}
+                  <div>
+                    <h4 className="text-xs font-semibold text-foreground mb-1.5">Description</h4>
+                    <div className="text-sm text-muted-foreground whitespace-pre-line leading-relaxed max-h-60 overflow-y-auto rounded-lg bg-secondary/30 p-3">
+                      {job.description}
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
           )) : <div className="p-8 text-center text-muted-foreground">{jobTab === "pending" ? "No pending jobs 🎉" : "No jobs found"}</div>}
