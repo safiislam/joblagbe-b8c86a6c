@@ -73,7 +73,7 @@ const BlogPost = () => {
               <img src={post.cover_image_url} alt={post.title} className="mt-6 w-full rounded-2xl object-cover max-h-96" />
             )}
 
-            <div className="prose prose-lg mt-8 max-w-none text-foreground">
+            <div className="prose prose-lg mt-8 max-w-none text-foreground prose-headings:text-foreground prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:leading-relaxed prose-p:mb-4 prose-li:leading-relaxed prose-blockquote:border-l-primary prose-blockquote:text-muted-foreground prose-a:text-primary prose-a:underline prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-hr:border-border prose-img:rounded-xl">
               <ReactMarkdown>{post.content}</ReactMarkdown>
             </div>
           </article>
