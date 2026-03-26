@@ -14,7 +14,7 @@ import SaveJobButton from "@/components/SaveJobButton";
 import ShareJobButton from "@/components/ShareJobButton";
 import {
   MapPin, Briefcase, Clock, Banknote, Building2, Phone, Globe,
-  ArrowLeft, CheckCircle2, FileText, Loader2, Upload, File
+  ArrowLeft, CheckCircle2, FileText, Loader2, Upload, File, ExternalLink
 } from "lucide-react";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import JobFraudWarning from "@/components/JobFraudWarning";
@@ -306,6 +306,19 @@ const JobDetail = () => {
                     </li>
                   ))}
                 </ul>
+              </div>
+            )}
+
+            {(job as any).source_url && (
+              <div className="rounded-2xl border bg-card p-6 shadow-card">
+                <a
+                  href={(job as any).source_url.startsWith("http") ? (job as any).source_url : `https://${(job as any).source_url}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
+                >
+                  <ExternalLink className="h-4 w-4" /> Source
+                </a>
               </div>
             )}
 
