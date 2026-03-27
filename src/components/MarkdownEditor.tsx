@@ -1,5 +1,6 @@
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useEffect } from "react";
 import { Textarea } from "@/components/ui/textarea";
+import TurndownService from "turndown";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -215,6 +216,55 @@ const MarkdownEditor = ({
         ref={taRef}
         value={value}
         onChange={(e) => handleChange(e.target.value)}
+        onPaste={(e) => {
+          const html = e.clipboardData.getData("text/html");
+          if (html && html.length > 20) {
+            e.preventDefault();
+            const turndown = new TurndownService({
+              headingStyle: "atx",
+              bulletListMarker: "-",
+              codeBlockStyle: "fenced",
+              emDelimiter: "*",
+              strongDelimiter: "**",
+            });
+            // Preserve line breaks from Google Docs
+            turndown.addRule("lineBreaks", {
+              filter: "br",
+              replacement: () => "  \n",
+            });
+            // Handle Google Docs span styling for bold/italic
+            turndown.addRule("styledSpans", {
+              filter: (node) => {
+                if (node.nodeName !== "SPAN") return false;
+                const style = (node as HTMLElement).style;
+                return style.fontWeight === "700" || style.fontWeight === "bold" || style.fontStyle === "italic";
+              },
+              replacement: (content, node) => {
+                const style = (node as HTMLElement).style;
+                const isBold = style.fontWeight === "700" || style.fontWeight === "bold";
+                const isItalic = style.fontStyle === "italic";
+                if (isBold && isItalic) return `***${content}***`;
+                if (isBold) return `**${content}**`;
+                if (isItalic) return `*${content}*`;
+                return content;
+              },
+            });
+            const md = turndown.turndown(html).replace(/\n{3,}/g, "\n\n");
+            const ta = taRef.current;
+            if (ta) {
+              const start = ta.selectionStart;
+              const end = ta.selectionEnd;
+              const before = value.slice(0, start);
+              const after = value.slice(end);
+              handleChange(before + md + after);
+              setTimeout(() => {
+                ta.focus();
+                const pos = start + md.length;
+                ta.setSelectionRange(pos, pos);
+              }, 0);
+            }
+          }
+        }}
         rows={rows}
         className={`border-0 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0 font-mono text-sm resize-y ${className}`}
         placeholder={placeholder}
