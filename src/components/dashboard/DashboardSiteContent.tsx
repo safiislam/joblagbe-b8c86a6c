@@ -111,6 +111,7 @@ const DashboardSiteContent = () => {
           <TabsTrigger value="pwa_settings">⚙️ PWA Settings</TabsTrigger>
           <TabsTrigger value="tutorial_videos">🎥 Tutorial Videos</TabsTrigger>
           <TabsTrigger value="contact_page">📩 Contact Page</TabsTrigger>
+          <TabsTrigger value="job_posting_pricing">💰 Job Post Pricing</TabsTrigger>
         </TabsList>
 
         {/* Announcement */}
