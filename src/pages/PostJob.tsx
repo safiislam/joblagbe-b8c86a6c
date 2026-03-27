@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import Header from "@/components/Header";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Clock, AlertTriangle, Upload, Building2, CalendarIcon } from "lucide-react";
+import { Clock, AlertTriangle, Upload, Building2, CalendarIcon, Tag, Gift } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
@@ -23,12 +23,23 @@ import {
 } from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
 import MultiLocationInput from "@/components/MultiLocationInput";
+import PaymentDialog from "@/components/PaymentDialog";
+
+type JobPricing = {
+  price: number;
+  offer_price: number;
+  is_free: boolean;
+  offer_label: string;
+  show_original_price: boolean;
+};
 
 const PostJob = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
+  const [pendingJobData, setPendingJobData] = useState<any>(null);
   const [form, setForm] = useState({
     title: "",
     salaryMin: "",
@@ -63,6 +74,21 @@ const PostJob = () => {
     },
   });
 
+  const { data: pricing } = useQuery({
+    queryKey: ["job-posting-pricing"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("site_content")
+        .select("content")
+        .eq("section_key", "job_posting_pricing")
+        .single();
+      return (data?.content as unknown as JobPricing) ?? { price: 0, offer_price: 0, is_free: true, offer_label: "", show_original_price: true };
+    },
+  });
+
+  const effectivePrice = pricing ? (pricing.offer_price > 0 ? pricing.offer_price : pricing.price) : 0;
+  const isFree = pricing?.is_free ?? true;
+
   const [companyForm, setCompanyForm] = useState({ name: "", location: "", description: "", phone: "", website: "" });
   const [showCompanyForm, setShowCompanyForm] = useState(false);
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -95,7 +121,6 @@ const PostJob = () => {
       .single();
     if (error) { toast.error(error.message); return null; }
 
-    // Upload logo if selected
     if (logoFile && data) {
       const logoPath = await uploadLogo(data.id);
       if (logoPath) {
@@ -107,6 +132,30 @@ const PostJob = () => {
     toast.success("Company created!");
     setShowCompanyForm(false);
     return data;
+  };
+
+  const submitJob = async (companyId: string) => {
+    const { error } = await supabase.from("jobs").insert({
+      company_id: companyId,
+      category_id: form.categoryId || null,
+      title: form.title,
+      location: locations.join(", "),
+      salary_min: form.salaryMin ? parseInt(form.salaryMin) : null,
+      salary_max: form.salaryMax ? parseInt(form.salaryMax) : null,
+      job_type: form.jobType,
+      tag: null,
+      description: form.description,
+      requirements: form.requirements.split("\n").filter(Boolean),
+      is_approved: false,
+      application_deadline: deadline ? deadline.toISOString() : null,
+      source_url: form.sourceUrl.trim() || null,
+    } as any);
+
+    if (error) {
+      toast.error(error.message);
+      return false;
+    }
+    return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -138,28 +187,27 @@ const PostJob = () => {
       return;
     }
 
-    const { error } = await supabase.from("jobs").insert({
-      company_id: companyId,
-      category_id: form.categoryId || null,
-      title: form.title,
-      location: locations.join(", "),
-      salary_min: form.salaryMin ? parseInt(form.salaryMin) : null,
-      salary_max: form.salaryMax ? parseInt(form.salaryMax) : null,
-      job_type: form.jobType,
-      tag: null,
-      description: form.description,
-      requirements: form.requirements.split("\n").filter(Boolean),
-      is_approved: false,
-      application_deadline: deadline ? deadline.toISOString() : null,
-      source_url: form.sourceUrl.trim() || null,
-    } as any);
-
-    setLoading(false);
-    if (error) {
-      toast.error(error.message);
-    } else {
-      setSubmitted(true);
+    // If not free, show payment dialog
+    if (!isFree) {
+      setPendingJobData({ companyId });
+      setShowPayment(true);
+      setLoading(false);
+      return;
     }
+
+    // Free: submit directly
+    const success = await submitJob(companyId);
+    setLoading(false);
+    if (success) setSubmitted(true);
+  };
+
+  const handlePaymentSuccess = async () => {
+    if (!pendingJobData?.companyId) return;
+    setLoading(true);
+    const success = await submitJob(pendingJobData.companyId);
+    setLoading(false);
+    setPendingJobData(null);
+    if (success) setSubmitted(true);
   };
 
   if (!user) {
@@ -212,6 +260,45 @@ const PostJob = () => {
             All job postings are reviewed by our admin team before going live. This helps maintain quality and protect job seekers.
           </AlertDescription>
         </Alert>
+
+        {/* Pricing Info Card */}
+        {pricing && (
+          <div className="mt-4 rounded-2xl border bg-card p-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+                {isFree ? <Gift className="h-5 w-5 text-primary" /> : <Tag className="h-5 w-5 text-primary" />}
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  {isFree ? (
+                    <>
+                      <span className="font-bold text-primary">ফ্রি</span>
+                      {pricing.show_original_price && pricing.price > 0 && (
+                        <span className="text-sm text-muted-foreground line-through">৳{pricing.price}</span>
+                      )}
+                      {pricing.offer_label && (
+                        <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">{pricing.offer_label}</span>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <span className="font-bold text-lg">৳{effectivePrice}</span>
+                      {pricing.show_original_price && pricing.offer_price > 0 && pricing.price > pricing.offer_price && (
+                        <span className="text-sm text-muted-foreground line-through">৳{pricing.price}</span>
+                      )}
+                      {pricing.offer_label && pricing.offer_price > 0 && (
+                        <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">{pricing.offer_label}</span>
+                      )}
+                    </>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {isFree ? "বর্তমানে চাকরি পোস্ট করা সম্পূর্ণ ফ্রি!" : "প্রতিটি চাকরি পোস্টের জন্য পেমেন্ট প্রয়োজন"}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {!company && !showCompanyForm && (
           <div className="mt-6 rounded-2xl border bg-secondary/50 p-6">
@@ -355,10 +442,21 @@ const PostJob = () => {
             <p className="mt-1 text-xs text-muted-foreground">মূল চাকরির বিজ্ঞপ্তির লিংক যোগ করুন (যদি থাকে)</p>
           </div>
           <Button type="submit" disabled={loading || (!company && !showCompanyForm)} className="bg-accent text-accent-foreground hover:bg-accent/90 px-8 font-semibold rounded-xl">
-            {loading ? "Submitting..." : "Submit for Review"}
+            {loading ? "Submitting..." : isFree ? "Submit for Review" : `Pay ৳${effectivePrice} & Submit`}
           </Button>
         </form>
       </div>
+
+      {/* Payment Dialog */}
+      <PaymentDialog
+        open={showPayment}
+        onOpenChange={setShowPayment}
+        itemType="job_post"
+        itemId={pendingJobData?.companyId}
+        itemTitle={`চাকরি পোস্ট: ${form.title}`}
+        amount={effectivePrice}
+        onSuccess={handlePaymentSuccess}
+      />
     </div>
   );
 };
