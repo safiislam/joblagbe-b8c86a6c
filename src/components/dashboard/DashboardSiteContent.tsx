@@ -567,6 +567,59 @@ const DashboardSiteContent = () => {
             <SaveBtn sectionKey="contact_page" />
           </div>
         </TabsContent>
+
+        {/* Job Posting Pricing */}
+        <TabsContent value="job_posting_pricing" className="space-y-4">
+          <div className="rounded-xl border bg-card p-5 space-y-4">
+            <p className="text-xs text-muted-foreground">চাকরি পোস্ট করার জন্য মূল্য, অফার এবং ফ্রি সিস্টেম নিয়ন্ত্রণ করুন</p>
+            <div className="flex items-center gap-3">
+              <Switch
+                checked={editData.job_posting_pricing?.is_free || false}
+                onCheckedChange={(v) => updateField("job_posting_pricing", "is_free", v)}
+              />
+              <Label>ফ্রি জব পোস্ট (পেমেন্ট ছাড়াই পোস্ট করতে পারবে)</Label>
+            </div>
+            <div>
+              <Label>মূল মূল্য (৳)</Label>
+              <Input
+                type="number"
+                className="mt-1"
+                value={editData.job_posting_pricing?.price || ""}
+                onChange={(e) => updateField("job_posting_pricing", "price", Number(e.target.value))}
+                placeholder="500"
+              />
+              <p className="text-xs text-muted-foreground mt-1">ফ্রি থাকলেও এই মূল্য দেখানো হবে (কাটা দামে)</p>
+            </div>
+            <div>
+              <Label>অফার মূল্য (৳)</Label>
+              <Input
+                type="number"
+                className="mt-1"
+                value={editData.job_posting_pricing?.offer_price ?? ""}
+                onChange={(e) => updateField("job_posting_pricing", "offer_price", Number(e.target.value))}
+                placeholder="200"
+              />
+              <p className="text-xs text-muted-foreground mt-1">০ রাখলে অফার দেখাবে না। ফ্রি না হলে এই মূল্যে পেমেন্ট নিবে।</p>
+            </div>
+            <div>
+              <Label>অফার লেবেল</Label>
+              <Input
+                className="mt-1"
+                value={editData.job_posting_pricing?.offer_label || ""}
+                onChange={(e) => updateField("job_posting_pricing", "offer_label", e.target.value)}
+                placeholder="🎉 বিশেষ অফার!"
+              />
+            </div>
+            <div className="flex items-center gap-3">
+              <Switch
+                checked={editData.job_posting_pricing?.show_original_price ?? true}
+                onCheckedChange={(v) => updateField("job_posting_pricing", "show_original_price", v)}
+              />
+              <Label>মূল মূল্য দেখাও (কাটা দামে)</Label>
+            </div>
+            <SaveBtn sectionKey="job_posting_pricing" />
+          </div>
+        </TabsContent>
       </Tabs>
     </div>
   );
