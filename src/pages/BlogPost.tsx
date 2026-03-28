@@ -58,6 +58,31 @@ const BlogPost = () => {
             <div className="h-64 animate-pulse rounded-2xl bg-muted" />
           </div>
         ) : post ? (
+          <>
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{
+                __html: JSON.stringify({
+                  "@context": "https://schema.org",
+                  "@type": "Article",
+                  headline: post.title,
+                  ...(post.cover_image_url && { image: post.cover_image_url }),
+                  datePublished: post.created_at,
+                  dateModified: post.updated_at,
+                  author: { "@type": "Person", name: post.author_name },
+                  publisher: {
+                    "@type": "Organization",
+                    name: "Job লাগবে",
+                    url: "https://joblagbe.lovable.app",
+                  },
+                  ...(post.excerpt && { description: post.excerpt }),
+                  mainEntityOfPage: {
+                    "@type": "WebPage",
+                    "@id": typeof window !== "undefined" ? window.location.href : "",
+                  },
+                }),
+              }}
+            />
           <article>
             <h1 className="text-3xl sm:text-4xl font-extrabold leading-tight tracking-tight text-foreground">
               {post.title}
@@ -200,6 +225,7 @@ const BlogPost = () => {
               </ReactMarkdown>
             </div>
           </article>
+          </>
         ) : (
           <div className="py-20 text-center text-muted-foreground">
             <p className="text-lg font-medium">পোস্ট পাওয়া যায়নি</p>

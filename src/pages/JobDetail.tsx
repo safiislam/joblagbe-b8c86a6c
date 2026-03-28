@@ -188,6 +188,47 @@ const JobDetail = () => {
   const company = job?.companies as any;
   const category = job?.categories as any;
 
+  // Build JSON-LD structured data for SEO
+  const jobJsonLd = job ? {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    title: job.title,
+    description: job.description,
+    datePosted: job.created_at,
+    ...(job.application_deadline && { validThrough: job.application_deadline }),
+    employmentType: job.job_type === "Full-time" ? "FULL_TIME"
+      : job.job_type === "Part-time" ? "PART_TIME"
+      : job.job_type === "Contract" ? "CONTRACT"
+      : job.job_type === "Internship" ? "INTERN"
+      : "OTHER",
+    hiringOrganization: {
+      "@type": "Organization",
+      name: company?.name ?? "Unknown",
+      ...(company?.logo_url && { logo: company.logo_url }),
+      ...(company?.website && { sameAs: company.website.startsWith("http") ? company.website : `https://${company.website}` }),
+    },
+    jobLocation: {
+      "@type": "Place",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: job.location,
+        addressCountry: "BD",
+      },
+    },
+    ...(job.salary_min || job.salary_max ? {
+      baseSalary: {
+        "@type": "MonetarySalary",
+        currency: "BDT",
+        value: {
+          "@type": "QuantitativeValue",
+          ...(job.salary_min && { minValue: job.salary_min }),
+          ...(job.salary_max && { maxValue: job.salary_max }),
+          unitText: "MONTH",
+        },
+      },
+    } : {}),
+  } : null;
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
@@ -220,6 +261,12 @@ const JobDetail = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {jobJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jobJsonLd) }}
+        />
+      )}
       <Header />
       <div className="container py-8">
         <Button onClick={() => navigate("/jobs")} variant="ghost" size="sm" className="mb-6 gap-1.5 text-muted-foreground hover:text-foreground">
