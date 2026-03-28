@@ -227,29 +227,83 @@ const MarkdownEditor = ({
               emDelimiter: "*",
               strongDelimiter: "**",
             });
-            // Preserve line breaks from Google Docs
-            turndown.addRule("lineBreaks", {
-              filter: "br",
-              replacement: () => "  \n",
+
+            // Google Docs uses font-size on spans to indicate heading levels
+            turndown.addRule("googleDocsFontSize", {
+              filter: (node) => {
+                if (node.nodeName !== "SPAN") return false;
+                const style = (node as HTMLElement).style;
+                const fontSize = parseInt(style.fontSize);
+                return !isNaN(fontSize) && fontSize >= 18;
+              },
+              replacement: (content, node) => {
+                const style = (node as HTMLElement).style;
+                const fontSize = parseInt(style.fontSize);
+                // Map font sizes to heading levels
+                if (fontSize >= 28) return `\n# ${content.trim()}\n\n`;
+                if (fontSize >= 22) return `\n## ${content.trim()}\n\n`;
+                if (fontSize >= 18) return `\n### ${content.trim()}\n\n`;
+                return content;
+              },
             });
-            // Handle Google Docs span styling for bold/italic
+
+            // Handle Google Docs span styling for bold/italic/underline
             turndown.addRule("styledSpans", {
               filter: (node) => {
                 if (node.nodeName !== "SPAN") return false;
                 const style = (node as HTMLElement).style;
-                return style.fontWeight === "700" || style.fontWeight === "bold" || style.fontStyle === "italic";
+                return (
+                  style.fontWeight === "700" ||
+                  style.fontWeight === "bold" ||
+                  style.fontStyle === "italic" ||
+                  style.textDecoration?.includes("underline")
+                );
               },
               replacement: (content, node) => {
+                if (!content.trim()) return content;
                 const style = (node as HTMLElement).style;
                 const isBold = style.fontWeight === "700" || style.fontWeight === "bold";
                 const isItalic = style.fontStyle === "italic";
-                if (isBold && isItalic) return `***${content}***`;
-                if (isBold) return `**${content}**`;
-                if (isItalic) return `*${content}*`;
-                return content;
+                let result = content;
+                if (isBold && isItalic) result = `***${content}***`;
+                else if (isBold) result = `**${content}**`;
+                else if (isItalic) result = `*${content}*`;
+                return result;
               },
             });
-            const md = turndown.turndown(html).replace(/\n{3,}/g, "\n\n");
+
+            // Preserve line breaks
+            turndown.addRule("lineBreaks", {
+              filter: "br",
+              replacement: () => "  \n",
+            });
+
+            // Handle Google Docs tables
+            turndown.addRule("tableCell", {
+              filter: ["th", "td"],
+              replacement: (content) => ` ${content.trim()} |`,
+            });
+            turndown.addRule("tableRow", {
+              filter: "tr",
+              replacement: (content) => `|${content}\n`,
+            });
+            turndown.addRule("table", {
+              filter: "table",
+              replacement: (content) => {
+                const rows = content.trim().split("\n").filter(Boolean);
+                if (rows.length === 0) return content;
+                // Count columns from first row
+                const cols = (rows[0].match(/\|/g) || []).length - 1;
+                const separator = "|" + " --- |".repeat(cols);
+                return "\n" + rows[0] + separator + "\n" + rows.slice(1).join("\n") + "\n\n";
+              },
+            });
+
+            const md = turndown
+              .turndown(html)
+              .replace(/\n{3,}/g, "\n\n")
+              .replace(/^\s+/, ""); // trim leading whitespace
+
             const ta = taRef.current;
             if (ta) {
               const start = ta.selectionStart;
