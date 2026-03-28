@@ -4,9 +4,15 @@ import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
-import { ArrowLeft, Share2, Facebook } from "lucide-react";
+import { ArrowLeft, Share2, Facebook, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
+const estimateReadTime = (text: string) => {
+  const words = text.trim().split(/\s+/).length;
+  return Math.max(1, Math.ceil(words / 200));
+};
 
 const BlogPost = () => {
   const { slug } = useParams();
@@ -35,11 +41,13 @@ const BlogPost = () => {
     }
   };
 
+  const readTime = post ? estimateReadTime(post.content) : 0;
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <div className="container max-w-3xl py-8">
-        <Link to="/blog" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary mb-6">
+      <div className="container max-w-3xl py-8 px-4 sm:px-6">
+        <Link to="/blog" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary mb-6 transition-colors">
           <ArrowLeft className="h-4 w-4" /> সব ব্লগ পোস্ট
         </Link>
 
@@ -51,11 +59,18 @@ const BlogPost = () => {
           </div>
         ) : post ? (
           <article>
-            <h1 className="text-3xl font-bold leading-tight">{post.title}</h1>
-            <div className="mt-3 flex items-center gap-3 text-sm text-muted-foreground">
-              <span>{post.author_name}</span>
-              <span>·</span>
+            <h1 className="text-3xl sm:text-4xl font-extrabold leading-tight tracking-tight text-foreground">
+              {post.title}
+            </h1>
+
+            <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+              <span className="font-medium text-foreground/70">{post.author_name}</span>
+              <span className="text-muted-foreground/40">·</span>
               <span>{format(new Date(post.created_at), "MMMM d, yyyy")}</span>
+              <span className="text-muted-foreground/40">·</span>
+              <span className="inline-flex items-center gap-1">
+                <Clock className="h-3.5 w-3.5" /> {readTime} min read
+              </span>
             </div>
 
             <div className="mt-4 flex gap-2">
@@ -70,38 +85,112 @@ const BlogPost = () => {
             </div>
 
             {post.cover_image_url && (
-              <img src={post.cover_image_url} alt={post.title} className="mt-6 w-full rounded-2xl object-cover max-h-96" />
+              <img
+                src={post.cover_image_url}
+                alt={post.title}
+                className="mt-8 w-full rounded-2xl object-cover max-h-[28rem] shadow-md"
+              />
             )}
 
-            <div className="prose prose-lg mt-8 max-w-none text-foreground
-              prose-headings:text-foreground prose-headings:font-bold
-              prose-h1:text-3xl prose-h1:leading-tight prose-h1:mt-10 prose-h1:mb-5 prose-h1:border-b prose-h1:border-border prose-h1:pb-3
-              prose-h2:text-2xl prose-h2:leading-snug prose-h2:mt-9 prose-h2:mb-4
-              prose-h3:text-xl prose-h3:leading-snug prose-h3:mt-8 prose-h3:mb-3
-              prose-h4:text-lg prose-h4:mt-6 prose-h4:mb-2
-              prose-p:text-base prose-p:leading-[1.9] prose-p:mb-6 prose-p:text-foreground/90
-              prose-li:text-base prose-li:leading-[1.9] prose-li:mb-1.5
-              prose-ul:my-5 prose-ul:pl-6 prose-ol:my-5 prose-ol:pl-6
-              prose-blockquote:border-l-4 prose-blockquote:border-l-primary prose-blockquote:bg-muted/50 prose-blockquote:py-3 prose-blockquote:px-5 prose-blockquote:rounded-r-lg prose-blockquote:text-muted-foreground prose-blockquote:not-italic prose-blockquote:my-7
-              prose-a:text-primary prose-a:underline prose-a:underline-offset-2 prose-a:font-medium
-              prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-medium
-              prose-pre:bg-muted prose-pre:rounded-xl prose-pre:border prose-pre:border-border prose-pre:my-6
-              prose-hr:border-border prose-hr:my-10
-              prose-img:rounded-xl prose-img:shadow-md prose-img:my-6
-              prose-strong:text-foreground prose-strong:font-semibold
-              prose-em:text-foreground/80
-            ">
+            <div className="blog-content mt-10 max-w-none text-foreground">
               <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
                 components={{
-                  p: ({ children }) => <p className="whitespace-pre-line">{children}</p>,
-                  br: () => <br />,
-                  h1: ({ children }) => <h1>{children}</h1>,
-                  h2: ({ children }) => <h2>{children}</h2>,
-                  h3: ({ children }) => <h3>{children}</h3>,
-                  h4: ({ children }) => <h4>{children}</h4>,
-                  img: ({ src, alt }) => (
-                    <img src={src} alt={alt || ""} className="max-w-full rounded-xl my-6" loading="lazy" />
+                  h1: ({ children }) => (
+                    <h1 className="text-3xl font-extrabold leading-tight mt-12 mb-5 pb-3 border-b border-border text-foreground">
+                      {children}
+                    </h1>
                   ),
+                  h2: ({ children }) => (
+                    <h2 className="text-2xl font-bold leading-snug mt-10 mb-4 text-foreground">
+                      {children}
+                    </h2>
+                  ),
+                  h3: ({ children }) => (
+                    <h3 className="text-xl font-bold leading-snug mt-8 mb-3 text-foreground">
+                      {children}
+                    </h3>
+                  ),
+                  h4: ({ children }) => (
+                    <h4 className="text-lg font-semibold mt-6 mb-2 text-foreground">
+                      {children}
+                    </h4>
+                  ),
+                  p: ({ children }) => (
+                    <p className="text-base leading-[1.9] mb-6 text-foreground/90 whitespace-pre-line">
+                      {children}
+                    </p>
+                  ),
+                  ul: ({ children }) => (
+                    <ul className="my-5 pl-6 list-disc space-y-1.5 text-base leading-[1.9] text-foreground/90">
+                      {children}
+                    </ul>
+                  ),
+                  ol: ({ children }) => (
+                    <ol className="my-5 pl-6 list-decimal space-y-1.5 text-base leading-[1.9] text-foreground/90">
+                      {children}
+                    </ol>
+                  ),
+                  li: ({ children }) => (
+                    <li className="leading-[1.9]">{children}</li>
+                  ),
+                  blockquote: ({ children }) => (
+                    <blockquote className="border-l-4 border-l-primary bg-muted/50 py-3 px-5 rounded-r-lg text-muted-foreground not-italic my-7">
+                      {children}
+                    </blockquote>
+                  ),
+                  a: ({ href, children }) => (
+                    <a href={href} className="text-primary underline underline-offset-2 font-medium hover:text-primary/80 transition-colors" target="_blank" rel="noopener noreferrer">
+                      {children}
+                    </a>
+                  ),
+                  code: ({ className, children, ...props }) => {
+                    const isBlock = className?.includes("language-");
+                    if (isBlock) {
+                      return (
+                        <pre className="bg-muted rounded-xl border border-border my-6 p-4 overflow-x-auto">
+                          <code className={`text-sm font-mono ${className}`} {...props}>
+                            {children}
+                          </code>
+                        </pre>
+                      );
+                    }
+                    return (
+                      <code className="bg-muted px-1.5 py-0.5 rounded text-sm font-medium" {...props}>
+                        {children}
+                      </code>
+                    );
+                  },
+                  hr: () => <hr className="border-border my-10" />,
+                  img: ({ src, alt }) => (
+                    <img
+                      src={src}
+                      alt={alt || ""}
+                      className="max-w-full rounded-xl shadow-md my-6"
+                      loading="lazy"
+                    />
+                  ),
+                  strong: ({ children }) => (
+                    <strong className="font-semibold text-foreground">{children}</strong>
+                  ),
+                  em: ({ children }) => (
+                    <em className="text-foreground/80">{children}</em>
+                  ),
+                  table: ({ children }) => (
+                    <div className="my-6 overflow-x-auto rounded-lg border border-border">
+                      <table className="w-full text-sm">{children}</table>
+                    </div>
+                  ),
+                  thead: ({ children }) => (
+                    <thead className="bg-muted/70 text-foreground font-semibold">{children}</thead>
+                  ),
+                  th: ({ children }) => (
+                    <th className="px-4 py-2.5 text-left border-b border-border">{children}</th>
+                  ),
+                  td: ({ children }) => (
+                    <td className="px-4 py-2.5 border-b border-border/50">{children}</td>
+                  ),
+                  br: () => <br />,
                 }}
               >
                 {post.content
