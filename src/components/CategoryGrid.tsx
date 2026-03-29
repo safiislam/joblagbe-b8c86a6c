@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useSiteContent } from "@/hooks/useSiteContent";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Monitor, Cpu, TrendingUp, Stethoscope, GraduationCap,
   Building2, Palette, Megaphone, Truck, Scale,
@@ -16,7 +17,7 @@ const iconMap: Record<string, LucideIcon> = {
 
 const CategoryGrid = () => {
   const navigate = useNavigate();
-  const { data: sectionData } = useSiteContent<{ title: string; subtitle: string }>("category_section");
+  const { data: sectionData, isLoading: sectionLoading } = useSiteContent<{ title: string; subtitle: string }>("category_section");
   const title = sectionData?.title || "ক্যাটাগরি অনুযায়ী খুঁজুন";
   const subtitle = sectionData?.subtitle || "Explore opportunities in your field";
 
@@ -42,8 +43,17 @@ const CategoryGrid = () => {
     <section className="bg-secondary/40 py-16">
       <div className="container">
         <div className="text-center">
-          <h2 className="text-2xl font-bold md:text-3xl font-bangla">{title}</h2>
-          <p className="mt-2 text-muted-foreground">{subtitle}</p>
+          {sectionLoading ? (
+            <>
+              <Skeleton className="mx-auto h-8 w-56 rounded-lg" />
+              <Skeleton className="mx-auto mt-2 h-5 w-72 rounded-lg" />
+            </>
+          ) : (
+            <>
+              <h2 className="text-2xl font-bold md:text-3xl font-bangla">{title}</h2>
+              <p className="mt-2 text-muted-foreground">{subtitle}</p>
+            </>
+          )}
         </div>
 
         <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 sm:gap-4">

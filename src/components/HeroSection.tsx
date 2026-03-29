@@ -2,6 +2,7 @@ import { Search, MapPin, TrendingUp } from "lucide-react";
 import { useState, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useSiteContent } from "@/hooks/useSiteContent";
 
 type HeroData = {
@@ -24,7 +25,7 @@ const HeroSection = () => {
   const [keyword, setKeyword] = useState("");
   const [location, setLocation] = useState("");
   const navigate = useNavigate();
-  const { data } = useSiteContent<HeroData>("hero");
+  const { data, isLoading } = useSiteContent<HeroData>("hero");
   const c = data || defaults;
 
   const handleSearch = (e: FormEvent) => {
@@ -48,18 +49,28 @@ const HeroSection = () => {
 
       <div className="container relative">
         <div className="mx-auto max-w-3xl text-center">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border bg-card px-4 py-1.5 text-sm shadow-card animate-fade-in">
-            <TrendingUp className="h-4 w-4 text-accent" />
-            <span className="text-muted-foreground">{c.badge}</span>
-          </div>
+          {isLoading ? (
+            <>
+              <Skeleton className="mx-auto mb-4 h-8 w-48 rounded-full" />
+              <Skeleton className="mx-auto h-12 w-3/4 rounded-lg" />
+              <Skeleton className="mx-auto mt-4 h-6 w-2/3 rounded-lg" />
+            </>
+          ) : (
+            <>
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border bg-card px-4 py-1.5 text-sm shadow-card animate-fade-in">
+                <TrendingUp className="h-4 w-4 text-accent" />
+                <span className="text-muted-foreground">{c.badge}</span>
+              </div>
 
-          <h1 className="font-bangla text-3xl font-bold leading-tight text-foreground md:text-5xl lg:text-[3.5rem] animate-fade-in">
-            {c.title_line1}{" "}
-            <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">{c.title_highlight}</span>
-          </h1>
-          <p className="mx-auto mt-4 max-w-xl text-muted-foreground md:text-lg animate-fade-in" style={{ animationDelay: "0.1s" }}>
-            {c.subtitle}
-          </p>
+              <h1 className="font-bangla text-3xl font-bold leading-tight text-foreground md:text-5xl lg:text-[3.5rem] animate-fade-in">
+                {c.title_line1}{" "}
+                <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">{c.title_highlight}</span>
+              </h1>
+              <p className="mx-auto mt-4 max-w-xl text-muted-foreground md:text-lg animate-fade-in" style={{ animationDelay: "0.1s" }}>
+                {c.subtitle}
+              </p>
+            </>
+          )}
         </div>
 
         <form onSubmit={handleSearch} className="mx-auto mt-8 max-w-2xl animate-fade-in" style={{ animationDelay: "0.2s" }}>

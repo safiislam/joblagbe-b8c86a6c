@@ -2,6 +2,7 @@ import { Building2, Users, BarChart3, ArrowRight, type LucideIcon } from "lucide
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useSiteContent } from "@/hooks/useSiteContent";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const iconMap: Record<string, LucideIcon> = { Building2, Users, BarChart3 };
 
@@ -9,7 +10,7 @@ type FeatureItem = { icon: string; title: string; desc: string };
 type EmployerCTAData = { badge: string; title: string; description: string; button_text: string; features: FeatureItem[] };
 
 const EmployerCTA = () => {
-  const { data } = useSiteContent<EmployerCTAData>("employer_cta");
+  const { data, isLoading } = useSiteContent<EmployerCTAData>("employer_cta");
   const badge = data?.badge || "For Employers";
   const title = data?.title || "Are You Hiring?";
   const description = data?.description || "Post your open positions and find the best talent in Bangladesh. Our platform connects you with thousands of job seekers every day.";
@@ -25,14 +26,25 @@ const EmployerCTA = () => {
       <div className="container">
         <div className="grid items-center gap-10 lg:grid-cols-2">
           <div>
-            <span className="inline-block rounded-full bg-primary-foreground/10 px-4 py-1.5 text-sm font-medium backdrop-blur-sm">
-              {badge}
-            </span>
-            <h2 className="mt-4 text-2xl font-bold md:text-3xl lg:text-4xl">{title}</h2>
-            <p className="mt-3 text-primary-foreground/80 md:text-lg leading-relaxed">{description}</p>
-            <Button className="mt-6 bg-accent text-accent-foreground hover:bg-accent/90 gap-2 px-8 font-semibold rounded-xl text-base" asChild>
-              <Link to="/post-job">{buttonText} <ArrowRight className="h-4 w-4" /></Link>
-            </Button>
+            {isLoading ? (
+              <>
+                <Skeleton className="h-8 w-32 rounded-full bg-primary-foreground/10" />
+                <Skeleton className="mt-4 h-10 w-3/4 rounded-lg bg-primary-foreground/10" />
+                <Skeleton className="mt-3 h-16 w-full rounded-lg bg-primary-foreground/10" />
+                <Skeleton className="mt-6 h-12 w-40 rounded-xl bg-primary-foreground/10" />
+              </>
+            ) : (
+              <>
+                <span className="inline-block rounded-full bg-primary-foreground/10 px-4 py-1.5 text-sm font-medium backdrop-blur-sm">
+                  {badge}
+                </span>
+                <h2 className="mt-4 text-2xl font-bold md:text-3xl lg:text-4xl">{title}</h2>
+                <p className="mt-3 text-primary-foreground/80 md:text-lg leading-relaxed">{description}</p>
+                <Button className="mt-6 bg-accent text-accent-foreground hover:bg-accent/90 gap-2 px-8 font-semibold rounded-xl text-base" asChild>
+                  <Link to="/post-job">{buttonText} <ArrowRight className="h-4 w-4" /></Link>
+                </Button>
+              </>
+            )}
           </div>
           <div className="grid gap-4 sm:grid-cols-3">
             {features.map((f) => {
