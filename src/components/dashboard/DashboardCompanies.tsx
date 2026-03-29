@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import {
   CheckCircle, XCircle, BadgeCheck, Clock, Search, Building2,
   MapPin, Phone, Globe, FileText, ChevronDown, ChevronUp,
-  Briefcase, Trash2, Eye, Shield, ShieldOff
+  Briefcase, Trash2, Eye, Shield, ShieldOff, User
 } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
@@ -28,6 +28,23 @@ const DashboardCompanies = () => {
         .order("created_at", { ascending: false })
         .limit(200);
       return data ?? [];
+    },
+  });
+
+  // Fetch owner profiles for companies
+  const { data: ownerProfiles } = useQuery({
+    queryKey: ["admin-company-owners", companies?.map((c: any) => c.user_id)],
+    enabled: !!companies && companies.length > 0,
+    queryFn: async () => {
+      const userIds = [...new Set(companies?.map((c: any) => c.user_id).filter(Boolean))];
+      if (userIds.length === 0) return {};
+      const { data } = await supabase
+        .from("profiles")
+        .select("user_id, full_name, phone")
+        .in("user_id", userIds);
+      const map: Record<string, { full_name: string | null; phone: string | null }> = {};
+      data?.forEach((p: any) => { map[p.user_id] = p; });
+      return map;
     },
   });
 
@@ -296,6 +313,13 @@ const DashboardCompanies = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <User className="h-3.5 w-3.5 text-muted-foreground" />
+                        <span>তৈরি করেছেন: {c.user_id ? (ownerProfiles?.[c.user_id]?.full_name || "নাম নেই") : "অজানা"}</span>
+                        {c.user_id && ownerProfiles?.[c.user_id]?.phone && (
+                          <span className="text-xs text-muted-foreground">({ownerProfiles[c.user_id].phone})</span>
+                        )}
+                      </div>
                       <div className="flex items-center gap-2">
                         <Briefcase className="h-3.5 w-3.5 text-muted-foreground" />
                         <span>মোট জব পোস্ট: {jobs}</span>
