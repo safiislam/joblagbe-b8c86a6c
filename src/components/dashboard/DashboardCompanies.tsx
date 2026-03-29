@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import {
   CheckCircle, XCircle, BadgeCheck, Clock, Search, Building2,
   MapPin, Phone, Globe, FileText, ChevronDown, ChevronUp,
-  Briefcase, Trash2, Eye, Shield, ShieldOff
+  Briefcase, Trash2, Eye, Shield, ShieldOff, User
 } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
