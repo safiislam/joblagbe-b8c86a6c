@@ -2,6 +2,7 @@ import { Building2, Users, BarChart3, ArrowRight, type LucideIcon } from "lucide
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useSiteContent } from "@/hooks/useSiteContent";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const iconMap: Record<string, LucideIcon> = { Building2, Users, BarChart3 };
 
@@ -9,7 +10,7 @@ type FeatureItem = { icon: string; title: string; desc: string };
 type EmployerCTAData = { badge: string; title: string; description: string; button_text: string; features: FeatureItem[] };
 
 const EmployerCTA = () => {
-  const { data } = useSiteContent<EmployerCTAData>("employer_cta");
+  const { data, isLoading } = useSiteContent<EmployerCTAData>("employer_cta");
   const badge = data?.badge || "For Employers";
   const title = data?.title || "Are You Hiring?";
   const description = data?.description || "Post your open positions and find the best talent in Bangladesh. Our platform connects you with thousands of job seekers every day.";

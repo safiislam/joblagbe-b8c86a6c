@@ -1,6 +1,7 @@
 import { Bell, BookOpen, BookMarked, Lightbulb, ArrowRight, type LucideIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useSiteContent } from "@/hooks/useSiteContent";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const iconMap: Record<string, LucideIcon> = { Bell, BookOpen, BookMarked, Lightbulb };
 
@@ -15,7 +16,7 @@ const defaultItems: QuickLinkItem[] = [
 ];
 
 const QuickLinks = () => {
-  const { data } = useSiteContent<QuickLinksData>("quick_links");
+  const { data, isLoading } = useSiteContent<QuickLinksData>("quick_links");
   const title = data?.title || "আপনার জন্য";
   const subtitle = data?.subtitle || "Resources to accelerate your career";
   const items = data?.items?.length ? data.items : defaultItems;
@@ -24,8 +25,17 @@ const QuickLinks = () => {
     <section className="py-14">
       <div className="container">
         <div className="text-center">
-          <h2 className="text-2xl font-bold md:text-3xl font-bangla">{title}</h2>
-          <p className="mt-2 text-muted-foreground">{subtitle}</p>
+          {isLoading ? (
+            <>
+              <Skeleton className="mx-auto h-8 w-48 rounded-lg" />
+              <Skeleton className="mx-auto mt-2 h-5 w-64 rounded-lg" />
+            </>
+          ) : (
+            <>
+              <h2 className="text-2xl font-bold md:text-3xl font-bangla">{title}</h2>
+              <p className="mt-2 text-muted-foreground">{subtitle}</p>
+            </>
+          )}
         </div>
 
         <div className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-4">
