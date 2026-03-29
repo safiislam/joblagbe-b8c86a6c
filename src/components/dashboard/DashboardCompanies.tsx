@@ -314,6 +314,13 @@ const DashboardCompanies = () => {
                     </div>
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
+                        <User className="h-3.5 w-3.5 text-muted-foreground" />
+                        <span>তৈরি করেছেন: {c.user_id ? (ownerProfiles?.[c.user_id]?.full_name || "নাম নেই") : "অজানা"}</span>
+                        {c.user_id && ownerProfiles?.[c.user_id]?.phone && (
+                          <span className="text-xs text-muted-foreground">({ownerProfiles[c.user_id].phone})</span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2">
                         <Briefcase className="h-3.5 w-3.5 text-muted-foreground" />
                         <span>মোট জব পোস্ট: {jobs}</span>
                       </div>
