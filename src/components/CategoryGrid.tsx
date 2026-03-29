@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useSiteContent } from "@/hooks/useSiteContent";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Monitor, Cpu, TrendingUp, Stethoscope, GraduationCap,
   Building2, Palette, Megaphone, Truck, Scale,
@@ -16,7 +17,7 @@ const iconMap: Record<string, LucideIcon> = {
 
 const CategoryGrid = () => {
   const navigate = useNavigate();
-  const { data: sectionData } = useSiteContent<{ title: string; subtitle: string }>("category_section");
+  const { data: sectionData, isLoading: sectionLoading } = useSiteContent<{ title: string; subtitle: string }>("category_section");
   const title = sectionData?.title || "ক্যাটাগরি অনুযায়ী খুঁজুন";
   const subtitle = sectionData?.subtitle || "Explore opportunities in your field";
 
