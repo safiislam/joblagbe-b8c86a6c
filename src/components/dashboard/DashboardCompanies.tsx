@@ -31,6 +31,23 @@ const DashboardCompanies = () => {
     },
   });
 
+  // Fetch owner profiles for companies
+  const { data: ownerProfiles } = useQuery({
+    queryKey: ["admin-company-owners", companies?.map((c: any) => c.user_id)],
+    enabled: !!companies && companies.length > 0,
+    queryFn: async () => {
+      const userIds = [...new Set(companies?.map((c: any) => c.user_id).filter(Boolean))];
+      if (userIds.length === 0) return {};
+      const { data } = await supabase
+        .from("profiles")
+        .select("user_id, full_name, phone")
+        .in("user_id", userIds);
+      const map: Record<string, { full_name: string | null; phone: string | null }> = {};
+      data?.forEach((p: any) => { map[p.user_id] = p; });
+      return map;
+    },
+  });
+
   // Fetch job counts per company
   const { data: jobCounts } = useQuery({
     queryKey: ["admin-company-job-counts"],
