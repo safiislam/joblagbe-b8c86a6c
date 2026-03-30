@@ -18,11 +18,16 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const iconMap: Record<string, LucideIcon> = { ScrollText, FileText, Megaphone };
 
 type ServiceItem = { title: string; desc: string; icon: string; features: string[]; cost: string };
 type ServicesData = { title: string; subtitle: string; items: ServiceItem[] };
+
+type ServicesSectionProps = {
+  contentLoading?: boolean;
+};
 
 const colorCycle = [
   { color: "bg-primary/10 text-primary", border: "border-primary/20" },
@@ -30,8 +35,8 @@ const colorCycle = [
   { color: "bg-success/10 text-success", border: "border-success/20" },
 ];
 
-const ServicesSection = () => {
-  const { data } = useSiteContent<ServicesData>("services");
+const ServicesSection = ({ contentLoading = false }: ServicesSectionProps) => {
+  const { data, isLoading } = useSiteContent<ServicesData>("services");
   const { user, profile } = useAuth();
   const navigate = useNavigate();
   const [orderService, setOrderService] = useState<ServiceItem | null>(null);
@@ -39,6 +44,7 @@ const ServicesSection = () => {
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", phone: "", details: "" });
   const [paymentItem, setPaymentItem] = useState<{ title: string; amount: number; orderId?: string } | null>(null);
+  const showSkeleton = contentLoading || isLoading;
 
   const title = data?.title || "আমাদের সেবাসমূহ";
   const subtitle = data?.subtitle || "Services that help you succeed";
@@ -96,12 +102,29 @@ const ServicesSection = () => {
     <section className="py-12 bg-secondary/30">
       <div className="container">
         <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold md:text-3xl font-bangla">{title}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
+          {showSkeleton ? (
+            <>
+              <Skeleton className="mx-auto h-8 w-56 rounded-lg" />
+              <Skeleton className="mx-auto mt-2 h-5 w-72 rounded-lg" />
+            </>
+          ) : (
+            <>
+              <h2 className="text-2xl font-bold md:text-3xl font-bangla">{title}</h2>
+              <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
+            </>
+          )}
         </div>
 
         <div className="grid gap-4 md:grid-cols-3">
-          {items.map((s, i) => {
+          {showSkeleton
+            ? Array.from({ length: 3 }).map((_, index) => (
+                <div key={index} className="rounded-xl border bg-card p-5 text-center shadow-card">
+                  <Skeleton className="mx-auto h-10 w-10 rounded-lg" />
+                  <Skeleton className="mx-auto mt-4 h-5 w-28 rounded-lg" />
+                  <Skeleton className="mx-auto mt-4 h-8 w-24 rounded-lg" />
+                </div>
+              ))
+            : items.map((s, i) => {
             const Icon = iconMap[s.icon] || FileText;
             const style = colorCycle[i % colorCycle.length];
             return (

@@ -23,6 +23,7 @@ export function useAllSiteContent() {
       return map;
     },
     staleTime: 5 * 60 * 1000,
+    refetchOnMount: "always",
   });
 }
 

@@ -13,6 +13,10 @@ type HeroData = {
   popular_tags: string[];
 };
 
+type HeroSectionProps = {
+  contentLoading?: boolean;
+};
+
 const defaults: HeroData = {
   badge: "বাংলাদেশের #১ জব পোর্টাল",
   title_line1: "আপনার ক্যারিয়ারের পরবর্তী ধাপ",
@@ -21,11 +25,12 @@ const defaults: HeroData = {
   popular_tags: ["Software Engineer", "Marketing", "Accountant", "Designer", "Data Entry"],
 };
 
-const HeroSection = () => {
+const HeroSection = ({ contentLoading = false }: HeroSectionProps) => {
   const [keyword, setKeyword] = useState("");
   const [location, setLocation] = useState("");
   const navigate = useNavigate();
   const { data, isLoading } = useSiteContent<HeroData>("hero");
+  const showSkeleton = contentLoading || isLoading;
   const c = data || defaults;
 
   const handleSearch = (e: FormEvent) => {
@@ -49,7 +54,7 @@ const HeroSection = () => {
 
       <div className="container relative">
         <div className="mx-auto max-w-3xl text-center">
-          {isLoading ? (
+          {showSkeleton ? (
             <>
               <Skeleton className="mx-auto mb-4 h-8 w-48 rounded-full" />
               <Skeleton className="mx-auto h-12 w-3/4 rounded-lg" />
@@ -89,14 +94,23 @@ const HeroSection = () => {
           </div>
         </form>
 
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: "0.3s" }}>
-          <span>Popular:</span>
-          {(c.popular_tags || []).map((tag) => (
-            <button type="button" key={tag} onClick={() => handleTagClick(tag)} className="rounded-full border bg-card px-3 py-1 text-xs transition-colors hover:border-primary hover:text-primary hover:shadow-card">
-              {tag}
-            </button>
-          ))}
-        </div>
+        {showSkeleton ? (
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-2 animate-fade-in" style={{ animationDelay: "0.3s" }}>
+            <Skeleton className="h-5 w-16 rounded-full" />
+            <Skeleton className="h-7 w-24 rounded-full" />
+            <Skeleton className="h-7 w-20 rounded-full" />
+            <Skeleton className="h-7 w-28 rounded-full" />
+          </div>
+        ) : (
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: "0.3s" }}>
+            <span>Popular:</span>
+            {(c.popular_tags || []).map((tag) => (
+              <button type="button" key={tag} onClick={() => handleTagClick(tag)} className="rounded-full border bg-card px-3 py-1 text-xs transition-colors hover:border-primary hover:text-primary hover:shadow-card">
+                {tag}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

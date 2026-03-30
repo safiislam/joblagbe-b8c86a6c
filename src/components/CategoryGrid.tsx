@@ -15,9 +15,14 @@ const iconMap: Record<string, LucideIcon> = {
   Banknote, Wrench,
 };
 
-const CategoryGrid = () => {
+type CategoryGridProps = {
+  contentLoading?: boolean;
+};
+
+const CategoryGrid = ({ contentLoading = false }: CategoryGridProps) => {
   const navigate = useNavigate();
   const { data: sectionData, isLoading: sectionLoading } = useSiteContent<{ title: string; subtitle: string }>("category_section");
+  const showSkeleton = contentLoading || sectionLoading;
   const title = sectionData?.title || "ক্যাটাগরি অনুযায়ী খুঁজুন";
   const subtitle = sectionData?.subtitle || "Explore opportunities in your field";
 
@@ -43,7 +48,7 @@ const CategoryGrid = () => {
     <section className="bg-secondary/40 py-16">
       <div className="container">
         <div className="text-center">
-          {sectionLoading ? (
+          {showSkeleton ? (
             <>
               <Skeleton className="mx-auto h-8 w-56 rounded-lg" />
               <Skeleton className="mx-auto mt-2 h-5 w-72 rounded-lg" />

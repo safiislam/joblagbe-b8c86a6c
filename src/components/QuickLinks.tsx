@@ -8,6 +8,10 @@ const iconMap: Record<string, LucideIcon> = { Bell, BookOpen, BookMarked, Lightb
 type QuickLinkItem = { title: string; desc: string; icon: string; color: string; href: string };
 type QuickLinksData = { title: string; subtitle: string; items: QuickLinkItem[] };
 
+type QuickLinksProps = {
+  contentLoading?: boolean;
+};
+
 const defaultItems: QuickLinkItem[] = [
   { icon: "Bell", title: "নিয়োগ বিজ্ঞপ্তি", desc: "সরকারি-বেসরকারি সকল নিয়োগ বিজ্ঞপ্তি এক জায়গায়।", color: "bg-primary", href: "/jobs" },
   { icon: "BookOpen", title: "কোর্স সমূহ", desc: "ক্যারিয়ার গড়তে দরকারি অনলাইন কোর্সসমূহ।", color: "bg-accent", href: "/courses" },
@@ -15,8 +19,9 @@ const defaultItems: QuickLinkItem[] = [
   { icon: "Lightbulb", title: "ক্যারিয়ার টিপস", desc: "ইন্টারভিউ, CV এবং ক্যারিয়ার নিয়ে পরামর্শ।", color: "bg-destructive", href: "/blog" },
 ];
 
-const QuickLinks = () => {
+const QuickLinks = ({ contentLoading = false }: QuickLinksProps) => {
   const { data, isLoading } = useSiteContent<QuickLinksData>("quick_links");
+  const showSkeleton = contentLoading || isLoading;
   const title = data?.title || "আপনার জন্য";
   const subtitle = data?.subtitle || "Resources to accelerate your career";
   const items = data?.items?.length ? data.items : defaultItems;
@@ -25,7 +30,7 @@ const QuickLinks = () => {
     <section className="py-14">
       <div className="container">
         <div className="text-center">
-          {isLoading ? (
+          {showSkeleton ? (
             <>
               <Skeleton className="mx-auto h-8 w-48 rounded-lg" />
               <Skeleton className="mx-auto mt-2 h-5 w-64 rounded-lg" />
@@ -39,7 +44,15 @@ const QuickLinks = () => {
         </div>
 
         <div className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-4">
-          {items.map((item) => {
+          {showSkeleton
+            ? Array.from({ length: 4 }).map((_, index) => (
+                <div key={index} className="rounded-2xl border bg-card p-6 text-center shadow-card">
+                  <Skeleton className="mx-auto h-14 w-14 rounded-xl" />
+                  <Skeleton className="mx-auto mt-4 h-5 w-24 rounded-lg" />
+                  <Skeleton className="mx-auto mt-3 hidden h-4 w-32 rounded-lg sm:block" />
+                </div>
+              ))
+            : items.map((item) => {
             const Icon = iconMap[item.icon] || Bell;
             return (
               <Link
