@@ -154,7 +154,7 @@ const Contact = () => {
           </div>
         </div>
       </main>
-      <Footer />
+      <Footer contentLoading={isLoading} />
     </div>
   );
 };
