@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { Send, Mail, Phone, MapPin } from "lucide-react";
 
@@ -23,7 +24,7 @@ type ContactPageData = {
 const Contact = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { data: pageData } = useSiteContent<ContactPageData>("contact_page");
+  const { data: pageData, isLoading } = useSiteContent<ContactPageData>("contact_page");
   const pageTitle = pageData?.title || "যোগাযোগ করুন";
   const pageSubtitle = pageData?.subtitle || "আমাদের সাথে যোগাযোগ করতে নিচের ফর্মটি পূরণ করুন";
   const contactEmail = pageData?.email || "support@joblagbe.com";
@@ -73,8 +74,17 @@ const Contact = () => {
       <Header />
       <main className="container mx-auto px-4 py-10 max-w-4xl">
         <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold text-foreground mb-2">{pageTitle}</h1>
-          <p className="text-muted-foreground">{pageSubtitle}</p>
+          {isLoading ? (
+            <>
+              <Skeleton className="mx-auto h-9 w-56 rounded-lg mb-3" />
+              <Skeleton className="mx-auto h-5 w-72 rounded-lg" />
+            </>
+          ) : (
+            <>
+              <h1 className="text-3xl font-bold text-foreground mb-2">{pageTitle}</h1>
+              <p className="text-muted-foreground">{pageSubtitle}</p>
+            </>
+          )}
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
@@ -86,7 +96,7 @@ const Contact = () => {
               </div>
               <div>
                 <p className="font-medium text-foreground">ইমেইল</p>
-                <p className="text-sm text-muted-foreground">{contactEmail}</p>
+                {isLoading ? <Skeleton className="h-4 w-36 rounded mt-1" /> : <p className="text-sm text-muted-foreground">{contactEmail}</p>}
               </div>
             </div>
             <div className="flex items-start gap-3">
@@ -95,7 +105,7 @@ const Contact = () => {
               </div>
               <div>
                 <p className="font-medium text-foreground">ফোন</p>
-                <p className="text-sm text-muted-foreground">{contactPhone}</p>
+                {isLoading ? <Skeleton className="h-4 w-32 rounded mt-1" /> : <p className="text-sm text-muted-foreground">{contactPhone}</p>}
               </div>
             </div>
             <div className="flex items-start gap-3">
@@ -104,7 +114,7 @@ const Contact = () => {
               </div>
               <div>
                 <p className="font-medium text-foreground">ঠিকানা</p>
-                <p className="text-sm text-muted-foreground">{contactAddress}</p>
+                {isLoading ? <Skeleton className="h-4 w-28 rounded mt-1" /> : <p className="text-sm text-muted-foreground">{contactAddress}</p>}
               </div>
             </div>
           </div>
@@ -144,7 +154,7 @@ const Contact = () => {
           </div>
         </div>
       </main>
-      <Footer />
+      <Footer contentLoading={isLoading} />
     </div>
   );
 };
