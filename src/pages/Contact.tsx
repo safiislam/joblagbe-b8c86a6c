@@ -23,7 +23,7 @@ type ContactPageData = {
 const Contact = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { data: pageData } = useSiteContent<ContactPageData>("contact_page");
+  const { data: pageData, isLoading } = useSiteContent<ContactPageData>("contact_page");
   const pageTitle = pageData?.title || "যোগাযোগ করুন";
   const pageSubtitle = pageData?.subtitle || "আমাদের সাথে যোগাযোগ করতে নিচের ফর্মটি পূরণ করুন";
   const contactEmail = pageData?.email || "support@joblagbe.com";
