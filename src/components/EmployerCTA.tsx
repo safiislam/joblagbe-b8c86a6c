@@ -9,8 +9,13 @@ const iconMap: Record<string, LucideIcon> = { Building2, Users, BarChart3 };
 type FeatureItem = { icon: string; title: string; desc: string };
 type EmployerCTAData = { badge: string; title: string; description: string; button_text: string; features: FeatureItem[] };
 
-const EmployerCTA = () => {
+type EmployerCTAProps = {
+  contentLoading?: boolean;
+};
+
+const EmployerCTA = ({ contentLoading = false }: EmployerCTAProps) => {
   const { data, isLoading } = useSiteContent<EmployerCTAData>("employer_cta");
+  const showSkeleton = contentLoading || isLoading;
   const badge = data?.badge || "For Employers";
   const title = data?.title || "Are You Hiring?";
   const description = data?.description || "Post your open positions and find the best talent in Bangladesh. Our platform connects you with thousands of job seekers every day.";
@@ -26,7 +31,7 @@ const EmployerCTA = () => {
       <div className="container">
         <div className="grid items-center gap-10 lg:grid-cols-2">
           <div>
-            {isLoading ? (
+            {showSkeleton ? (
               <>
                 <Skeleton className="h-8 w-32 rounded-full bg-primary-foreground/10" />
                 <Skeleton className="mt-4 h-10 w-3/4 rounded-lg bg-primary-foreground/10" />
@@ -47,7 +52,16 @@ const EmployerCTA = () => {
             )}
           </div>
           <div className="grid gap-4 sm:grid-cols-3">
-            {features.map((f) => {
+            {showSkeleton
+              ? Array.from({ length: 3 }).map((_, index) => (
+                  <div key={index} className="rounded-2xl bg-primary-foreground/10 p-6 backdrop-blur-sm">
+                    <Skeleton className="h-8 w-8 rounded-lg bg-primary-foreground/10" />
+                    <Skeleton className="mt-3 h-6 w-20 rounded-lg bg-primary-foreground/10" />
+                    <Skeleton className="mt-2 h-4 w-full rounded-lg bg-primary-foreground/10" />
+                    <Skeleton className="mt-2 h-4 w-4/5 rounded-lg bg-primary-foreground/10" />
+                  </div>
+                ))
+              : features.map((f) => {
               const Icon = iconMap[f.icon] || Building2;
               return (
                 <div key={f.title} className="rounded-2xl bg-primary-foreground/10 p-6 backdrop-blur-sm transition-colors hover:bg-primary-foreground/15">

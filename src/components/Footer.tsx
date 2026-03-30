@@ -2,6 +2,7 @@ import { Facebook, Youtube, Mail, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useSiteContent } from "@/hooks/useSiteContent";
 import { useBrandSettings } from "@/hooks/useBrandSettings";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type FooterData = {
   description: string;
@@ -10,9 +11,14 @@ type FooterData = {
   social_links: { facebook: string; youtube: string };
 };
 
-const Footer = () => {
-  const { data } = useSiteContent<FooterData>("footer");
+type FooterProps = {
+  contentLoading?: boolean;
+};
+
+const Footer = ({ contentLoading = false }: FooterProps) => {
+  const { data, isLoading } = useSiteContent<FooterData>("footer");
   const { logoUrl } = useBrandSettings();
+  const showSkeleton = contentLoading || isLoading;
   const desc = data?.description || "Bangladesh's trusted job portal connecting talent with opportunity.";
   const email = data?.contact_email || "support@joblagbe.com";
   const phone = data?.contact_phone || "+880 1XXX-XXXXXX";
@@ -25,7 +31,14 @@ const Footer = () => {
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <img src={logoUrl} alt="Job Lagbe" width={40} height={40} className="h-10 w-auto" loading="lazy" decoding="async" />
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{desc}</p>
+            {showSkeleton ? (
+              <div className="mt-3 space-y-2">
+                <Skeleton className="h-4 w-full rounded-lg" />
+                <Skeleton className="h-4 w-5/6 rounded-lg" />
+              </div>
+            ) : (
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{desc}</p>
+            )}
             <div className="mt-4 flex gap-3">
               <a href={socialFb} target="_blank" rel="noopener noreferrer" className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary text-muted-foreground transition-colors hover:bg-primary hover:text-primary-foreground">
                 <Facebook className="h-4 w-4" />
@@ -58,8 +71,17 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold">Contact</h4>
             <ul className="mt-3 space-y-2.5 text-sm text-muted-foreground">
-              <li className="flex items-center gap-2"><Mail className="h-4 w-4" /> {email}</li>
-              <li className="flex items-center gap-2"><Phone className="h-4 w-4" /> {phone}</li>
+              {showSkeleton ? (
+                <>
+                  <li><Skeleton className="h-4 w-36 rounded-lg" /></li>
+                  <li><Skeleton className="h-4 w-32 rounded-lg" /></li>
+                </>
+              ) : (
+                <>
+                  <li className="flex items-center gap-2"><Mail className="h-4 w-4" /> {email}</li>
+                  <li className="flex items-center gap-2"><Phone className="h-4 w-4" /> {phone}</li>
+                </>
+              )}
               <li><Link to="/contact" className="transition-colors hover:text-primary">Free Consultation</Link></li>
             </ul>
           </div>

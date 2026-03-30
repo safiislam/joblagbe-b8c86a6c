@@ -8,6 +8,10 @@ type AnnouncementData = {
   type: "info" | "warning" | "promo";
 };
 
+type AnnouncementBannerProps = {
+  contentLoading?: boolean;
+};
+
 const iconMap = { info: Info, warning: AlertTriangle, promo: Megaphone };
 const colorMap = {
   info: "bg-primary/8 border-primary/15 text-primary",
@@ -15,10 +19,11 @@ const colorMap = {
   promo: "bg-accent/8 border-accent/15 text-accent",
 };
 
-const AnnouncementBanner = () => {
+const AnnouncementBanner = ({ contentLoading = false }: AnnouncementBannerProps) => {
   const [dismissed, setDismissed] = useState(false);
   const { data } = useSiteContent<AnnouncementData>("announcement");
 
+  if (contentLoading) return null;
   if (!data?.enabled || !data?.message || dismissed) return null;
 
   const Icon = iconMap[data.type] || Info;
