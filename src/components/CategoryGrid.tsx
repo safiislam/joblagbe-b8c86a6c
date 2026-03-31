@@ -55,7 +55,7 @@ const CategoryGrid = ({ contentLoading = false }: CategoryGridProps) => {
         <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 sm:gap-4">
           {categories?.map((cat) => {
             const Icon = iconMap[cat.icon] || Monitor;
-            const count = jobCounts?.[cat.id] || 0;
+            const count = cat.job_count || 0;
             return (
               <button
                 key={cat.id}
