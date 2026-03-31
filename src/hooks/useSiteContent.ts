@@ -22,8 +22,7 @@ export function useAllSiteContent() {
       });
       return map;
     },
-    staleTime: 5 * 60 * 1000,
-    refetchOnMount: "always",
+    staleTime: 30 * 60 * 1000,
   });
 }
 
@@ -40,7 +39,7 @@ export function useSiteContent<T = Record<string, any>>(sectionKey: string) {
       if (error) return null;
       return data?.content as T | null;
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: 30 * 60 * 1000,
   });
 }
 

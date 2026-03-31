@@ -38,7 +38,7 @@ const Index = () => {
         .order("sort_order", { ascending: true });
       return data ?? [];
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: 30 * 60 * 1000,
   });
 
   // Dynamically inject a preload link for the first banner image

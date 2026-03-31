@@ -40,7 +40,7 @@ const TutorialVideoButton = () => {
         .maybeSingle();
       return ((data?.content as any)?.videos || []) as VideoEntry[];
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: 30 * 60 * 1000,
   });
 
   const currentVideo = videos?.find((v) => v.page_key === currentPageKey);
