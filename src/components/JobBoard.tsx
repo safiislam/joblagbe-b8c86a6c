@@ -196,7 +196,7 @@ const JobBoard = () => {
         .eq("is_active", true)
         .eq("is_approved", true)
         .order("created_at", { ascending: false })
-        .limit(20);
+        .limit(10);
 
       if (keyword.trim()) query = query.ilike("title", `%${keyword.trim()}%`);
       if (locationFilter.trim()) query = query.ilike("location", `%${locationFilter.trim()}%`);
