@@ -871,6 +871,16 @@ export type Database = {
         }
         Returns: boolean
       }
+      get_categories_with_count: {
+        Args: never
+        Returns: {
+          created_at: string
+          icon: string
+          id: string
+          job_count: number
+          name: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

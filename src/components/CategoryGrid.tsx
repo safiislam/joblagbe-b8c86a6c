@@ -27,21 +27,12 @@ const CategoryGrid = ({ contentLoading = false }: CategoryGridProps) => {
   const subtitle = sectionData?.subtitle || "Explore opportunities in your field";
 
   const { data: categories } = useQuery({
-    queryKey: ["categories"],
+    queryKey: ["categories-with-counts"],
     queryFn: async () => {
-      const { data } = await supabase.from("categories").select("*").order("name");
-      return data ?? [];
+      const { data } = await supabase.rpc("get_categories_with_count");
+      return (data ?? []) as { id: string; name: string; icon: string; created_at: string; job_count: number }[];
     },
-  });
-
-  const { data: jobCounts } = useQuery({
-    queryKey: ["job-counts-by-category"],
-    queryFn: async () => {
-      const { data } = await supabase.from("jobs").select("category_id").eq("is_active", true);
-      const counts: Record<string, number> = {};
-      data?.forEach((j) => { if (j.category_id) counts[j.category_id] = (counts[j.category_id] || 0) + 1; });
-      return counts;
-    },
+    staleTime: 30 * 60 * 1000,
   });
 
   return (
@@ -64,7 +55,7 @@ const CategoryGrid = ({ contentLoading = false }: CategoryGridProps) => {
         <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 sm:gap-4">
           {categories?.map((cat) => {
             const Icon = iconMap[cat.icon] || Monitor;
-            const count = jobCounts?.[cat.id] || 0;
+            const count = cat.job_count || 0;
             return (
               <button
                 key={cat.id}
