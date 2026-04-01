@@ -13,7 +13,7 @@ import { useBrandSettings } from "@/hooks/useBrandSettings";
 
 const SignUp = () => {
   const navigate = useNavigate();
-  const [emailOrPhone, setEmailOrPhone] = useState("");
+  const [email, setEmail] = useState("");
   const { logoUrl } = useBrandSettings();
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
