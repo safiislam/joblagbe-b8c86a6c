@@ -22,9 +22,6 @@ const SignUp = () => {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
-  const isEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-  const isPhone = (value: string) => /^01\d{9}$/.test(value.replace(/[\s-]/g, ""));
-
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreedToTerms) {
@@ -32,16 +29,13 @@ const SignUp = () => {
       return;
     }
 
-    const trimmed = emailOrPhone.trim();
-    
-    if (!isEmail(trimmed) && !isPhone(trimmed)) {
-      toast.error("Please enter a valid email or phone number (01XXXXXXXXX).");
+    const trimmed = email.trim();
+    if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      toast.error("Please enter a valid email address.");
       return;
     }
 
     setLoading(true);
-    const email = isEmail(trimmed) ? trimmed : `${trimmed.replace(/[\s-]/g, "")}@phone.local`;
-    const phone = isPhone(trimmed) ? trimmed.replace(/[\s-]/g, "") : null;
 
     const { data, error } = await supabase.auth.signUp({
       email,
