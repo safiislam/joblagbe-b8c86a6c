@@ -112,8 +112,8 @@ const SignUp = () => {
             <Input id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} required placeholder="Your full name" className="mt-1.5 rounded-xl" />
           </div>
           <div>
-            <Label htmlFor="emailOrPhone">Email or Phone Number</Label>
-            <Input id="emailOrPhone" value={emailOrPhone} onChange={(e) => setEmailOrPhone(e.target.value)} required placeholder="you@example.com or 01XXXXXXXXX" className="mt-1.5 rounded-xl" />
+            <Label htmlFor="email">Email Address</Label>
+            <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" className="mt-1.5 rounded-xl" />
           </div>
           <div>
             <Label htmlFor="password">Password</Label>
