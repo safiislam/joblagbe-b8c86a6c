@@ -89,9 +89,25 @@ const ResumeUpload = () => {
     toast.success("File removed");
   };
 
-  const getPublicUrl = (doc: DocumentRow) => {
-    const bucket = doc.file_type === "video_cv" ? "video-cvs" : "resumes";
-    return supabase.storage.from(bucket).getPublicUrl(doc.file_url).data.publicUrl;
+  const [signedUrls, setSignedUrls] = useState<Record<string, string>>({});
+
+  // Generate signed URLs for private bucket files
+  useEffect(() => {
+    const generateUrls = async () => {
+      if (!documents?.length) return;
+      const urls: Record<string, string> = {};
+      for (const doc of documents) {
+        const bucket = doc.file_type === "video_cv" ? "video-cvs" : "resumes";
+        const { data } = await supabase.storage.from(bucket).createSignedUrl(doc.file_url, 3600);
+        if (data?.signedUrl) urls[doc.id] = data.signedUrl;
+      }
+      setSignedUrls(urls);
+    };
+    generateUrls();
+  }, [documents]);
+
+  const getFileUrl = (doc: DocumentRow) => {
+    return signedUrls[doc.id] || "#";
   };
 
   return (

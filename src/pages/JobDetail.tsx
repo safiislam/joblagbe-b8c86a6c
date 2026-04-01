@@ -116,15 +116,13 @@ const JobDetail = () => {
         .upload(filePath, file);
       if (uploadError) throw uploadError;
 
-      const { data: urlData } = supabase.storage.from("resumes").getPublicUrl(filePath);
-
       const { data: doc, error: dbError } = await supabase
         .from("seeker_documents")
         .insert({
           user_id: user.id,
           file_name: file.name,
           file_type: "resume",
-          file_url: urlData.publicUrl,
+          file_url: filePath,
         })
         .select()
         .single();
