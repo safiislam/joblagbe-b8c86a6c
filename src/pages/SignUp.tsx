@@ -38,10 +38,10 @@ const SignUp = () => {
     setLoading(true);
 
     const { data, error } = await supabase.auth.signUp({
-      email,
+      email: trimmed,
       password,
       options: {
-        data: { full_name: fullName, role, phone },
+        data: { full_name: fullName, role },
         emailRedirectTo: window.location.origin,
       },
     });
@@ -51,11 +51,7 @@ const SignUp = () => {
       return;
     }
 
-    if (data?.user && phone) {
-      await supabase.from("profiles").update({ phone }).eq("user_id", data.user.id);
-    }
-
-    toast.success(isEmail(trimmed) ? "Account created! Check your email to confirm." : "Account created successfully!");
+    toast.success("Account created! Check your email to confirm.");
     setLoading(false);
     navigate("/");
   };
