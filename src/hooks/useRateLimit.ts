@@ -65,12 +65,14 @@ export async function checkRateLimit(
       return false;
     }
 
-    // Log the action for future rate limiting
-    await supabase.from("user_activity").insert({
-      action: config.action,
-      user_id: userId || null,
-      resource_type: "rate_limit",
-    });
+    // Log the action for future rate limiting (only for authenticated users)
+    if (userId) {
+      await supabase.from("user_activity").insert({
+        action: config.action,
+        user_id: userId,
+        resource_type: "rate_limit",
+      });
+    }
 
     return true;
   } catch {
