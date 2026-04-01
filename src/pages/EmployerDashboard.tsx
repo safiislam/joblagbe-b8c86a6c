@@ -480,7 +480,13 @@ const EmployerDashboard = () => {
                           </div>
                           {app.cover_letter && <p className="mt-2 text-sm text-muted-foreground bg-secondary/50 rounded-xl p-3 whitespace-pre-wrap">{app.cover_letter}</p>}
                           {app.profiles?.resume_url && (
-                            <a href={supabase.storage.from("resumes").getPublicUrl(app.profiles.resume_url).data.publicUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex items-center gap-1.5 text-xs text-primary hover:underline"><FileText className="h-3.5 w-3.5" /> View Resume</a>
+                            <button
+                              onClick={async () => {
+                                const { data } = await supabase.storage.from("resumes").createSignedUrl(app.profiles!.resume_url!, 3600);
+                                if (data?.signedUrl) window.open(data.signedUrl, "_blank");
+                              }}
+                              className="mt-2 inline-flex items-center gap-1.5 text-xs text-primary hover:underline"
+                            ><FileText className="h-3.5 w-3.5" /> View Resume</button>
                           )}
                           <div className="mt-3 flex flex-wrap gap-2">
                             {app.status !== "shortlisted" && app.status !== "accepted" && (

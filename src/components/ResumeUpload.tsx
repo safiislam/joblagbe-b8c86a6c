@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -89,9 +89,25 @@ const ResumeUpload = () => {
     toast.success("File removed");
   };
 
-  const getPublicUrl = (doc: DocumentRow) => {
-    const bucket = doc.file_type === "video_cv" ? "video-cvs" : "resumes";
-    return supabase.storage.from(bucket).getPublicUrl(doc.file_url).data.publicUrl;
+  const [signedUrls, setSignedUrls] = useState<Record<string, string>>({});
+
+  // Generate signed URLs for private bucket files
+  useEffect(() => {
+    const generateUrls = async () => {
+      if (!documents?.length) return;
+      const urls: Record<string, string> = {};
+      for (const doc of documents) {
+        const bucket = doc.file_type === "video_cv" ? "video-cvs" : "resumes";
+        const { data } = await supabase.storage.from(bucket).createSignedUrl(doc.file_url, 3600);
+        if (data?.signedUrl) urls[doc.id] = data.signedUrl;
+      }
+      setSignedUrls(urls);
+    };
+    generateUrls();
+  }, [documents]);
+
+  const getFileUrl = (doc: DocumentRow) => {
+    return signedUrls[doc.id] || "#";
   };
 
   return (
@@ -110,7 +126,7 @@ const ResumeUpload = () => {
             {resumes.map((doc) => (
               <div key={doc.id} className="flex items-center justify-between gap-3 rounded-xl bg-muted/50 px-3 py-2">
                 <a
-                  href={getPublicUrl(doc)}
+                  href={getFileUrl(doc)}
                   target="_blank"
                   rel="noopener"
                   className="flex items-center gap-2 text-sm text-primary hover:underline truncate min-w-0"
@@ -161,7 +177,7 @@ const ResumeUpload = () => {
           <div key={doc.id} className="mt-3 rounded-xl bg-muted/50 p-3">
             <div className="flex items-center justify-between gap-3">
               <a
-                href={getPublicUrl(doc)}
+                href={getFileUrl(doc)}
                 target="_blank"
                 rel="noopener"
                 className="flex items-center gap-2 text-sm text-primary hover:underline truncate min-w-0"
@@ -174,7 +190,7 @@ const ResumeUpload = () => {
               </Button>
             </div>
             <video
-              src={getPublicUrl(doc)}
+              src={getFileUrl(doc)}
               controls
               className="mt-2 w-full rounded-lg max-h-48"
             />
