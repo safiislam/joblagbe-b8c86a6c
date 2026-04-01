@@ -64,7 +64,7 @@ const Jobs = () => {
         query = query.eq("category_id", categoryFilter);
       }
       if (search) {
-        query = query.or(`title.ilike.%${search}%,companies.name.ilike.%${search}%`);
+        query = query.ilike("title", `%${search}%`);
       }
 
       // Pagination
