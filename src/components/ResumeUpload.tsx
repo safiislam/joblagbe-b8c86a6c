@@ -126,7 +126,7 @@ const ResumeUpload = () => {
             {resumes.map((doc) => (
               <div key={doc.id} className="flex items-center justify-between gap-3 rounded-xl bg-muted/50 px-3 py-2">
                 <a
-                  href={getPublicUrl(doc)}
+                  href={getFileUrl(doc)}
                   target="_blank"
                   rel="noopener"
                   className="flex items-center gap-2 text-sm text-primary hover:underline truncate min-w-0"
@@ -177,7 +177,7 @@ const ResumeUpload = () => {
           <div key={doc.id} className="mt-3 rounded-xl bg-muted/50 p-3">
             <div className="flex items-center justify-between gap-3">
               <a
-                href={getPublicUrl(doc)}
+                href={getFileUrl(doc)}
                 target="_blank"
                 rel="noopener"
                 className="flex items-center gap-2 text-sm text-primary hover:underline truncate min-w-0"
@@ -190,7 +190,7 @@ const ResumeUpload = () => {
               </Button>
             </div>
             <video
-              src={getPublicUrl(doc)}
+              src={getFileUrl(doc)}
               controls
               className="mt-2 w-full rounded-lg max-h-48"
             />
