@@ -6,15 +6,18 @@ import { useState, useMemo, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Briefcase, Search, Clock, Building2 } from "lucide-react";
+import { MapPin, Briefcase, Search, Clock, Building2, ChevronLeft, ChevronRight } from "lucide-react";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import { formatDistanceToNow } from "date-fns";
 import { Link, useSearchParams } from "react-router-dom";
 import { getJobDisplayTag } from "@/lib/jobTag";
 import { AffiliateSidebarAd, AffiliateInContentAd, AffiliateCarousel } from "@/components/AffiliateAds";
+import { Button } from "@/components/ui/button";
+
+const JOBS_PER_PAGE = 20;
 
 const Jobs = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -24,6 +27,12 @@ const Jobs = () => {
   const [jobType, setJobType] = useState("all");
   const [location, setLocation] = useState(searchParams.get("location") || "all");
   const [categoryFilter, setCategoryFilter] = useState(searchParams.get("category") || "all");
+  const [page, setPage] = useState(1);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [search, jobType, location, categoryFilter]);
 
   useEffect(() => {
     setSearch(searchParams.get("q") || "");
@@ -33,18 +42,44 @@ const Jobs = () => {
     if (cat) setCategoryFilter(cat);
   }, [searchParams]);
 
-  const { data: jobs, isLoading } = useQuery({
-    queryKey: ["all-jobs"],
+  // Build the query with server-side filtering + pagination
+  const { data, isLoading } = useQuery({
+    queryKey: ["all-jobs", search, jobType, location, categoryFilter, page],
     queryFn: async () => {
-      const { data } = await supabase
+      let query = supabase
         .from("jobs")
-        .select("*, companies(name, logo_url, is_verified), categories(name)")
+        .select("*, companies(name, logo_url, is_verified), categories(name)", { count: "exact" })
         .eq("is_active", true)
         .eq("is_approved", true)
         .order("created_at", { ascending: false });
-      return data ?? [];
+
+      // Server-side filters
+      if (jobType !== "all") {
+        query = query.eq("job_type", jobType);
+      }
+      if (location !== "all") {
+        query = query.ilike("location", `%${location}%`);
+      }
+      if (categoryFilter !== "all") {
+        query = query.eq("category_id", categoryFilter);
+      }
+      if (search) {
+        query = query.or(`title.ilike.%${search}%,companies.name.ilike.%${search}%`);
+      }
+
+      // Pagination
+      const from = (page - 1) * JOBS_PER_PAGE;
+      const to = from + JOBS_PER_PAGE - 1;
+      query = query.range(from, to);
+
+      const { data: jobs, error, count } = await query;
+      return { jobs: jobs ?? [], totalCount: count ?? 0 };
     },
   });
+
+  const jobs = data?.jobs ?? [];
+  const totalCount = data?.totalCount ?? 0;
+  const totalPages = Math.ceil(totalCount / JOBS_PER_PAGE);
 
   const { data: categories } = useQuery({
     queryKey: ["categories"],
@@ -52,24 +87,34 @@ const Jobs = () => {
       const { data } = await supabase.from("categories").select("*").order("name");
       return data ?? [];
     },
+    staleTime: 30 * 60 * 1000,
   });
 
-  const jobTypes = [...new Set(jobs?.map((j) => j.job_type) ?? [])];
-  const locations = useMemo(() => {
-    const locs = jobs?.flatMap((j) => j.location?.split(",").map((l) => l.trim()).filter(Boolean) ?? []) ?? [];
-    return [...new Set(locs)].sort();
-  }, [jobs]);
-
-  const filtered = jobs?.filter((job) => {
-    const matchSearch =
-      !search ||
-      job.title.toLowerCase().includes(search.toLowerCase()) ||
-      (job.companies as any)?.name?.toLowerCase().includes(search.toLowerCase());
-    const matchType = jobType === "all" || job.job_type === jobType;
-    const matchLoc = location === "all" || job.location?.toLowerCase().includes(location.toLowerCase());
-    const matchCat = categoryFilter === "all" || job.category_id === categoryFilter;
-    return matchSearch && matchType && matchLoc && matchCat;
+  // Fetch distinct job types and locations for filter dropdowns
+  const { data: filterOptions } = useQuery({
+    queryKey: ["job-filter-options"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("jobs")
+        .select("job_type, location")
+        .eq("is_active", true)
+        .eq("is_approved", true);
+      const types = [...new Set(data?.map((j) => j.job_type) ?? [])];
+      const locs = [...new Set(
+        data?.flatMap((j) => j.location?.split(",").map((l) => l.trim()).filter(Boolean) ?? []) ?? []
+      )].sort();
+      return { types, locations: locs };
+    },
+    staleTime: 30 * 60 * 1000,
   });
+
+  const jobTypes = filterOptions?.types ?? [];
+  const locations = filterOptions?.locations ?? [];
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -128,7 +173,7 @@ const Jobs = () => {
 
         <div className="flex gap-8">
           <div className="flex-1 min-w-0">
-            <p className="mb-4 text-sm text-muted-foreground">{filtered?.length ?? 0} টি চাকরি পাওয়া গেছে</p>
+            <p className="mb-4 text-sm text-muted-foreground">{totalCount} টি চাকরি পাওয়া গেছে</p>
 
             {isLoading ? (
               <div className="space-y-4">
@@ -136,9 +181,9 @@ const Jobs = () => {
                   <div key={i} className="h-28 animate-pulse rounded-2xl bg-muted" />
                 ))}
               </div>
-            ) : filtered && filtered.length > 0 ? (
+            ) : jobs.length > 0 ? (
               <div className="space-y-4">
-                {filtered.map((job, index) => (
+                {jobs.map((job, index) => (
                   <div key={job.id}>
                     <Link
                       to={`/jobs/${job.id}`}
@@ -184,6 +229,57 @@ const Jobs = () => {
                     {(index + 1) % 5 === 0 && <div className="mt-4"><AffiliateInContentAd /></div>}
                   </div>
                 ))}
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="mt-8 flex items-center justify-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(page - 1)}
+                      disabled={page <= 1}
+                      className="gap-1"
+                    >
+                      <ChevronLeft className="h-4 w-4" /> আগের
+                    </Button>
+                    
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                        let pageNum: number;
+                        if (totalPages <= 5) {
+                          pageNum = i + 1;
+                        } else if (page <= 3) {
+                          pageNum = i + 1;
+                        } else if (page >= totalPages - 2) {
+                          pageNum = totalPages - 4 + i;
+                        } else {
+                          pageNum = page - 2 + i;
+                        }
+                        return (
+                          <Button
+                            key={pageNum}
+                            variant={pageNum === page ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => handlePageChange(pageNum)}
+                            className="w-9"
+                          >
+                            {pageNum}
+                          </Button>
+                        );
+                      })}
+                    </div>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(page + 1)}
+                      disabled={page >= totalPages}
+                      className="gap-1"
+                    >
+                      পরের <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="flex flex-col items-center py-20 text-muted-foreground">
