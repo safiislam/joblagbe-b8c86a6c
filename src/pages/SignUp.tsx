@@ -13,7 +13,7 @@ import { useBrandSettings } from "@/hooks/useBrandSettings";
 
 const SignUp = () => {
   const navigate = useNavigate();
-  const [emailOrPhone, setEmailOrPhone] = useState("");
+  const [email, setEmail] = useState("");
   const { logoUrl } = useBrandSettings();
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -22,9 +22,6 @@ const SignUp = () => {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
-  const isEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-  const isPhone = (value: string) => /^01\d{9}$/.test(value.replace(/[\s-]/g, ""));
-
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreedToTerms) {
@@ -32,22 +29,19 @@ const SignUp = () => {
       return;
     }
 
-    const trimmed = emailOrPhone.trim();
-    
-    if (!isEmail(trimmed) && !isPhone(trimmed)) {
-      toast.error("Please enter a valid email or phone number (01XXXXXXXXX).");
+    const trimmed = email.trim();
+    if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      toast.error("Please enter a valid email address.");
       return;
     }
 
     setLoading(true);
-    const email = isEmail(trimmed) ? trimmed : `${trimmed.replace(/[\s-]/g, "")}@phone.local`;
-    const phone = isPhone(trimmed) ? trimmed.replace(/[\s-]/g, "") : null;
 
     const { data, error } = await supabase.auth.signUp({
-      email,
+      email: trimmed,
       password,
       options: {
-        data: { full_name: fullName, role, phone },
+        data: { full_name: fullName, role },
         emailRedirectTo: window.location.origin,
       },
     });
@@ -57,11 +51,7 @@ const SignUp = () => {
       return;
     }
 
-    if (data?.user && phone) {
-      await supabase.from("profiles").update({ phone }).eq("user_id", data.user.id);
-    }
-
-    toast.success(isEmail(trimmed) ? "Account created! Check your email to confirm." : "Account created successfully!");
+    toast.success("Account created! Check your email to confirm.");
     setLoading(false);
     navigate("/");
   };
@@ -122,8 +112,8 @@ const SignUp = () => {
             <Input id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} required placeholder="Your full name" className="mt-1.5 rounded-xl" />
           </div>
           <div>
-            <Label htmlFor="emailOrPhone">Email or Phone Number</Label>
-            <Input id="emailOrPhone" value={emailOrPhone} onChange={(e) => setEmailOrPhone(e.target.value)} required placeholder="you@example.com or 01XXXXXXXXX" className="mt-1.5 rounded-xl" />
+            <Label htmlFor="email">Email Address</Label>
+            <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" className="mt-1.5 rounded-xl" />
           </div>
           <div>
             <Label htmlFor="password">Password</Label>
