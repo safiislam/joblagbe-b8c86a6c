@@ -63,8 +63,11 @@ const SignUp = () => {
     }
     setGoogleLoading(true);
     localStorage.setItem("pending_signup_role", role);
-    const { error } = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: `${window.location.origin}/?role=${role}`,
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/?role=${role}`,
+      },
     });
     setGoogleLoading(false);
     if (error) {
