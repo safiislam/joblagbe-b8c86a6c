@@ -19,6 +19,7 @@ import DashboardSiteContent from "@/components/dashboard/DashboardSiteContent";
 import DashboardPopups from "@/components/dashboard/DashboardPopups";
 import DashboardPayments from "@/components/dashboard/DashboardPayments";
 import DashboardAffiliates from "@/components/dashboard/DashboardAffiliates";
+import DashboardSmsOtp from "@/components/dashboard/DashboardSmsOtp";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import NotificationBell from "@/components/NotificationBell";
@@ -89,6 +90,7 @@ const Dashboard = () => {
               <Route path="site-content" element={<DashboardSiteContent />} />
               <Route path="popups" element={<DashboardPopups />} />
               <Route path="affiliates" element={<DashboardAffiliates />} />
+              <Route path="sms-otp" element={<DashboardSmsOtp />} />
             </Routes>
           </main>
         </div>
