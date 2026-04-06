@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useBrandSettings } from "@/hooks/useBrandSettings";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import PhoneOtpForm from "@/components/PhoneOtpForm";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -19,6 +21,7 @@ const Login = () => {
   const [showForgot, setShowForgot] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotLoading, setForgotLoading] = useState(false);
+  const [authMethod, setAuthMethod] = useState<"email" | "phone">("email");
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,24 +116,42 @@ const Login = () => {
               <Separator className="flex-1" />
             </div>
 
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" className="mt-1.5 rounded-xl" />
-              </div>
-              <div>
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Password</Label>
-                  <button type="button" onClick={() => setShowForgot(true)} className="text-xs text-primary hover:underline">
-                    Forgot Password?
-                  </button>
-                </div>
-                <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="••••••••" className="mt-1.5 rounded-xl" />
-              </div>
-              <Button type="submit" disabled={loading} className="w-full bg-accent text-accent-foreground hover:bg-accent/90 font-semibold rounded-xl py-2.5">
-                {loading ? "Logging in..." : "Login"}
-              </Button>
-            </form>
+            {/* Auth method tabs */}
+            <Tabs value={authMethod} onValueChange={(v) => setAuthMethod(v as "email" | "phone")} className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-4">
+                <TabsTrigger value="email">📧 Email</TabsTrigger>
+                <TabsTrigger value="phone">📱 Phone</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="email">
+                <form onSubmit={handleLogin} className="space-y-4">
+                  <div>
+                    <Label htmlFor="email">Email</Label>
+                    <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" className="mt-1.5 rounded-xl" />
+                  </div>
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="password">Password</Label>
+                      <button type="button" onClick={() => setShowForgot(true)} className="text-xs text-primary hover:underline">
+                        Forgot Password?
+                      </button>
+                    </div>
+                    <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="••••••••" className="mt-1.5 rounded-xl" />
+                  </div>
+                  <Button type="submit" disabled={loading} className="w-full bg-accent text-accent-foreground hover:bg-accent/90 font-semibold rounded-xl py-2.5">
+                    {loading ? "Logging in..." : "Login"}
+                  </Button>
+                </form>
+              </TabsContent>
+
+              <TabsContent value="phone">
+                <PhoneOtpForm
+                  action="login"
+                  onSuccess={() => navigate("/")}
+                />
+              </TabsContent>
+            </Tabs>
+
             <p className="mt-6 text-center text-sm text-muted-foreground">
               Don't have an account?{" "}
               <Link to="/signup" className="font-medium text-primary hover:underline">Sign Up</Link>
