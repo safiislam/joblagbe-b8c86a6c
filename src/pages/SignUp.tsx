@@ -66,7 +66,7 @@ const SignUp = () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/?role=${role}`,
+        redirectTo: `https://joblagbe.bd/?role=${role}`,
       },
     });
     setGoogleLoading(false);

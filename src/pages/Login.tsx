@@ -52,7 +52,7 @@ const Login = () => {
     if (!forgotEmail) { toast.error("Enter your email"); return; }
     setForgotLoading(true);
     const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: "https://joblagbe.bd/reset-password",
     });
     setForgotLoading(false);
     if (error) {
