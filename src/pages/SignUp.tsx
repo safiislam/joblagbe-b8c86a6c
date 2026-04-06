@@ -10,6 +10,8 @@ import { toast } from "sonner";
 import { Briefcase, Search } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useBrandSettings } from "@/hooks/useBrandSettings";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import PhoneOtpForm from "@/components/PhoneOtpForm";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -21,6 +23,7 @@ const SignUp = () => {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [authMethod, setAuthMethod] = useState<"email" | "phone">("email");
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,7 +94,7 @@ const SignUp = () => {
         <Button
           variant="outline"
           onClick={handleGoogleSignUp}
-          disabled={googleLoading}
+          disabled={googleLoading || !agreedToTerms}
           className="w-full gap-3 rounded-xl py-2.5 font-medium"
         >
           <svg className="h-5 w-5" viewBox="0 0 24 24">
@@ -109,63 +112,107 @@ const SignUp = () => {
           <Separator className="flex-1" />
         </div>
 
-        <form onSubmit={handleSignUp} className="space-y-4">
-          <div>
-            <Label htmlFor="fullName">Full Name</Label>
-            <Input id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} required placeholder="Your full name" className="mt-1.5 rounded-xl" />
+        {/* Role selector - always visible */}
+        <div className="mb-4">
+          <Label>I am a</Label>
+          <div className="mt-2 grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setRole("seeker")}
+              className={`flex flex-col items-center gap-2 rounded-xl border p-3.5 text-sm font-medium transition-all ${
+                role === "seeker" ? "border-primary bg-primary/10 text-primary ring-1 ring-primary/20" : "hover:border-muted-foreground"
+              }`}
+            >
+              <Search className="h-5 w-5" />
+              Job Seeker
+            </button>
+            <button
+              type="button"
+              onClick={() => setRole("employer")}
+              className={`flex flex-col items-center gap-2 rounded-xl border p-3.5 text-sm font-medium transition-all ${
+                role === "employer" ? "border-primary bg-primary/10 text-primary ring-1 ring-primary/20" : "hover:border-muted-foreground"
+              }`}
+            >
+              <Briefcase className="h-5 w-5" />
+              Employer
+            </button>
           </div>
-          <div>
-            <Label htmlFor="email">Email Address</Label>
-            <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" className="mt-1.5 rounded-xl" />
-          </div>
-          <div>
-            <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} placeholder="Min 6 characters" className="mt-1.5 rounded-xl" />
-          </div>
-          <div>
-            <Label>I am a</Label>
-            <div className="mt-2 grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => setRole("seeker")}
-                className={`flex flex-col items-center gap-2 rounded-xl border p-3.5 text-sm font-medium transition-all ${
-                  role === "seeker" ? "border-primary bg-primary/10 text-primary ring-1 ring-primary/20" : "hover:border-muted-foreground"
-                }`}
-              >
-                <Search className="h-5 w-5" />
-                Job Seeker
-              </button>
-              <button
-                type="button"
-                onClick={() => setRole("employer")}
-                className={`flex flex-col items-center gap-2 rounded-xl border p-3.5 text-sm font-medium transition-all ${
-                  role === "employer" ? "border-primary bg-primary/10 text-primary ring-1 ring-primary/20" : "hover:border-muted-foreground"
-                }`}
-              >
-                <Briefcase className="h-5 w-5" />
-                Employer
-              </button>
+        </div>
+
+        {/* Auth method tabs */}
+        <Tabs value={authMethod} onValueChange={(v) => setAuthMethod(v as "email" | "phone")} className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-4">
+            <TabsTrigger value="email">📧 Email</TabsTrigger>
+            <TabsTrigger value="phone">📱 Phone</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="email">
+            <form onSubmit={handleSignUp} className="space-y-4">
+              <div>
+                <Label htmlFor="fullName">Full Name</Label>
+                <Input id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} required placeholder="Your full name" className="mt-1.5 rounded-xl" />
+              </div>
+              <div>
+                <Label htmlFor="email">Email Address</Label>
+                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" className="mt-1.5 rounded-xl" />
+              </div>
+              <div>
+                <Label htmlFor="password">Password</Label>
+                <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} placeholder="Min 6 characters" className="mt-1.5 rounded-xl" />
+              </div>
+              {/* Terms agreement */}
+              <div className="flex items-start gap-2.5">
+                <Checkbox
+                  id="terms-email"
+                  checked={agreedToTerms}
+                  onCheckedChange={(checked) => setAgreedToTerms(checked === true)}
+                  className="mt-0.5"
+                />
+                <label htmlFor="terms-email" className="text-xs leading-relaxed text-muted-foreground cursor-pointer">
+                  I agree to the{" "}
+                  <Link to="/terms" target="_blank" className="text-primary underline hover:opacity-80">Terms & Conditions</Link>
+                  {" "}and{" "}
+                  <Link to="/privacy-policy" target="_blank" className="text-primary underline hover:opacity-80">Privacy Policy</Link>
+                </label>
+              </div>
+              <Button type="submit" disabled={loading || !agreedToTerms} className="w-full bg-accent text-accent-foreground hover:bg-accent/90 font-semibold rounded-xl py-2.5">
+                {loading ? "Creating account..." : "Sign Up"}
+              </Button>
+            </form>
+          </TabsContent>
+
+          <TabsContent value="phone">
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="fullNamePhone">Full Name</Label>
+                <Input id="fullNamePhone" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Your full name" className="mt-1.5 rounded-xl" />
+              </div>
+              {/* Terms agreement */}
+              <div className="flex items-start gap-2.5">
+                <Checkbox
+                  id="terms-phone"
+                  checked={agreedToTerms}
+                  onCheckedChange={(checked) => setAgreedToTerms(checked === true)}
+                  className="mt-0.5"
+                />
+                <label htmlFor="terms-phone" className="text-xs leading-relaxed text-muted-foreground cursor-pointer">
+                  I agree to the{" "}
+                  <Link to="/terms" target="_blank" className="text-primary underline hover:opacity-80">Terms & Conditions</Link>
+                  {" "}and{" "}
+                  <Link to="/privacy-policy" target="_blank" className="text-primary underline hover:opacity-80">Privacy Policy</Link>
+                </label>
+              </div>
+              <PhoneOtpForm
+                action="signup"
+                fullName={fullName}
+                role={role}
+                disabled={!agreedToTerms}
+                onSuccess={() => navigate("/")}
+              />
             </div>
-          </div>
-          {/* Terms agreement */}
-          <div className="flex items-start gap-2.5">
-            <Checkbox
-              id="terms"
-              checked={agreedToTerms}
-              onCheckedChange={(checked) => setAgreedToTerms(checked === true)}
-              className="mt-0.5"
-            />
-            <label htmlFor="terms" className="text-xs leading-relaxed text-muted-foreground cursor-pointer">
-              I agree to the{" "}
-              <Link to="/terms" target="_blank" className="text-primary underline hover:opacity-80">Terms & Conditions</Link>
-              {" "}and{" "}
-              <Link to="/privacy-policy" target="_blank" className="text-primary underline hover:opacity-80">Privacy Policy</Link>
-            </label>
-          </div>
-          <Button type="submit" disabled={loading || !agreedToTerms} className="w-full bg-accent text-accent-foreground hover:bg-accent/90 font-semibold rounded-xl py-2.5">
-            {loading ? "Creating account..." : "Sign Up"}
-          </Button>
-        </form>
+          </TabsContent>
+        </Tabs>
+
         <p className="mt-6 text-center text-sm text-muted-foreground">
           Already have an account?{" "}
           <Link to="/login" className="font-medium text-primary hover:underline">Login</Link>
