@@ -33,6 +33,7 @@ const trackingItems = [
   { title: "Contact Leads", url: "/dashboard/contacts", icon: Mail },
   { title: "User Activity", url: "/dashboard/activity", icon: Activity },
   { title: "Chat Logs", url: "/dashboard/chat-logs", icon: MessageSquare },
+  { title: "SMS & OTP", url: "/dashboard/sms-otp", icon: Smartphone },
 ];
 
 const settingsItems = [

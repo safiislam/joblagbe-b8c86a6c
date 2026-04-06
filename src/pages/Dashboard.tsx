@@ -90,6 +90,7 @@ const Dashboard = () => {
               <Route path="site-content" element={<DashboardSiteContent />} />
               <Route path="popups" element={<DashboardPopups />} />
               <Route path="affiliates" element={<DashboardAffiliates />} />
+              <Route path="sms-otp" element={<DashboardSmsOtp />} />
             </Routes>
           </main>
         </div>
