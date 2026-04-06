@@ -42,7 +42,7 @@ const SignUp = () => {
       password,
       options: {
         data: { full_name: fullName, role },
-        emailRedirectTo: window.location.origin,
+        emailRedirectTo: "https://joblagbe.bd",
       },
     });
     if (error) {
@@ -66,7 +66,7 @@ const SignUp = () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/?role=${role}`,
+        redirectTo: `https://joblagbe.bd/?role=${role}`,
       },
     });
     setGoogleLoading(false);
