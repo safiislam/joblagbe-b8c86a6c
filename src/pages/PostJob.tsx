@@ -183,7 +183,7 @@ const PostJob = () => {
 
     if ((count ?? 0) >= 10) {
       toast.error("আপনি আজকের জন্য সর্বোচ্চ ১০টি চাকরি পোস্ট করেছেন। আগামীকাল আবার চেষ্টা করুন।");
-      setLoading(false);
+      setSubmitting(false);
       return;
     }
 
