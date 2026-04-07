@@ -34,24 +34,9 @@ type JobPricing = {
 };
 
 const PostJob = () => {
-  const { user, profile, loading } = useAuth();
+  const { user, profile, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-
-  // Only employers can post jobs
-  if (!loading && profile && profile.role !== "employer") {
-    return (
-      <>
-        <Header />
-        <div className="container mx-auto px-4 py-20 text-center">
-          <AlertTriangle className="h-12 w-12 text-destructive mx-auto mb-4" />
-          <h1 className="text-2xl font-bold mb-2">অনুমতি নেই</h1>
-          <p className="text-muted-foreground mb-4">শুধুমাত্র Employer অ্যাকাউন্ট থেকে চাকরি পোস্ট করা যায়।</p>
-          <Button onClick={() => navigate("/")}>হোমে ফিরে যান</Button>
-        </div>
-      </>
-    );
-  }
-  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [pendingJobData, setPendingJobData] = useState<any>(null);
