@@ -34,9 +34,9 @@ type JobPricing = {
 };
 
 const PostJob = () => {
-  const { user } = useAuth();
+  const { user, profile, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [pendingJobData, setPendingJobData] = useState<any>(null);
@@ -163,12 +163,12 @@ const PostJob = () => {
     if (!user) { toast.error("Please login first"); navigate("/login"); return; }
     if (locations.length === 0) { toast.error("অন্তত একটি লোকেশন যোগ করুন"); return; }
 
-    setLoading(true);
+    setSubmitting(true);
     let companyId = company?.id;
 
     if (!companyId) {
       const newCompany = await createCompany();
-      if (!newCompany) { setLoading(false); return; }
+      if (!newCompany) { setSubmitting(false); return; }
       companyId = newCompany.id;
     }
 
@@ -183,7 +183,7 @@ const PostJob = () => {
 
     if ((count ?? 0) >= 10) {
       toast.error("আপনি আজকের জন্য সর্বোচ্চ ১০টি চাকরি পোস্ট করেছেন। আগামীকাল আবার চেষ্টা করুন।");
-      setLoading(false);
+      setSubmitting(false);
       return;
     }
 
@@ -191,21 +191,21 @@ const PostJob = () => {
     if (!isFree) {
       setPendingJobData({ companyId });
       setShowPayment(true);
-      setLoading(false);
+      setSubmitting(false);
       return;
     }
 
     // Free: submit directly
     const success = await submitJob(companyId);
-    setLoading(false);
+    setSubmitting(false);
     if (success) setSubmitted(true);
   };
 
   const handlePaymentSuccess = async () => {
     if (!pendingJobData?.companyId) return;
-    setLoading(true);
+    setSubmitting(true);
     const success = await submitJob(pendingJobData.companyId);
-    setLoading(false);
+    setSubmitting(false);
     setPendingJobData(null);
     if (success) setSubmitted(true);
   };
@@ -218,6 +218,20 @@ const PostJob = () => {
           <h2 className="text-2xl font-bold">Login Required</h2>
           <p className="mt-2 text-muted-foreground">You need to be logged in as an employer to post jobs.</p>
           <Button onClick={() => navigate("/login")} className="mt-4 bg-accent text-accent-foreground">Login</Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!authLoading && profile && profile.role !== "employer") {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container flex flex-col items-center justify-center py-20 text-center">
+          <AlertTriangle className="h-12 w-12 text-destructive mx-auto mb-4" />
+          <h1 className="text-2xl font-bold mb-2">অনুমতি নেই</h1>
+          <p className="text-muted-foreground mb-4">শুধুমাত্র Employer অ্যাকাউন্ট থেকে চাকরি পোস্ট করা যায়।</p>
+          <Button onClick={() => navigate("/")} className="bg-accent text-accent-foreground">হোমে ফিরে যান</Button>
         </div>
       </div>
     );
@@ -441,8 +455,8 @@ const PostJob = () => {
             <Input value={form.sourceUrl} onChange={(e) => setForm({ ...form, sourceUrl: e.target.value })} placeholder="e.g. https://original-job-post.com/apply" className="mt-1.5 rounded-xl" />
             <p className="mt-1 text-xs text-muted-foreground">মূল চাকরির বিজ্ঞপ্তির লিংক যোগ করুন (যদি থাকে)</p>
           </div>
-          <Button type="submit" disabled={loading || (!company && !showCompanyForm)} className="bg-accent text-accent-foreground hover:bg-accent/90 px-8 font-semibold rounded-xl">
-            {loading ? "Submitting..." : isFree ? "Submit for Review" : `Pay ৳${effectivePrice} & Submit`}
+          <Button type="submit" disabled={submitting || (!company && !showCompanyForm)} className="bg-accent text-accent-foreground hover:bg-accent/90 px-8 font-semibold rounded-xl">
+            {submitting ? "Submitting..." : isFree ? "Submit for Review" : `Pay ৳${effectivePrice} & Submit`}
           </Button>
         </form>
       </div>
