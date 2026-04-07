@@ -197,7 +197,7 @@ const PostJob = () => {
 
     // Free: submit directly
     const success = await submitJob(companyId);
-    setLoading(false);
+    setSubmitting(false);
     if (success) setSubmitted(true);
   };
 
