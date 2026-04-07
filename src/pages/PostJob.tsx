@@ -223,6 +223,20 @@ const PostJob = () => {
     );
   }
 
+  if (!authLoading && profile && profile.role !== "employer") {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container flex flex-col items-center justify-center py-20 text-center">
+          <AlertTriangle className="h-12 w-12 text-destructive mx-auto mb-4" />
+          <h1 className="text-2xl font-bold mb-2">অনুমতি নেই</h1>
+          <p className="text-muted-foreground mb-4">শুধুমাত্র Employer অ্যাকাউন্ট থেকে চাকরি পোস্ট করা যায়।</p>
+          <Button onClick={() => navigate("/")} className="bg-accent text-accent-foreground">হোমে ফিরে যান</Button>
+        </div>
+      </div>
+    );
+  }
+
   if (submitted) {
     return (
       <div className="min-h-screen bg-background">
