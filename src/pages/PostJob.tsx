@@ -168,7 +168,7 @@ const PostJob = () => {
 
     if (!companyId) {
       const newCompany = await createCompany();
-      if (!newCompany) { setLoading(false); return; }
+      if (!newCompany) { setSubmitting(false); return; }
       companyId = newCompany.id;
     }
 
