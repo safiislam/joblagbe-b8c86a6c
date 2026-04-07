@@ -191,7 +191,7 @@ const PostJob = () => {
     if (!isFree) {
       setPendingJobData({ companyId });
       setShowPayment(true);
-      setLoading(false);
+      setSubmitting(false);
       return;
     }
 
