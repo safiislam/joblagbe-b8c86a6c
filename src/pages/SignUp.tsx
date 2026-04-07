@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable/index";
 import { Checkbox } from "@/components/ui/checkbox";
 
 import { Button } from "@/components/ui/button";
@@ -66,17 +67,23 @@ const SignUp = () => {
     }
     setGoogleLoading(true);
     localStorage.setItem("pending_signup_role", role);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/?role=${role}`,
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin,
+      extraParams: {
+        role: role,
       },
     });
     setGoogleLoading(false);
-    if (error) {
+    if (result.error) {
       localStorage.removeItem("pending_signup_role");
       toast.error("Google sign-in failed. Please try again.");
+      return;
     }
+    if (result.redirected) {
+      return;
+    }
+    toast.success("Account created!");
+    navigate("/");
   };
 
   return (
