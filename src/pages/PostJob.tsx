@@ -203,9 +203,9 @@ const PostJob = () => {
 
   const handlePaymentSuccess = async () => {
     if (!pendingJobData?.companyId) return;
-    setLoading(true);
+    setSubmitting(true);
     const success = await submitJob(pendingJobData.companyId);
-    setLoading(false);
+    setSubmitting(false);
     setPendingJobData(null);
     if (success) setSubmitted(true);
   };
