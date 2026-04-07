@@ -163,7 +163,7 @@ const PostJob = () => {
     if (!user) { toast.error("Please login first"); navigate("/login"); return; }
     if (locations.length === 0) { toast.error("অন্তত একটি লোকেশন যোগ করুন"); return; }
 
-    setLoading(true);
+    setSubmitting(true);
     let companyId = company?.id;
 
     if (!companyId) {
