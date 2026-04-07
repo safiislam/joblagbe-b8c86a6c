@@ -73,7 +73,7 @@ const BlogPost = () => {
                   publisher: {
                     "@type": "Organization",
                     name: "Job লাগবে",
-                    url: "https://joblagbe.lovable.app",
+                    url: "https://joblagbe.bd",
                   },
                   ...(post.excerpt && { description: post.excerpt }),
                   mainEntityOfPage: {

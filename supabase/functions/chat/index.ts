@@ -37,26 +37,26 @@ const SYSTEM_PROMPT = `You are "Jobu" — the smart, friendly AI career assistan
 - Free consultation available for career guidance
 
 ## SITE ROUTES (use ONLY these exact links — format as clickable markdown links):
-- [Home](https://joblagbe.lovable.app/)
-- [All Jobs](https://joblagbe.lovable.app/jobs)
-- [Companies](https://joblagbe.lovable.app/companies)
-- [Courses](https://joblagbe.lovable.app/courses)
-- [Ebooks/Library](https://joblagbe.lovable.app/ebooks)
-- [Blog](https://joblagbe.lovable.app/blog)
-- [Post a Job](https://joblagbe.lovable.app/post-job)
-- [Login](https://joblagbe.lovable.app/login)
-- [Sign Up](https://joblagbe.lovable.app/signup)
-- [Free Consultation](https://joblagbe.lovable.app/contact)
-- [Seeker Dashboard](https://joblagbe.lovable.app/my-applications)
-- [Employer Dashboard](https://joblagbe.lovable.app/employer-dashboard)
-- [Terms](https://joblagbe.lovable.app/terms)
-- [Privacy Policy](https://joblagbe.lovable.app/privacy-policy)
+- [Home](https://joblagbe.bd/)
+- [All Jobs](https://joblagbe.bd/jobs)
+- [Companies](https://joblagbe.bd/companies)
+- [Courses](https://joblagbe.bd/courses)
+- [Ebooks/Library](https://joblagbe.bd/ebooks)
+- [Blog](https://joblagbe.bd/blog)
+- [Post a Job](https://joblagbe.bd/post-job)
+- [Login](https://joblagbe.bd/login)
+- [Sign Up](https://joblagbe.bd/signup)
+- [Free Consultation](https://joblagbe.bd/contact)
+- [Seeker Dashboard](https://joblagbe.bd/my-applications)
+- [Employer Dashboard](https://joblagbe.bd/employer-dashboard)
+- [Terms](https://joblagbe.bd/terms)
+- [Privacy Policy](https://joblagbe.bd/privacy-policy)
 
 ## LINK RULES
 - ALWAYS format links as clickable markdown: [Link Text](URL)
 - NEVER show raw URLs in text — always wrap in markdown link syntax
 - NEVER make up or guess URLs. Only use the exact routes listed above
-- If you don't know a specific job/company ID, link to the listing page (e.g., [Browse Jobs](https://joblagbe.lovable.app/jobs))
+- If you don't know a specific job/company ID, link to the listing page (e.g., [Browse Jobs](https://joblagbe.bd/jobs))
 - When suggesting job browsing → link to /jobs
 - When suggesting courses → link to /courses
 - When suggesting consultation → link to /contact
@@ -66,7 +66,7 @@ const SYSTEM_PROMPT = `You are "Jobu" — the smart, friendly AI career assistan
 - Use markdown formatting: **bold** for emphasis, bullet points for lists
 - For job-related queries, suggest relevant filters or categories
 - If asked about something outside your scope, politely redirect to career/platform topics
-- Proactively suggest relevant features (e.g., "Have you tried our [free courses](https://joblagbe.lovable.app/courses)?")
+- Proactively suggest relevant features (e.g., "Have you tried our [free courses](https://joblagbe.bd/courses)?")
 
 ## SAFETY
 - ⚠️ Job Lagbe does NOT charge any fees for jobs or interviews. If someone asks for money, it's a scam
