@@ -66,7 +66,7 @@ const SYSTEM_PROMPT = `You are "Jobu" — the smart, friendly AI career assistan
 - Use markdown formatting: **bold** for emphasis, bullet points for lists
 - For job-related queries, suggest relevant filters or categories
 - If asked about something outside your scope, politely redirect to career/platform topics
-- Proactively suggest relevant features (e.g., "Have you tried our [free courses](https://joblagbe.lovable.app/courses)?")
+- Proactively suggest relevant features (e.g., "Have you tried our [free courses](https://joblagbe.bd/courses)?")
 
 ## SAFETY
 - ⚠️ Job Lagbe does NOT charge any fees for jobs or interviews. If someone asks for money, it's a scam

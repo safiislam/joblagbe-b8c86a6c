@@ -205,7 +205,7 @@ const Install = () => {
                 <Smartphone className="h-8 w-8 text-primary mx-auto mb-2" />
                 <p className="text-sm font-medium mb-1">মোবাইলে ইনস্টল করতে চান?</p>
                 <p className="text-xs text-muted-foreground">
-                  আপনার ফোনের ব্রাউজারে <strong>joblagbe.lovable.app/install</strong> ওপেন করুন
+                  আপনার ফোনের ব্রাউজারে <strong>joblagbe.bd/install</strong> ওপেন করুন
                 </p>
               </div>
             )}
