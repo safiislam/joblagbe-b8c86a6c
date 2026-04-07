@@ -45,7 +45,7 @@ const SignUp = () => {
       password,
       options: {
         data: { full_name: fullName, role },
-        emailRedirectTo: "https://joblagbe.bd",
+        emailRedirectTo: window.location.origin,
       },
     });
     if (error) {
