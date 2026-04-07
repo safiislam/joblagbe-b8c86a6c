@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable/index";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,16 +39,19 @@ const Login = () => {
 
   const handleGoogleLogin = async () => {
     setGoogleLoading(true);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: window.location.origin,
-      },
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin,
     });
     setGoogleLoading(false);
-    if (error) {
+    if (result.error) {
       toast.error("Google sign-in failed. Please try again.");
+      return;
     }
+    if (result.redirected) {
+      return;
+    }
+    toast.success("Welcome back!");
+    navigate("/");
   };
 
   const handleForgotPassword = async (e: React.FormEvent) => {
