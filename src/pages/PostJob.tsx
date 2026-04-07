@@ -455,8 +455,8 @@ const PostJob = () => {
             <Input value={form.sourceUrl} onChange={(e) => setForm({ ...form, sourceUrl: e.target.value })} placeholder="e.g. https://original-job-post.com/apply" className="mt-1.5 rounded-xl" />
             <p className="mt-1 text-xs text-muted-foreground">মূল চাকরির বিজ্ঞপ্তির লিংক যোগ করুন (যদি থাকে)</p>
           </div>
-          <Button type="submit" disabled={loading || (!company && !showCompanyForm)} className="bg-accent text-accent-foreground hover:bg-accent/90 px-8 font-semibold rounded-xl">
-            {loading ? "Submitting..." : isFree ? "Submit for Review" : `Pay ৳${effectivePrice} & Submit`}
+          <Button type="submit" disabled={submitting || (!company && !showCompanyForm)} className="bg-accent text-accent-foreground hover:bg-accent/90 px-8 font-semibold rounded-xl">
+            {submitting ? "Submitting..." : isFree ? "Submit for Review" : `Pay ৳${effectivePrice} & Submit`}
           </Button>
         </form>
       </div>
