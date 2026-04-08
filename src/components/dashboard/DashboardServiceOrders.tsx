@@ -16,7 +16,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Eye, Search, Filter, CheckCircle2, Clock, XCircle, Package } from "lucide-react";
+import { Eye, Search, Filter, CheckCircle2, Clock, XCircle, Package, Trash2 } from "lucide-react";
 
 const statusConfig: Record<string, { label: string; color: string; icon: typeof Clock }> = {
   pending: { label: "Pending", color: "bg-warning/15 text-warning border-warning/20", icon: Clock },
