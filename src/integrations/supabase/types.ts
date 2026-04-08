@@ -68,6 +68,7 @@ export type Database = {
           created_at: string
           id: string
           job_id: string
+          resume_doc_id: string | null
           status: string
           updated_at: string
           user_id: string
@@ -77,6 +78,7 @@ export type Database = {
           created_at?: string
           id?: string
           job_id: string
+          resume_doc_id?: string | null
           status?: string
           updated_at?: string
           user_id: string
@@ -86,6 +88,7 @@ export type Database = {
           created_at?: string
           id?: string
           job_id?: string
+          resume_doc_id?: string | null
           status?: string
           updated_at?: string
           user_id?: string
@@ -96,6 +99,13 @@ export type Database = {
             columns: ["job_id"]
             isOneToOne: false
             referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "applications_resume_doc_id_fkey"
+            columns: ["resume_doc_id"]
+            isOneToOne: false
+            referencedRelation: "seeker_documents"
             referencedColumns: ["id"]
           },
         ]

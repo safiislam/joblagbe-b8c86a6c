@@ -27,7 +27,8 @@ type AppRow = {
   user_id: string;
   job_id: string;
   jobs: { title: string; companies: { name: string } | null } | null;
-  applicant_profile?: { full_name: string | null; phone: string | null; resume_url: string | null; email?: string | null };
+  applicant_profile?: { full_name: string | null; phone: string | null; email?: string | null };
+  resume_doc?: { file_url: string; file_name: string } | null;
 };
 
 const DashboardApplications = () => {
@@ -41,7 +42,7 @@ const DashboardApplications = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("applications")
-        .select("id, status, created_at, cover_letter, user_id, job_id, jobs(title, companies(name))")
+        .select("id, status, created_at, cover_letter, user_id, job_id, resume_doc_id, jobs(title, companies(name))")
         .order("created_at", { ascending: false })
         .limit(200);
 
@@ -51,7 +52,7 @@ const DashboardApplications = () => {
       const userIds = [...new Set(data.map((a: any) => a.user_id))];
       const { data: profiles } = await supabase
         .from("profiles")
-        .select("user_id, full_name, phone, resume_url")
+        .select("user_id, full_name, phone")
         .in("user_id", userIds);
 
       const profileMap: Record<string, any> = {};
@@ -59,9 +60,18 @@ const DashboardApplications = () => {
         profileMap[p.user_id] = p;
       });
 
+      // Fetch resume documents
+      const docIds = data.map((a: any) => a.resume_doc_id).filter(Boolean);
+      let docMap: Record<string, { file_url: string; file_name: string }> = {};
+      if (docIds.length > 0) {
+        const { data: docs } = await supabase.from("seeker_documents").select("id, file_url, file_name").in("id", docIds);
+        docs?.forEach(d => { docMap[d.id] = { file_url: d.file_url, file_name: d.file_name }; });
+      }
+
       return data.map((a: any) => ({
         ...a,
         applicant_profile: profileMap[a.user_id] || null,
+        resume_doc: docMap[a.resume_doc_id] || null,
       })) as AppRow[];
     },
   });
@@ -222,15 +232,16 @@ const DashboardApplications = () => {
                     )}
 
                     {/* Resume */}
-                    {app.applicant_profile?.resume_url && (
-                      <a
-                        href={supabase.storage.from("resumes").getPublicUrl(app.applicant_profile.resume_url).data.publicUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                    {app.resume_doc && (
+                      <button
+                        onClick={async () => {
+                          const { data } = await supabase.storage.from("resumes").createSignedUrl(app.resume_doc!.file_url, 3600);
+                          if (data?.signedUrl) window.open(data.signedUrl, "_blank");
+                        }}
                         className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline"
                       >
-                        <FileText className="h-3.5 w-3.5" /> View Resume
-                      </a>
+                        <FileText className="h-3.5 w-3.5" /> View Resume ({app.resume_doc.file_name})
+                      </button>
                     )}
 
                     {/* Status Actions */}

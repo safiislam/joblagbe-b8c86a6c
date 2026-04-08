@@ -94,15 +94,13 @@ const ApplyJobDialog = ({
         .upload(filePath, file);
       if (uploadError) throw uploadError;
 
-      const { data: urlData } = supabase.storage.from("resumes").getPublicUrl(filePath);
-
       const { data: doc, error: insertError } = await supabase
         .from("seeker_documents")
         .insert({
           user_id: user.id,
           file_name: file.name,
           file_type: "resume",
-          file_url: urlData.publicUrl,
+          file_url: filePath,
         })
         .select()
         .single();
@@ -134,7 +132,8 @@ const ApplyJobDialog = ({
         job_id: jobId,
         user_id: user.id,
         cover_letter: coverLetter.trim() || null,
-      });
+        resume_doc_id: selectedDocId,
+      } as any);
 
       if (error) {
         if (error.code === "23505") {
