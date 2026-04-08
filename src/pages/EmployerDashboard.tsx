@@ -29,7 +29,8 @@ type EmployerJob = {
 
 type ApplicationRow = {
   id: string; status: string; created_at: string; cover_letter: string | null; user_id: string;
-  profiles: { full_name: string | null; phone: string | null; resume_url: string | null } | null;
+  profiles: { full_name: string | null; phone: string | null } | null;
+  resume_doc: { file_url: string; file_name: string } | null;
 };
 
 const CompanyEditForm = ({ company, queryClient }: { company: any; queryClient: any }) => {
