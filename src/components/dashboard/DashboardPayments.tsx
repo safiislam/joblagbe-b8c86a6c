@@ -367,16 +367,21 @@ const DashboardPayments = () => {
                       </span>
                     </TableCell>
                     <TableCell className="text-right">
-                      {p.status === "pending" && (
-                        <div className="flex justify-end gap-1">
-                          <Button size="icon" variant="ghost" className="h-7 w-7 text-green-600" onClick={() => updatePaymentStatus(p.id, "approved")}>
-                            <CheckCircle2 className="h-4 w-4" />
-                          </Button>
-                          <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => updatePaymentStatus(p.id, "rejected")}>
-                            <XCircle className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      )}
+                      <div className="flex justify-end gap-1">
+                        {p.status === "pending" && (
+                          <>
+                            <Button size="icon" variant="ghost" className="h-7 w-7 text-green-600" onClick={() => updatePaymentStatus(p.id, "approved")}>
+                              <CheckCircle2 className="h-4 w-4" />
+                            </Button>
+                            <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => updatePaymentStatus(p.id, "rejected")}>
+                              <XCircle className="h-4 w-4" />
+                            </Button>
+                          </>
+                        )}
+                        <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => deletePayment(p.id)} title="স্থায়ীভাবে মুছুন">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 )) : (
