@@ -54,6 +54,13 @@ const DashboardServiceOrders = () => {
     },
   });
 
+  const deleteOrder = async (id: string) => {
+    if (!confirm("এই সার্ভিস অর্ডার স্থায়ীভাবে মুছে ফেলতে চান?")) return;
+    const { error } = await supabase.from("service_orders").delete().eq("id", id);
+    if (error) toast.error(error.message);
+    else { toast.success("মুছে ফেলা হয়েছে"); queryClient.invalidateQueries({ queryKey: ["admin-service-orders"] }); }
+  };
+
   const filtered = (orders ?? []).filter((o) => {
     const matchSearch =
       !search ||
