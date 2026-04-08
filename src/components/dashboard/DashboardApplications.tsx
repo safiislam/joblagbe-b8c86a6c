@@ -27,7 +27,8 @@ type AppRow = {
   user_id: string;
   job_id: string;
   jobs: { title: string; companies: { name: string } | null } | null;
-  applicant_profile?: { full_name: string | null; phone: string | null; resume_url: string | null; email?: string | null };
+  applicant_profile?: { full_name: string | null; phone: string | null; email?: string | null };
+  resume_doc?: { file_url: string; file_name: string } | null;
 };
 
 const DashboardApplications = () => {
