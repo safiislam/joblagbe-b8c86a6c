@@ -42,7 +42,7 @@ const DashboardApplications = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("applications")
-        .select("id, status, created_at, cover_letter, user_id, job_id, jobs(title, companies(name))")
+        .select("id, status, created_at, cover_letter, user_id, job_id, resume_doc_id, jobs(title, companies(name))")
         .order("created_at", { ascending: false })
         .limit(200);
 
@@ -52,7 +52,7 @@ const DashboardApplications = () => {
       const userIds = [...new Set(data.map((a: any) => a.user_id))];
       const { data: profiles } = await supabase
         .from("profiles")
-        .select("user_id, full_name, phone, resume_url")
+        .select("user_id, full_name, phone")
         .in("user_id", userIds);
 
       const profileMap: Record<string, any> = {};
@@ -60,9 +60,18 @@ const DashboardApplications = () => {
         profileMap[p.user_id] = p;
       });
 
+      // Fetch resume documents
+      const docIds = data.map((a: any) => a.resume_doc_id).filter(Boolean);
+      let docMap: Record<string, { file_url: string; file_name: string }> = {};
+      if (docIds.length > 0) {
+        const { data: docs } = await supabase.from("seeker_documents").select("id, file_url, file_name").in("id", docIds);
+        docs?.forEach(d => { docMap[d.id] = { file_url: d.file_url, file_name: d.file_name }; });
+      }
+
       return data.map((a: any) => ({
         ...a,
         applicant_profile: profileMap[a.user_id] || null,
+        resume_doc: docMap[a.resume_doc_id] || null,
       })) as AppRow[];
     },
   });
