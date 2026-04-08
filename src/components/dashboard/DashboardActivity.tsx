@@ -52,6 +52,7 @@ const ACTION_COLORS: Record<string, string> = {
 const PAGE_SIZE = 25;
 
 const DashboardActivity = () => {
+  const qc = useQueryClient();
   const [search, setSearch] = useState("");
   const [actionFilter, setActionFilter] = useState("all");
   const [timeFilter, setTimeFilter] = useState("all");
