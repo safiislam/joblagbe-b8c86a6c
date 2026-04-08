@@ -179,14 +179,27 @@ const EmployerDashboard = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("applications")
-        .select("id, status, created_at, cover_letter, user_id")
+        .select("id, status, created_at, cover_letter, user_id, resume_doc_id")
         .eq("job_id", selectedJobId!);
       if (!data || data.length === 0) return [];
       const userIds = data.map(a => a.user_id);
-      const { data: profiles } = await supabase.from("profiles").select("user_id, full_name, phone, resume_url").in("user_id", userIds);
-      const profileMap: Record<string, { full_name: string | null; phone: string | null; resume_url: string | null }> = {};
-      profiles?.forEach(p => { profileMap[p.user_id] = { full_name: p.full_name, phone: p.phone, resume_url: p.resume_url }; });
-      return data.map(a => ({ ...a, profiles: profileMap[a.user_id] || { full_name: null, resume_url: null } })) as ApplicationRow[];
+      const { data: profiles } = await supabase.from("profiles").select("user_id, full_name, phone").in("user_id", userIds);
+      const profileMap: Record<string, { full_name: string | null; phone: string | null }> = {};
+      profiles?.forEach(p => { profileMap[p.user_id] = { full_name: p.full_name, phone: p.phone }; });
+
+      // Fetch the actual resume documents linked to each application
+      const docIds = data.map(a => (a as any).resume_doc_id).filter(Boolean);
+      let docMap: Record<string, { file_url: string; file_name: string }> = {};
+      if (docIds.length > 0) {
+        const { data: docs } = await supabase.from("seeker_documents").select("id, file_url, file_name").in("id", docIds);
+        docs?.forEach(d => { docMap[d.id] = { file_url: d.file_url, file_name: d.file_name }; });
+      }
+
+      return data.map(a => ({
+        ...a,
+        profiles: profileMap[a.user_id] || { full_name: null, phone: null },
+        resume_doc: docMap[(a as any).resume_doc_id] || null,
+      })) as ApplicationRow[];
     },
     enabled: !!selectedJobId,
   });
