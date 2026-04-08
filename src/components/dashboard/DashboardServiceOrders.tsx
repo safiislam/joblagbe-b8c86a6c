@@ -16,7 +16,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Eye, Search, Filter, CheckCircle2, Clock, XCircle, Package } from "lucide-react";
+import { Eye, Search, Filter, CheckCircle2, Clock, XCircle, Package, Trash2 } from "lucide-react";
 
 const statusConfig: Record<string, { label: string; color: string; icon: typeof Clock }> = {
   pending: { label: "Pending", color: "bg-warning/15 text-warning border-warning/20", icon: Clock },
@@ -53,6 +53,13 @@ const DashboardServiceOrders = () => {
       toast.success("স্ট্যাটাস আপডেট হয়েছে");
     },
   });
+
+  const deleteOrder = async (id: string) => {
+    if (!confirm("এই সার্ভিস অর্ডার স্থায়ীভাবে মুছে ফেলতে চান?")) return;
+    const { error } = await supabase.from("service_orders").delete().eq("id", id);
+    if (error) toast.error(error.message);
+    else { toast.success("মুছে ফেলা হয়েছে"); queryClient.invalidateQueries({ queryKey: ["admin-service-orders"] }); }
+  };
 
   const filtered = (orders ?? []).filter((o) => {
     const matchSearch =
@@ -156,9 +163,14 @@ const DashboardServiceOrders = () => {
                       {formatDistanceToNow(new Date(o.created_at), { addSuffix: true })}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={() => setSelected(o)}>
-                        <Eye className="h-4 w-4" />
-                      </Button>
+                      <div className="flex justify-end gap-1">
+                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={() => setSelected(o)}>
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-destructive" onClick={() => deleteOrder(o.id)} title="স্থায়ীভাবে মুছুন">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 );

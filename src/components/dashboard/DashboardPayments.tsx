@@ -183,6 +183,13 @@ const DashboardPayments = () => {
     else { toast.success(`স্ট্যাটাস ${status === "approved" ? "অনুমোদিত" : "প্রত্যাখ্যাত"} হয়েছে`); qc.invalidateQueries({ queryKey: ["admin-payments"] }); }
   };
 
+  const deletePayment = async (id: string) => {
+    if (!confirm("এই পেমেন্ট রেকর্ড স্থায়ীভাবে মুছে ফেলতে চান?")) return;
+    const { error } = await supabase.from("payments").delete().eq("id", id);
+    if (error) toast.error(error.message);
+    else { toast.success("পেমেন্ট মুছে ফেলা হয়েছে"); qc.invalidateQueries({ queryKey: ["admin-payments"] }); }
+  };
+
   const filteredPayments = payments?.filter((p) => {
     const matchSearch = !search ||
       p.item_title?.toLowerCase().includes(search.toLowerCase()) ||
@@ -360,16 +367,21 @@ const DashboardPayments = () => {
                       </span>
                     </TableCell>
                     <TableCell className="text-right">
-                      {p.status === "pending" && (
-                        <div className="flex justify-end gap-1">
-                          <Button size="icon" variant="ghost" className="h-7 w-7 text-green-600" onClick={() => updatePaymentStatus(p.id, "approved")}>
-                            <CheckCircle2 className="h-4 w-4" />
-                          </Button>
-                          <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => updatePaymentStatus(p.id, "rejected")}>
-                            <XCircle className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      )}
+                      <div className="flex justify-end gap-1">
+                        {p.status === "pending" && (
+                          <>
+                            <Button size="icon" variant="ghost" className="h-7 w-7 text-green-600" onClick={() => updatePaymentStatus(p.id, "approved")}>
+                              <CheckCircle2 className="h-4 w-4" />
+                            </Button>
+                            <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => updatePaymentStatus(p.id, "rejected")}>
+                              <XCircle className="h-4 w-4" />
+                            </Button>
+                          </>
+                        )}
+                        <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => deletePayment(p.id)} title="স্থায়ীভাবে মুছুন">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 )) : (

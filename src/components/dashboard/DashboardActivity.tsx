@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { formatDistanceToNow, format, subDays, subHours, isAfter } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -52,6 +53,7 @@ const ACTION_COLORS: Record<string, string> = {
 const PAGE_SIZE = 25;
 
 const DashboardActivity = () => {
+  const qc = useQueryClient();
   const [search, setSearch] = useState("");
   const [actionFilter, setActionFilter] = useState("all");
   const [timeFilter, setTimeFilter] = useState("all");
@@ -225,6 +227,21 @@ const DashboardActivity = () => {
         <p className="text-sm text-muted-foreground">
           Showing {filtered.length === 0 ? 0 : page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, filtered.length)} of {filtered.length} events
         </p>
+        <Button
+          variant="destructive"
+          size="sm"
+          className="gap-1.5"
+          disabled={filtered.length === 0}
+          onClick={async () => {
+            if (!confirm("সকল অ্যাক্টিভিটি লগ স্থায়ীভাবে মুছে ফেলতে চান?")) return;
+            const ids = filtered.map((a) => a.id);
+            const { error } = await supabase.from("user_activity").delete().in("id", ids);
+            if (error) toast.error(error.message);
+            else { toast.success("অ্যাক্টিভিটি মুছে ফেলা হয়েছে"); qc.invalidateQueries({ queryKey: ["admin-activity"] }); }
+          }}
+        >
+          <Trash2 className="h-3.5 w-3.5" /> Delete Filtered
+        </Button>
       </div>
 
       {/* Activity List */}
