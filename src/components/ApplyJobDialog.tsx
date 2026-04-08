@@ -132,7 +132,8 @@ const ApplyJobDialog = ({
         job_id: jobId,
         user_id: user.id,
         cover_letter: coverLetter.trim() || null,
-      });
+        resume_doc_id: selectedDocId,
+      } as any);
 
       if (error) {
         if (error.code === "23505") {
