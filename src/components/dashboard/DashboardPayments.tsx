@@ -183,6 +183,13 @@ const DashboardPayments = () => {
     else { toast.success(`স্ট্যাটাস ${status === "approved" ? "অনুমোদিত" : "প্রত্যাখ্যাত"} হয়েছে`); qc.invalidateQueries({ queryKey: ["admin-payments"] }); }
   };
 
+  const deletePayment = async (id: string) => {
+    if (!confirm("এই পেমেন্ট রেকর্ড স্থায়ীভাবে মুছে ফেলতে চান?")) return;
+    const { error } = await supabase.from("payments").delete().eq("id", id);
+    if (error) toast.error(error.message);
+    else { toast.success("পেমেন্ট মুছে ফেলা হয়েছে"); qc.invalidateQueries({ queryKey: ["admin-payments"] }); }
+  };
+
   const filteredPayments = payments?.filter((p) => {
     const matchSearch = !search ||
       p.item_title?.toLowerCase().includes(search.toLowerCase()) ||
