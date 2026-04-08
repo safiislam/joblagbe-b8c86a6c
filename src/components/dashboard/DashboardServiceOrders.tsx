@@ -163,9 +163,14 @@ const DashboardServiceOrders = () => {
                       {formatDistanceToNow(new Date(o.created_at), { addSuffix: true })}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={() => setSelected(o)}>
-                        <Eye className="h-4 w-4" />
-                      </Button>
+                      <div className="flex justify-end gap-1">
+                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={() => setSelected(o)}>
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-destructive" onClick={() => deleteOrder(o.id)} title="স্থায়ীভাবে মুছুন">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 );
