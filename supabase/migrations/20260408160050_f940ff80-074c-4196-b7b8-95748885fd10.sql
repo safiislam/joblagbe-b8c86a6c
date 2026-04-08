@@ -1,0 +1,1 @@
+ALTER TABLE public.applications ADD COLUMN resume_doc_id uuid REFERENCES public.seeker_documents(id) ON DELETE SET NULL;
