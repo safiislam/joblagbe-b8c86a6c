@@ -232,15 +232,16 @@ const DashboardApplications = () => {
                     )}
 
                     {/* Resume */}
-                    {app.applicant_profile?.resume_url && (
-                      <a
-                        href={supabase.storage.from("resumes").getPublicUrl(app.applicant_profile.resume_url).data.publicUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                    {app.resume_doc && (
+                      <button
+                        onClick={async () => {
+                          const { data } = await supabase.storage.from("resumes").createSignedUrl(app.resume_doc!.file_url, 3600);
+                          if (data?.signedUrl) window.open(data.signedUrl, "_blank");
+                        }}
                         className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline"
                       >
-                        <FileText className="h-3.5 w-3.5" /> View Resume
-                      </a>
+                        <FileText className="h-3.5 w-3.5" /> View Resume ({app.resume_doc.file_name})
+                      </button>
                     )}
 
                     {/* Status Actions */}
