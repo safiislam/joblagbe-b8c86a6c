@@ -23,7 +23,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 const iconMap: Record<string, LucideIcon> = { ScrollText, FileText, Megaphone };
 
 type ServiceItem = { title: string; desc: string; icon: string; features: string[]; cost: string; cta?: string };
-type ServicesData = { title: string; subtitle: string; items: ServiceItem[] };
+type ServicesData = { title: string; subtitle: string; items: ServiceItem[]; orderDialogTitle?: string; orderSubmitText?: string };
 
 type ServicesSectionProps = {
   contentLoading?: boolean;
@@ -171,7 +171,7 @@ const ServicesSection = ({ contentLoading = false }: ServicesSectionProps) => {
       <Dialog open={!!orderService} onOpenChange={(open) => { if (!open) setOrderService(null); }}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="font-bangla">সেবা অর্ডার করুন</DialogTitle>
+            <DialogTitle className="font-bangla">{data?.orderDialogTitle || "সেবা অর্ডার করুন"}</DialogTitle>
             <DialogDescription>
               <span className="font-medium text-foreground">{orderService?.title}</span>
               {orderService?.cost && <span className="text-muted-foreground"> — {orderService.cost}</span>}
@@ -198,7 +198,7 @@ const ServicesSection = ({ contentLoading = false }: ServicesSectionProps) => {
           <div className="flex gap-3 pt-2">
             <Button variant="outline" className="rounded-xl" onClick={() => setOrderService(null)}>বাতিল</Button>
             <Button onClick={handleSubmit} disabled={submitting} className="flex-1 rounded-xl font-semibold">
-              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "অর্ডার জমা দিন"}
+              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : (data?.orderSubmitText || "অর্ডার জমা দিন")}
             </Button>
           </div>
         </DialogContent>
