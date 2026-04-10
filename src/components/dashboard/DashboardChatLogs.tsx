@@ -40,6 +40,20 @@ const DashboardChatLogs = () => {
     },
   });
 
+  // Fetch user profiles for logged-in chatters
+  const { data: userProfiles } = useQuery({
+    queryKey: ["admin-chat-user-profiles", logs?.map((l) => l.user_id).filter(Boolean)],
+    enabled: !!logs && logs.some((l) => l.user_id),
+    queryFn: async () => {
+      const userIds = [...new Set(logs?.map((l) => l.user_id).filter(Boolean) as string[])];
+      if (!userIds.length) return {};
+      const { data } = await supabase.from("profiles").select("user_id, full_name, phone").in("user_id", userIds);
+      const map: Record<string, { full_name: string | null; phone: string | null }> = {};
+      data?.forEach((p: any) => { map[p.user_id] = p; });
+      return map;
+    },
+  });
+
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase.from("chat_logs").delete().eq("id", id);
@@ -159,10 +173,16 @@ const DashboardChatLogs = () => {
                       <Badge variant="secondary" className="text-[10px] h-4 gap-0.5">
                         <Bot className="h-2.5 w-2.5" /> {botMsgCount}
                       </Badge>
-                      {log.user_id && (
+                      {log.user_id && userProfiles?.[log.user_id] ? (
+                        <Badge variant="outline" className="text-[10px] h-4 text-success border-success/30">
+                          {userProfiles[log.user_id].full_name || "নাম নেই"} {userProfiles[log.user_id].phone ? `(${userProfiles[log.user_id].phone})` : ""}
+                        </Badge>
+                      ) : log.user_id ? (
                         <Badge variant="outline" className="text-[10px] h-4 text-success border-success/30">
                           Logged In
                         </Badge>
+                      ) : (
+                        <Badge variant="secondary" className="text-[10px] h-4">Anonymous</Badge>
                       )}
                     </div>
                   </div>
@@ -218,12 +238,19 @@ const DashboardChatLogs = () => {
                 <span>Session: {selectedLog.session_id.slice(0, 16)}...</span>
                 <span>·</span>
                 <span>{format(new Date(selectedLog.created_at), "MMM dd, yyyy HH:mm")}</span>
-                {selectedLog.user_id && (
+                {selectedLog.user_id && userProfiles?.[selectedLog.user_id] ? (
+                  <>
+                    <span>·</span>
+                    <Badge variant="outline" className="text-[10px] h-4 text-success border-success/30">
+                      {userProfiles[selectedLog.user_id].full_name || "নাম নেই"} {userProfiles[selectedLog.user_id].phone ? `(${userProfiles[selectedLog.user_id].phone})` : ""}
+                    </Badge>
+                  </>
+                ) : selectedLog.user_id ? (
                   <>
                     <span>·</span>
                     <Badge variant="outline" className="text-[10px] h-4 text-success border-success/30">Logged In User</Badge>
                   </>
-                )}
+                ) : null}
               </div>
             )}
           </DialogHeader>
