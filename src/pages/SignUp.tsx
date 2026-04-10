@@ -234,7 +234,8 @@ const SignUp = () => {
                 action="signup"
                 fullName={fullName}
                 role={role}
-                disabled={!agreedToTerms}
+                nidNumber={nidNumber}
+                disabled={!agreedToTerms || !nidNumber || !/^\d{10}(\d{3}|\d{7})?$/.test(nidNumber)}
                 onSuccess={() => navigate("/")}
               />
             </div>

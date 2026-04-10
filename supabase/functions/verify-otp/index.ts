@@ -11,7 +11,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { phone, otp, action, full_name, role } = await req.json();
+    const { phone, otp, action, full_name, role, nid_number } = await req.json();
 
     if (!phone || !otp || !action) {
       return new Response(JSON.stringify({ error: "Phone, OTP, and action are required" }), {
