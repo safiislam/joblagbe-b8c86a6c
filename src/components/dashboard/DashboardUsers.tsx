@@ -124,10 +124,11 @@ const DashboardUsers = () => {
 
   const exportCSV = () => {
     if (!profiles?.length) return;
-    const headers = ["Name", "Phone", "Role", "App Role", "Joined"];
+    const headers = ["Name", "Phone", "NID", "Role", "App Role", "Joined"];
     const rows = profiles.map((p) => [
       p.full_name || "N/A",
       p.phone || "N/A",
+      p.nid_number || "N/A",
       p.role,
       getUserRole(p.user_id),
       format(new Date(p.created_at), "yyyy-MM-dd"),
