@@ -28,6 +28,10 @@ const Blog = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SeoHead
+        title="ক্যারিয়ার টিপস ও ব্লগ"
+        description="চাকরির ইন্টারভিউ টিপস, সিভি লেখার কৌশল এবং ক্যারিয়ার গাইডলাইন পড়ুন Job লাগবে ব্লগে।"
+      />
       <Header />
       <div className="container py-10">
         <div className="text-center mb-10">
