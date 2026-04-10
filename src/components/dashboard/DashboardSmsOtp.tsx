@@ -6,9 +6,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { RefreshCw, Search, Phone, MessageSquare, Wallet } from "lucide-react";
+import { RefreshCw, Search, Phone, MessageSquare, Wallet, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 const DashboardSmsOtp = () => {
   const [searchPhone, setSearchPhone] = useState("");

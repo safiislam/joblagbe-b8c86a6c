@@ -263,6 +263,21 @@ const DashboardActivity = () => {
                     <Badge variant="secondary" className="text-[11px] font-medium">
                       {a.action}
                     </Badge>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 ml-auto shrink-0 text-muted-foreground hover:text-destructive"
+                      title="ডিলিট করুন"
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        if (!confirm("এই অ্যাক্টিভিটি স্থায়ীভাবে মুছে ফেলতে চান?")) return;
+                        const { error } = await supabase.from("user_activity").delete().eq("id", a.id);
+                        if (error) toast.error(error.message);
+                        else { toast.success("মুছে ফেলা হয়েছে"); qc.invalidateQueries({ queryKey: ["admin-activity"] }); }
+                      }}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
                     {a.resource_type && (
                       <span className="text-xs text-muted-foreground">
                         → {a.resource_type}
