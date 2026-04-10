@@ -173,10 +173,16 @@ const DashboardChatLogs = () => {
                       <Badge variant="secondary" className="text-[10px] h-4 gap-0.5">
                         <Bot className="h-2.5 w-2.5" /> {botMsgCount}
                       </Badge>
-                      {log.user_id && (
+                      {log.user_id && userProfiles?.[log.user_id] ? (
+                        <Badge variant="outline" className="text-[10px] h-4 text-success border-success/30">
+                          {userProfiles[log.user_id].full_name || "নাম নেই"} {userProfiles[log.user_id].phone ? `(${userProfiles[log.user_id].phone})` : ""}
+                        </Badge>
+                      ) : log.user_id ? (
                         <Badge variant="outline" className="text-[10px] h-4 text-success border-success/30">
                           Logged In
                         </Badge>
+                      ) : (
+                        <Badge variant="secondary" className="text-[10px] h-4">Anonymous</Badge>
                       )}
                     </div>
                   </div>
