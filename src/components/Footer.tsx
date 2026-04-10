@@ -1,18 +1,37 @@
-import { Facebook, Youtube, Mail, Phone } from "lucide-react";
+import { Facebook, Youtube, Mail, Phone, MessageCircle, Instagram, Twitter, Linkedin, Globe, Send } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useSiteContent } from "@/hooks/useSiteContent";
 import { useBrandSettings } from "@/hooks/useBrandSettings";
 import { Skeleton } from "@/components/ui/skeleton";
+
+type SocialLink = {
+  platform: string;
+  url: string;
+  label?: string;
+};
 
 type FooterData = {
   description: string;
   contact_email: string;
   contact_phone: string;
   social_links: { facebook: string; youtube: string };
+  custom_social_links?: SocialLink[];
 };
 
 type FooterProps = {
   contentLoading?: boolean;
+};
+
+const ICON_MAP: Record<string, React.ElementType> = {
+  facebook: Facebook,
+  youtube: Youtube,
+  whatsapp: MessageCircle,
+  instagram: Instagram,
+  twitter: Twitter,
+  linkedin: Linkedin,
+  telegram: Send,
+  website: Globe,
+  email: Mail,
 };
 
 const Footer = ({ contentLoading = false }: FooterProps) => {
@@ -22,8 +41,21 @@ const Footer = ({ contentLoading = false }: FooterProps) => {
   const desc = data?.description || "Bangladesh's trusted job portal connecting talent with opportunity.";
   const email = data?.contact_email || "support@joblagbe.com";
   const phone = data?.contact_phone || "+880 1XXX-XXXXXX";
-  const socialFb = data?.social_links?.facebook || "#";
-  const socialYt = data?.social_links?.youtube || "#";
+
+  // Build social links array from legacy + custom
+  const socialLinks: SocialLink[] = (() => {
+    const custom = data?.custom_social_links || [];
+    if (custom.length > 0) return custom;
+    // Fallback to legacy fields
+    const legacy: SocialLink[] = [];
+    if (data?.social_links?.facebook) legacy.push({ platform: "facebook", url: data.social_links.facebook });
+    if (data?.social_links?.youtube) legacy.push({ platform: "youtube", url: data.social_links.youtube });
+    if (!legacy.length) {
+      legacy.push({ platform: "facebook", url: "#" });
+      legacy.push({ platform: "youtube", url: "#" });
+    }
+    return legacy;
+  })();
 
   return (
     <footer className="border-t bg-card">
@@ -39,13 +71,18 @@ const Footer = ({ contentLoading = false }: FooterProps) => {
             ) : (
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{desc}</p>
             )}
-            <div className="mt-4 flex gap-3">
-              <a href={socialFb} target="_blank" rel="noopener noreferrer" className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary text-muted-foreground transition-colors hover:bg-primary hover:text-primary-foreground">
-                <Facebook className="h-4 w-4" />
-              </a>
-              <a href={socialYt} target="_blank" rel="noopener noreferrer" className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary text-muted-foreground transition-colors hover:bg-primary hover:text-primary-foreground">
-                <Youtube className="h-4 w-4" />
-              </a>
+            <div className="mt-4 flex flex-wrap gap-3">
+              {socialLinks.map((link, i) => {
+                const Icon = ICON_MAP[link.platform] || Globe;
+                const href = link.platform === "whatsapp" && link.url && !link.url.startsWith("http")
+                  ? `https://wa.me/${link.url.replace(/[^0-9]/g, "")}`
+                  : link.url || "#";
+                return (
+                  <a key={i} href={href} target="_blank" rel="noopener noreferrer" title={link.label || link.platform} className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary text-muted-foreground transition-colors hover:bg-primary hover:text-primary-foreground">
+                    <Icon className="h-4 w-4" />
+                  </a>
+                );
+              })}
               <a href={`mailto:${email}`} className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary text-muted-foreground transition-colors hover:bg-primary hover:text-primary-foreground">
                 <Mail className="h-4 w-4" />
               </a>

@@ -323,20 +323,52 @@ const DashboardSiteContent = () => {
               <Label>Contact Phone</Label>
               <Input className="mt-1" value={editData.footer?.contact_phone || ""} onChange={(e) => updateField("footer", "contact_phone", e.target.value)} />
             </div>
-            <div>
-              <Label>Facebook URL</Label>
-              <Input className="mt-1" value={editData.footer?.social_links?.facebook || ""} onChange={(e) => {
-                const links = { ...editData.footer?.social_links, facebook: e.target.value };
-                updateField("footer", "social_links", links);
-              }} />
+
+            {/* Dynamic Social Links */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <Label className="text-base font-semibold">Social Links</Label>
+                <Button size="sm" variant="outline" onClick={() => addArrayItem("footer", "custom_social_links", { platform: "whatsapp", url: "", label: "" })}>
+                  <Plus className="h-4 w-4 mr-1" /> Add Link
+                </Button>
+              </div>
+              {(editData.footer?.custom_social_links || []).map((link: any, idx: number) => (
+                <div key={idx} className="flex items-end gap-2 rounded-lg border p-3">
+                  <div className="w-36">
+                    <Label className="text-xs">Platform</Label>
+                    <Select value={link.platform || "website"} onValueChange={(v) => updateNestedField("footer", "custom_social_links", idx, "platform", v)}>
+                      <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="facebook">Facebook</SelectItem>
+                        <SelectItem value="youtube">YouTube</SelectItem>
+                        <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                        <SelectItem value="instagram">Instagram</SelectItem>
+                        <SelectItem value="twitter">Twitter / X</SelectItem>
+                        <SelectItem value="linkedin">LinkedIn</SelectItem>
+                        <SelectItem value="telegram">Telegram</SelectItem>
+                        <SelectItem value="website">Website</SelectItem>
+                        <SelectItem value="email">Email</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex-1">
+                    <Label className="text-xs">URL / Number</Label>
+                    <Input className="mt-1" placeholder={link.platform === "whatsapp" ? "+880XXXXXXXXX or https://wa.me/..." : "https://..."} value={link.url || ""} onChange={(e) => updateNestedField("footer", "custom_social_links", idx, "url", e.target.value)} />
+                  </div>
+                  <div className="w-28">
+                    <Label className="text-xs">Label</Label>
+                    <Input className="mt-1" placeholder="Optional" value={link.label || ""} onChange={(e) => updateNestedField("footer", "custom_social_links", idx, "label", e.target.value)} />
+                  </div>
+                  <Button size="icon" variant="ghost" className="text-destructive shrink-0" onClick={() => removeArrayItem("footer", "custom_social_links", idx)}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+              {!(editData.footer?.custom_social_links?.length) && (
+                <p className="text-sm text-muted-foreground">No custom social links yet. Click "Add Link" to add WhatsApp, Instagram, etc.</p>
+              )}
             </div>
-            <div>
-              <Label>YouTube URL</Label>
-              <Input className="mt-1" value={editData.footer?.social_links?.youtube || ""} onChange={(e) => {
-                const links = { ...editData.footer?.social_links, youtube: e.target.value };
-                updateField("footer", "social_links", links);
-              }} />
-            </div>
+
             <SaveBtn sectionKey="footer" />
           </div>
         </TabsContent>
