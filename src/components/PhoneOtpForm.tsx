@@ -10,11 +10,12 @@ interface PhoneOtpFormProps {
   action: "signup" | "login";
   fullName?: string;
   role?: string;
+  nidNumber?: string;
   onSuccess: (session: any) => void;
   disabled?: boolean;
 }
 
-const PhoneOtpForm = ({ action, fullName, role, onSuccess, disabled }: PhoneOtpFormProps) => {
+const PhoneOtpForm = ({ action, fullName, role, nidNumber, onSuccess, disabled }: PhoneOtpFormProps) => {
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState<"phone" | "otp">("phone");
@@ -80,6 +81,7 @@ const PhoneOtpForm = ({ action, fullName, role, onSuccess, disabled }: PhoneOtpF
           action,
           full_name: fullName,
           role: role,
+          nid_number: nidNumber,
         },
       });
 

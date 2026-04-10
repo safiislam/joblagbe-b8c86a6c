@@ -11,7 +11,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { phone, otp, action, full_name, role } = await req.json();
+    const { phone, otp, action, full_name, role, nid_number } = await req.json();
 
     if (!phone || !otp || !action) {
       return new Response(JSON.stringify({ error: "Phone, OTP, and action are required" }), {
@@ -92,7 +92,9 @@ Deno.serve(async (req) => {
 
       // Update profile phone
       if (newUser?.user) {
-        await supabase.from("profiles").update({ phone }).eq("user_id", newUser.user.id);
+        const updateData: Record<string, string> = { phone };
+        if (nid_number) updateData.nid_number = nid_number;
+        await supabase.from("profiles").update(updateData).eq("user_id", newUser.user.id);
       }
 
       // Sign in the user

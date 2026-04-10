@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN nid_number text;

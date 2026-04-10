@@ -656,6 +656,7 @@ export type Database = {
           created_at: string
           full_name: string | null
           id: string
+          nid_number: string | null
           phone: string | null
           resume_url: string | null
           role: string
@@ -667,6 +668,7 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id?: string
+          nid_number?: string | null
           phone?: string | null
           resume_url?: string | null
           role?: string
@@ -678,6 +680,7 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id?: string
+          nid_number?: string | null
           phone?: string | null
           resume_url?: string | null
           role?: string

@@ -21,6 +21,7 @@ const SignUp = () => {
   const { logoUrl } = useBrandSettings();
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [nidNumber, setNidNumber] = useState("");
   const [role, setRole] = useState<"seeker" | "employer">("seeker");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -31,6 +32,12 @@ const SignUp = () => {
     e.preventDefault();
     if (!agreedToTerms) {
       toast.error("You must agree to the Terms & Conditions and Privacy Policy.");
+      return;
+    }
+
+    const trimmedNid = nidNumber.replace(/\s/g, "");
+    if (!trimmedNid || !/^\d{10}(\d{3}|\d{7})?$/.test(trimmedNid)) {
+      toast.error("সঠিক NID নম্বর দিন (১০, ১৩ অথবা ১৭ ডিজিট)");
       return;
     }
 
@@ -54,6 +61,11 @@ const SignUp = () => {
       toast.error(error.message);
       setLoading(false);
       return;
+    }
+
+    // Save NID to profile
+    if (data?.user) {
+      await supabase.from("profiles").update({ nid_number: trimmedNid } as any).eq("user_id", data.user.id);
     }
 
     toast.success("Account created! Check your email to confirm.");
@@ -168,6 +180,10 @@ const SignUp = () => {
                 <Label htmlFor="password">Password</Label>
                 <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} placeholder="Min 6 characters" className="mt-1.5 rounded-xl" />
               </div>
+              <div>
+                <Label htmlFor="nid">NID Number <span className="text-destructive">*</span></Label>
+                <Input id="nid" type="text" inputMode="numeric" value={nidNumber} onChange={(e) => setNidNumber(e.target.value.replace(/[^\d]/g, ""))} required placeholder="১০/১৩/১৭ ডিজিট NID নম্বর" className="mt-1.5 rounded-xl" />
+              </div>
               {/* Terms agreement */}
               <div className="flex items-start gap-2.5">
                 <Checkbox
@@ -195,6 +211,10 @@ const SignUp = () => {
                 <Label htmlFor="fullNamePhone">Full Name</Label>
                 <Input id="fullNamePhone" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Your full name" className="mt-1.5 rounded-xl" />
               </div>
+              <div>
+                <Label htmlFor="nidPhone">NID Number <span className="text-destructive">*</span></Label>
+                <Input id="nidPhone" type="text" inputMode="numeric" value={nidNumber} onChange={(e) => setNidNumber(e.target.value.replace(/[^\d]/g, ""))} placeholder="১০/১৩/১৭ ডিজিট NID নম্বর" className="mt-1.5 rounded-xl" />
+              </div>
               {/* Terms agreement */}
               <div className="flex items-start gap-2.5">
                 <Checkbox
@@ -214,7 +234,8 @@ const SignUp = () => {
                 action="signup"
                 fullName={fullName}
                 role={role}
-                disabled={!agreedToTerms}
+                nidNumber={nidNumber}
+                disabled={!agreedToTerms || !nidNumber || !/^\d{10}(\d{3}|\d{7})?$/.test(nidNumber)}
                 onSuccess={() => navigate("/")}
               />
             </div>
