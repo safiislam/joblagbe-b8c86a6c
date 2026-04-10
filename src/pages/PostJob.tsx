@@ -25,6 +25,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import MultiLocationInput from "@/components/MultiLocationInput";
 import PaymentDialog from "@/components/PaymentDialog";
+import CircularPostForm from "@/components/CircularPostForm";
 
 type JobPricing = {
   price: number;
