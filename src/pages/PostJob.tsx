@@ -492,6 +492,7 @@ const PostJob = () => {
             )}
           </TabsContent>
         </Tabs>
+      </div>
 
       {/* Payment Dialog */}
       <PaymentDialog
