@@ -244,6 +244,16 @@ const DashboardSiteContent = () => {
               <Label>Subtitle</Label>
               <Input className="mt-1" value={editData.services?.subtitle || ""} onChange={(e) => updateField("services", "subtitle", e.target.value)} />
             </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Order Dialog Title</Label>
+                <Input className="mt-1" placeholder="সেবা অর্ডার করুন" value={editData.services?.orderDialogTitle || ""} onChange={(e) => updateField("services", "orderDialogTitle", e.target.value)} />
+              </div>
+              <div>
+                <Label>Order Submit Button Text</Label>
+                <Input className="mt-1" placeholder="অর্ডার জমা দিন" value={editData.services?.orderSubmitText || ""} onChange={(e) => updateField("services", "orderSubmitText", e.target.value)} />
+              </div>
+            </div>
             <h3 className="font-semibold text-sm pt-2">Service Cards</h3>
             {(editData.services?.items || []).map((item: any, i: number) => (
               <div key={i} className="rounded-lg border p-3 space-y-2">
