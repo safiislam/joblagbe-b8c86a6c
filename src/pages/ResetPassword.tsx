@@ -54,24 +54,29 @@ const ResetPassword = () => {
   };
 
   if (!isRecovery) {
-      <SeoHead noIndex />
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-primary/5 to-background px-4">
-        <div className="w-full max-w-md rounded-2xl border bg-card p-8 shadow-elevated text-center">
-          <Link to="/">
-            <img src={logoUrl} alt="Job Lagbe" width={40} height={40} className="mx-auto h-10 w-auto" />
-          </Link>
-          <h2 className="mt-6 text-xl font-bold">Invalid Reset Link</h2>
-          <p className="mt-2 text-sm text-muted-foreground">This link is invalid or expired. Please request a new password reset.</p>
-          <Button className="mt-6 bg-accent text-accent-foreground" asChild>
-            <Link to="/login">Back to Login</Link>
-          </Button>
+    return (
+      <>
+        <SeoHead noIndex />
+        <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-primary/5 to-background px-4">
+          <div className="w-full max-w-md rounded-2xl border bg-card p-8 shadow-elevated text-center">
+            <Link to="/">
+              <img src={logoUrl} alt="Job Lagbe" width={40} height={40} className="mx-auto h-10 w-auto" />
+            </Link>
+            <h2 className="mt-6 text-xl font-bold">Invalid Reset Link</h2>
+            <p className="mt-2 text-sm text-muted-foreground">This link is invalid or expired. Please request a new password reset.</p>
+            <Button className="mt-6 bg-accent text-accent-foreground" asChild>
+              <Link to="/login">Back to Login</Link>
+            </Button>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-primary/5 to-background px-4">
+    <>
+      <SeoHead noIndex />
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-primary/5 to-background px-4">
       <div className="w-full max-w-md rounded-2xl border bg-card p-8 shadow-elevated">
         <div className="mb-8 flex flex-col items-center text-center">
           <Link to="/">
