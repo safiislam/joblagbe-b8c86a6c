@@ -21,6 +21,7 @@ const SignUp = () => {
   const { logoUrl } = useBrandSettings();
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [nidNumber, setNidNumber] = useState("");
   const [role, setRole] = useState<"seeker" | "employer">("seeker");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
