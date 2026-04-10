@@ -1,4 +1,4 @@
-import { MapPin, Clock, Banknote, Building2, ChevronRight, Briefcase, Search, Filter, X, ArrowRight, Sparkles } from "lucide-react";
+import { MapPin, Clock, Banknote, Building2, ChevronRight, Briefcase, Search, Filter, X, ArrowRight, CalendarDays } from "lucide-react";
 import { optimizeStorageImage } from "@/lib/imageOptimize";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -36,6 +36,7 @@ type JobRow = {
   category_id: string | null;
   company_id: string;
   hide_apply: boolean;
+  application_deadline: string | null;
   companies: { name: string; location: string | null; logo_url: string | null; is_verified: boolean } | null;
 };
 
@@ -49,11 +50,11 @@ const formatSalary = (min: number | null, max: number | null) => {
 const JOB_TYPES = ["Full-time", "Part-time", "Contract", "Remote", "Internship"];
 
 const typeColorMap: Record<string, string> = {
-  "Full-time": "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
-  "Part-time": "bg-blue-500/10 text-blue-600 border-blue-500/20",
-  "Contract": "bg-amber-500/10 text-amber-600 border-amber-500/20",
-  "Remote": "bg-violet-500/10 text-violet-600 border-violet-500/20",
-  "Internship": "bg-pink-500/10 text-pink-600 border-pink-500/20",
+  "Full-time": "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
+  "Part-time": "bg-blue-500/10 text-blue-700 dark:text-blue-400",
+  "Contract": "bg-amber-500/10 text-amber-700 dark:text-amber-400",
+  "Remote": "bg-violet-500/10 text-violet-700 dark:text-violet-400",
+  "Internship": "bg-pink-500/10 text-pink-700 dark:text-pink-400",
 };
 
 const JobCard = ({
@@ -66,98 +67,112 @@ const JobCard = ({
   isSelected: boolean;
   onClick: () => void;
   savedJobIds?: Set<string>;
-}) => (
-  <button
-    onClick={onClick}
-    className={`group w-full rounded-2xl border p-4 text-left transition-all duration-200 ${
-      isSelected
-        ? "border-primary bg-primary/5 shadow-lg ring-2 ring-primary/20"
-        : "bg-card hover:border-primary/30 hover:shadow-md"
-    }`}
-  >
-    <div className="flex gap-3">
-      {/* Company logo */}
-      <div className="shrink-0">
-        {job.companies?.logo_url ? (
+}) => {
+  const displayTag = getJobDisplayTag(job.tag, job.created_at);
+
+  return (
+    <button
+      onClick={onClick}
+      className={`group relative w-full text-left transition-all duration-200 rounded-xl border p-4 ${
+        isSelected
+          ? "border-primary/50 bg-primary/[0.03] shadow-md ring-1 ring-primary/20"
+          : "border-border/60 bg-card hover:border-primary/30 hover:shadow-sm"
+      }`}
+    >
+      {/* Tag ribbon */}
+      {displayTag && (
+        <div className={`absolute -top-0 right-3 rounded-b-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+          displayTag === "Urgent"
+            ? "bg-destructive text-destructive-foreground"
+            : "bg-accent text-accent-foreground"
+        }`}>
+          {displayTag}
+        </div>
+      )}
+
+      <div className="flex gap-3.5">
+        {/* Logo */}
+        <div className="shrink-0 mt-0.5">
+          {job.companies?.logo_url ? (
             <img
-            src={optimizeStorageImage(job.companies.logo_url, { width: 96, height: 96 })}
-            alt=""
-            className="h-12 w-12 rounded-xl border bg-secondary object-cover"
-            width={48}
-            height={48}
-            loading="lazy"
-            decoding="async"
-          />
-        ) : (
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl border bg-secondary">
-            <Building2 className="h-5 w-5 text-muted-foreground" />
-          </div>
-        )}
-      </div>
-
-      <div className="flex-1 min-w-0">
-        <div className="flex items-start justify-between gap-2">
-          <Link
-            to={`/jobs/${job.id}`}
-            onClick={(e) => e.stopPropagation()}
-            className="font-semibold leading-snug text-foreground group-hover:text-primary transition-colors line-clamp-1"
-          >
-            {job.title}
-          </Link>
-          <div className="flex items-center gap-0.5 shrink-0">
-            <SaveJobButton jobId={job.id} saved={savedJobIds?.has(job.id)} />
-            <ShareJobButton jobTitle={job.title} jobId={job.id} />
-          </div>
-        </div>
-
-        <Link
-          to={`/company/${job.company_id}`}
-          onClick={(e) => e.stopPropagation()}
-          className="mt-0.5 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors"
-        >
-          {job.companies?.name}
-          {job.companies?.is_verified && <VerifiedBadge className="h-3.5 w-3.5" />}
-        </Link>
-
-        <div className="mt-2 flex flex-wrap items-center gap-2">
-          {/* Job type badge */}
-          <span className={`rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${typeColorMap[job.job_type] || "bg-secondary text-muted-foreground"}`}>
-            {job.job_type}
-          </span>
-          {(() => { const dt = getJobDisplayTag(job.tag, job.created_at); return dt ? (
-            <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide ${
-              dt === "Urgent"
-                ? "bg-destructive/10 text-destructive border border-destructive/20"
-                : "bg-accent/15 text-accent border border-accent/20"
-            }`}>
-              {dt}
-            </span>
-          ) : null; })()}
-        </div>
-
-        <div className="mt-2.5 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1">
-            <MapPin className="h-3 w-3 shrink-0" />
-            {job.location}
-          </span>
-          <span className="flex items-center gap-1 font-medium text-foreground/70">
-            <Banknote className="h-3 w-3 shrink-0" />
-            {formatSalary(job.salary_min, job.salary_max)}
-          </span>
-          <span className="flex items-center gap-1">
-            <Clock className="h-3 w-3 shrink-0" />
-            {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}
-          </span>
-          {(job as any).application_deadline && (
-            <span className={`flex items-center gap-1 font-medium ${new Date((job as any).application_deadline) < new Date() ? "text-destructive" : "text-accent"}`}>
-              ডেডলাইন: {format(new Date((job as any).application_deadline), "dd MMM")}
-            </span>
+              src={optimizeStorageImage(job.companies.logo_url, { width: 96, height: 96 })}
+              alt=""
+              className="h-11 w-11 rounded-lg border bg-background object-cover"
+              width={44}
+              height={44}
+              loading="lazy"
+              decoding="async"
+            />
+          ) : (
+            <div className="flex h-11 w-11 items-center justify-center rounded-lg border bg-muted/50">
+              <Building2 className="h-5 w-5 text-muted-foreground/60" />
+            </div>
           )}
         </div>
+
+        <div className="flex-1 min-w-0">
+          {/* Title row */}
+          <div className="flex items-start justify-between gap-1.5">
+            <Link
+              to={`/jobs/${job.id}`}
+              onClick={(e) => e.stopPropagation()}
+              className="font-semibold text-[15px] leading-snug text-foreground group-hover:text-primary transition-colors line-clamp-2"
+            >
+              {job.title}
+            </Link>
+            <div className="flex items-center shrink-0 -mr-1">
+              <SaveJobButton jobId={job.id} saved={savedJobIds?.has(job.id)} />
+              <ShareJobButton jobTitle={job.title} jobId={job.id} />
+            </div>
+          </div>
+
+          {/* Company */}
+          <Link
+            to={`/company/${job.company_id}`}
+            onClick={(e) => e.stopPropagation()}
+            className="mt-0.5 inline-flex items-center gap-1 text-[13px] text-muted-foreground hover:text-primary transition-colors"
+          >
+            {job.companies?.name}
+            {job.companies?.is_verified && <VerifiedBadge className="h-3.5 w-3.5" />}
+          </Link>
+
+          {/* Type badge */}
+          <div className="mt-2">
+            <span className={`inline-flex rounded-md px-2 py-0.5 text-[11px] font-semibold ${typeColorMap[job.job_type] || "bg-secondary text-muted-foreground"}`}>
+              {job.job_type}
+            </span>
+          </div>
+
+          {/* Meta info */}
+          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <MapPin className="h-3 w-3 shrink-0 text-muted-foreground/70" />
+              <span className="line-clamp-1">{job.location}</span>
+            </span>
+            <span className="flex items-center gap-1 font-medium text-foreground/70">
+              <Banknote className="h-3 w-3 shrink-0 text-muted-foreground/70" />
+              {formatSalary(job.salary_min, job.salary_max)}
+            </span>
+          </div>
+
+          {/* Footer row: time + deadline */}
+          <div className="mt-2 flex items-center gap-3 text-[11px] text-muted-foreground/70">
+            <span className="flex items-center gap-1">
+              <Clock className="h-2.5 w-2.5" />
+              {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}
+            </span>
+            {job.application_deadline && (
+              <span className={`flex items-center gap-1 font-semibold ${new Date(job.application_deadline) < new Date() ? "text-destructive/80" : "text-accent"}`}>
+                <CalendarDays className="h-2.5 w-2.5" />
+                ডেডলাইন: {format(new Date(job.application_deadline), "dd MMM")}
+              </span>
+            )}
+          </div>
+        </div>
       </div>
-    </div>
-  </button>
-);
+    </button>
+  );
+};
 
 const JobBoard = () => {
   const [selectedJob, setSelectedJob] = useState<JobRow | null>(null);
@@ -219,48 +234,49 @@ const JobBoard = () => {
   const clearFilters = () => { setKeyword(""); setLocationFilter(""); setJobType("all"); setCategoryId("all"); };
 
   return (
-    <section className="py-16" id="jobs">
+    <section className="py-14 lg:py-20" id="jobs">
       <div className="container">
         {/* Section header */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 className="text-2xl font-bold md:text-3xl font-bangla">সর্বশেষ চাকরি</h2>
-            <p className="mt-1 text-muted-foreground">Hand-picked opportunities updated daily</p>
+            <p className="mt-1 text-sm text-muted-foreground">Hand-picked opportunities updated daily</p>
           </div>
           <Button
             variant="outline"
-            className="gap-2 self-start sm:self-auto rounded-xl"
+            size="sm"
+            className="gap-2 self-start sm:self-auto rounded-lg"
             onClick={() => setShowFilters(!showFilters)}
           >
-            <Filter className="h-4 w-4" />
+            <Filter className="h-3.5 w-3.5" />
             {showFilters ? "Hide Filters" : "Filters"}
             {hasActiveFilters && (
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-accent-foreground">!</span>
+              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground">!</span>
             )}
           </Button>
         </div>
 
         {/* Filters */}
         {showFilters && (
-          <div className="mt-6 rounded-2xl border bg-card p-4 shadow-sm animate-fade-in" style={{ animationDuration: "0.2s" }}>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="flex items-center gap-2 rounded-xl bg-secondary px-3 py-2.5">
-                <Search className="h-4 w-4 text-muted-foreground shrink-0" />
-                <input type="text" value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder="Job title or keyword" className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground" />
+          <div className="mt-5 rounded-xl border bg-card/80 backdrop-blur-sm p-4 shadow-sm animate-fade-in" style={{ animationDuration: "0.2s" }}>
+            <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="flex items-center gap-2 rounded-lg border bg-background px-3 py-2">
+                <Search className="h-4 w-4 text-muted-foreground/60 shrink-0" />
+                <input type="text" value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder="Job title or keyword" className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground/50" />
               </div>
-              <div className="flex items-center gap-2 rounded-xl bg-secondary px-3 py-2.5">
-                <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
-                <input type="text" value={locationFilter} onChange={(e) => setLocationFilter(e.target.value)} placeholder="Location" className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground" />
+              <div className="flex items-center gap-2 rounded-lg border bg-background px-3 py-2">
+                <MapPin className="h-4 w-4 text-muted-foreground/60 shrink-0" />
+                <input type="text" value={locationFilter} onChange={(e) => setLocationFilter(e.target.value)} placeholder="Location" className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground/50" />
               </div>
               <Select value={jobType} onValueChange={setJobType}>
-                <SelectTrigger className="rounded-xl bg-secondary border-0"><SelectValue placeholder="Job Type" /></SelectTrigger>
+                <SelectTrigger className="rounded-lg"><SelectValue placeholder="Job Type" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Types</SelectItem>
                   {JOB_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
                 </SelectContent>
               </Select>
               <Select value={categoryId} onValueChange={setCategoryId}>
-                <SelectTrigger className="rounded-xl bg-secondary border-0"><SelectValue placeholder="Category" /></SelectTrigger>
+                <SelectTrigger className="rounded-lg"><SelectValue placeholder="Category" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Categories</SelectItem>
                   {categories?.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
@@ -268,11 +284,11 @@ const JobBoard = () => {
               </Select>
             </div>
             {hasActiveFilters && (
-              <div className="mt-3 flex items-center gap-2">
-                <Button variant="ghost" size="sm" onClick={clearFilters} className="gap-1 text-destructive hover:text-destructive">
-                  <X className="h-3 w-3" /> Clear all filters
+              <div className="mt-2.5 flex items-center gap-2">
+                <Button variant="ghost" size="sm" onClick={clearFilters} className="h-7 gap-1 text-xs text-destructive hover:text-destructive">
+                  <X className="h-3 w-3" /> Clear all
                 </Button>
-                <span className="text-xs text-muted-foreground">{jobs?.length ?? 0} results found</span>
+                <span className="text-xs text-muted-foreground">{jobs?.length ?? 0} results</span>
               </div>
             )}
           </div>
@@ -280,25 +296,26 @@ const JobBoard = () => {
 
         {/* Loading skeleton */}
         {isLoading ? (
-          <div className="mt-8 grid gap-4 lg:grid-cols-5">
-            <div className="space-y-3 lg:col-span-2">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="flex gap-3 rounded-2xl border bg-card p-4">
-                  <div className="h-12 w-12 animate-pulse rounded-xl bg-muted" />
-                  <div className="flex-1 space-y-2">
+          <div className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+            <div className="space-y-3">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="flex gap-3.5 rounded-xl border p-4">
+                  <div className="h-11 w-11 animate-pulse rounded-lg bg-muted" />
+                  <div className="flex-1 space-y-2.5">
                     <div className="h-4 w-3/4 animate-pulse rounded bg-muted" />
-                    <div className="h-3 w-1/2 animate-pulse rounded bg-muted" />
+                    <div className="h-3 w-1/3 animate-pulse rounded bg-muted" />
+                    <div className="h-5 w-16 animate-pulse rounded-md bg-muted" />
                     <div className="h-3 w-2/3 animate-pulse rounded bg-muted" />
                   </div>
                 </div>
               ))}
             </div>
-            <div className="hidden h-96 animate-pulse rounded-2xl border bg-muted lg:col-span-3 lg:block" />
+            <div className="hidden h-[500px] animate-pulse rounded-xl border bg-muted/30 lg:block" />
           </div>
         ) : (
-          <div className="mt-8 grid gap-6 lg:grid-cols-5">
+          <div className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
             {/* Job list */}
-            <div className="space-y-3 lg:col-span-2 max-h-[640px] overflow-y-auto pr-1 scrollbar-thin">
+            <div className="space-y-2.5 max-h-[680px] overflow-y-auto pr-1 scrollbar-thin">
               {jobs?.map((job) => (
                 <JobCard
                   key={job.id}
@@ -309,14 +326,14 @@ const JobBoard = () => {
                 />
               ))}
               {jobs?.length === 0 && (
-                <div className="flex flex-col items-center py-16 text-muted-foreground">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-muted">
-                    <Briefcase className="h-7 w-7 opacity-40" />
+                <div className="flex flex-col items-center py-20 text-muted-foreground">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-muted/50">
+                    <Briefcase className="h-6 w-6 opacity-30" />
                   </div>
-                  <p className="mt-4 font-semibold text-foreground">No jobs found</p>
+                  <p className="mt-3 font-semibold text-foreground/60">No jobs found</p>
                   <p className="mt-1 text-sm">Try adjusting your search or filters</p>
                   {hasActiveFilters && (
-                    <Button variant="outline" size="sm" onClick={clearFilters} className="mt-3 gap-1 rounded-xl">
+                    <Button variant="outline" size="sm" onClick={clearFilters} className="mt-3 gap-1 rounded-lg text-xs">
                       <X className="h-3 w-3" /> Clear filters
                     </Button>
                   )}
@@ -325,38 +342,36 @@ const JobBoard = () => {
             </div>
 
             {/* Desktop detail panel */}
-            <div className="hidden rounded-2xl border bg-card shadow-sm lg:col-span-3 lg:block sticky top-20 self-start overflow-hidden">
+            <div className="hidden rounded-xl border bg-card lg:block sticky top-20 self-start overflow-hidden">
               {selectedJob ? (
-                <div className="max-h-[640px] overflow-y-auto">
-                  {/* Header area with subtle gradient */}
-                  <div className="border-b bg-gradient-to-br from-primary/5 to-transparent p-6">
+                <div className="max-h-[680px] overflow-y-auto">
+                  {/* Header */}
+                  <div className="border-b p-5 pb-4">
                     <div className="flex items-start justify-between gap-3">
-                      <div className="flex gap-4">
+                      <div className="flex gap-3.5">
                         {selectedJob.companies?.logo_url ? (
-                          <img src={optimizeStorageImage(selectedJob.companies.logo_url, { width: 112, height: 112 })} alt="" className="h-14 w-14 rounded-xl border bg-card object-cover shrink-0" width={56} height={56} loading="lazy" decoding="async" />
+                          <img src={optimizeStorageImage(selectedJob.companies.logo_url, { width: 112, height: 112 })} alt="" className="h-12 w-12 rounded-lg border bg-background object-cover shrink-0" width={48} height={48} loading="lazy" decoding="async" />
                         ) : (
-                          <div className="flex h-14 w-14 items-center justify-center rounded-xl border bg-card shrink-0">
-                            <Building2 className="h-6 w-6 text-muted-foreground" />
+                          <div className="flex h-12 w-12 items-center justify-center rounded-lg border bg-muted/50 shrink-0">
+                            <Building2 className="h-5 w-5 text-muted-foreground/60" />
                           </div>
                         )}
-                        <div>
-                          <h3 className="text-xl font-bold leading-tight">{selectedJob.title}</h3>
-                          <p className="mt-1 flex items-center gap-2 text-muted-foreground">
+                        <div className="min-w-0">
+                          <h3 className="text-lg font-bold leading-tight">{selectedJob.title}</h3>
+                          <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
                             <Link to={`/company/${selectedJob.company_id}`} className="hover:text-primary font-medium transition-colors inline-flex items-center gap-1">
                               {selectedJob.companies?.name}
-                              {selectedJob.companies?.is_verified && <VerifiedBadge />}
+                              {selectedJob.companies?.is_verified && <VerifiedBadge className="h-3.5 w-3.5" />}
                             </Link>
-                            <span className="text-border">•</span>
-                            <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{selectedJob.location}</span>
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-1 shrink-0">
+                      <div className="flex items-center gap-0.5 shrink-0">
                         <SaveJobButton jobId={selectedJob.id} saved={savedJobIds?.has(selectedJob.id)} />
                         <ShareJobButton jobTitle={selectedJob.title} jobId={selectedJob.id} />
                         <button
                           onClick={() => setSelectedJob(null)}
-                          className="ml-1 rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                          className="ml-0.5 rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                           title="বন্ধ করুন"
                         >
                           <X className="h-4 w-4" />
@@ -364,18 +379,25 @@ const JobBoard = () => {
                       </div>
                     </div>
 
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      <span className={`rounded-full border px-3 py-1 text-sm font-medium ${typeColorMap[selectedJob.job_type] || "bg-secondary"}`}>
+                    {/* Info pills */}
+                    <div className="mt-3 flex flex-wrap gap-1.5">
+                      <span className={`inline-flex items-center rounded-md px-2.5 py-1 text-xs font-semibold ${typeColorMap[selectedJob.job_type] || "bg-secondary"}`}>
                         {selectedJob.job_type}
                       </span>
-                      <span className="rounded-full border bg-secondary px-3 py-1 text-sm font-semibold">
+                      <span className="inline-flex items-center gap-1 rounded-md bg-secondary px-2.5 py-1 text-xs font-medium text-foreground/70">
+                        <Banknote className="h-3 w-3" />
                         {formatSalary(selectedJob.salary_min, selectedJob.salary_max)}
                       </span>
-                      <span className="rounded-full border bg-secondary px-3 py-1 text-sm text-muted-foreground">
+                      <span className="inline-flex items-center gap-1 rounded-md bg-secondary px-2.5 py-1 text-xs text-muted-foreground">
+                        <MapPin className="h-3 w-3" />
+                        {selectedJob.location}
+                      </span>
+                      <span className="inline-flex items-center gap-1 rounded-md bg-secondary px-2.5 py-1 text-xs text-muted-foreground">
+                        <Clock className="h-3 w-3" />
                         {formatDistanceToNow(new Date(selectedJob.created_at), { addSuffix: true })}
                       </span>
                       {(() => { const dt = getJobDisplayTag(selectedJob.tag, selectedJob.created_at); return dt ? (
-                        <span className={`rounded-full px-3 py-1 text-sm font-bold ${
+                        <span className={`inline-flex items-center rounded-md px-2.5 py-1 text-xs font-bold ${
                           dt === "Urgent"
                             ? "bg-destructive/10 text-destructive"
                             : "bg-accent/15 text-accent"
@@ -383,22 +405,30 @@ const JobBoard = () => {
                           {dt}
                         </span>
                       ) : null; })()}
+                      {selectedJob.application_deadline && (
+                        <span className={`inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-semibold ${
+                          new Date(selectedJob.application_deadline) < new Date() ? "bg-destructive/10 text-destructive" : "bg-accent/10 text-accent"
+                        }`}>
+                          <CalendarDays className="h-3 w-3" />
+                          ডেডলাইন: {format(new Date(selectedJob.application_deadline), "dd MMM yyyy")}
+                        </span>
+                      )}
                     </div>
                   </div>
 
                   {/* Content */}
-                  <div className="p-6 space-y-6">
+                  <div className="p-5 space-y-5">
                     <div>
-                      <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Job Description</h4>
-                      <p className="mt-3 leading-relaxed text-foreground/80 whitespace-pre-line">{selectedJob.description}</p>
+                      <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/80 mb-2.5">Job Description</h4>
+                      <p className="text-sm leading-relaxed text-foreground/80 whitespace-pre-line">{selectedJob.description}</p>
                     </div>
                     {selectedJob.requirements && selectedJob.requirements.length > 0 && (
                       <div>
-                        <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Requirements</h4>
-                        <ul className="mt-3 space-y-2">
+                        <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/80 mb-2.5">Requirements</h4>
+                        <ul className="space-y-1.5">
                           {selectedJob.requirements.map((r, i) => (
-                            <li key={i} className="flex items-start gap-2 text-foreground/80">
-                              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                            <li key={i} className="flex items-start gap-2 text-sm text-foreground/80">
+                              <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-primary" />
                               {r}
                             </li>
                           ))}
@@ -406,28 +436,28 @@ const JobBoard = () => {
                       </div>
                     )}
                     <JobFraudWarning />
-                    <div className="flex items-center gap-3 pt-2">
+                    <div className="flex items-center gap-2.5 pt-1">
                       {!selectedJob.hide_apply && (
                         <Button
                           onClick={() => handleApply(selectedJob.id)}
-                          className="bg-accent text-accent-foreground hover:bg-accent/90 px-8 text-base font-semibold rounded-xl gap-2"
+                          className="bg-accent text-accent-foreground hover:bg-accent/90 px-6 font-semibold rounded-lg gap-2"
                         >
                           Apply Now <ArrowRight className="h-4 w-4" />
                         </Button>
                       )}
-                      <Button variant="outline" className="rounded-xl" asChild>
+                      <Button variant="outline" className="rounded-lg" asChild>
                         <Link to={`/jobs/${selectedJob.id}`}>View Full Details</Link>
                       </Button>
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className="flex h-full min-h-[400px] flex-col items-center justify-center text-muted-foreground p-8">
-                  <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-muted/50">
-                    <Briefcase className="h-9 w-9 opacity-30" />
+                <div className="flex h-full min-h-[440px] flex-col items-center justify-center p-8">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10">
+                    <Briefcase className="h-7 w-7 text-primary/40" />
                   </div>
-                  <p className="mt-4 text-lg font-semibold text-foreground/60">Select a job to view details</p>
-                  <p className="mt-1 text-sm">Click on any job card from the list</p>
+                  <p className="mt-4 font-semibold text-foreground/50">Select a job to view details</p>
+                  <p className="mt-1 text-sm text-muted-foreground/60">Click on any job card from the list</p>
                 </div>
               )}
             </div>
@@ -437,7 +467,7 @@ const JobBoard = () => {
         {/* Mobile detail modal */}
         {selectedJob && (
           <div className="fixed inset-0 z-50 flex items-end bg-foreground/40 backdrop-blur-sm lg:hidden" onClick={() => setSelectedJob(null)}>
-            <div className="relative max-h-[85vh] w-full overflow-y-auto rounded-t-3xl bg-card p-6" onClick={(e) => e.stopPropagation()}>
+            <div className="relative max-h-[85vh] w-full overflow-y-auto rounded-t-2xl bg-card p-5" onClick={(e) => e.stopPropagation()}>
               <div className="flex items-center justify-between mb-4">
                 <div className="mx-auto h-1 w-10 rounded-full bg-border" />
                 <button
@@ -449,44 +479,49 @@ const JobBoard = () => {
               </div>
               <div className="flex items-start gap-3">
                 {selectedJob.companies?.logo_url ? (
-                  <img src={optimizeStorageImage(selectedJob.companies.logo_url, { width: 96, height: 96 })} alt="" className="h-12 w-12 rounded-xl border object-cover" width={48} height={48} loading="lazy" />
+                  <img src={optimizeStorageImage(selectedJob.companies.logo_url, { width: 96, height: 96 })} alt="" className="h-11 w-11 rounded-lg border object-cover" width={44} height={44} loading="lazy" />
                 ) : (
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl border bg-secondary">
-                    <Building2 className="h-5 w-5 text-muted-foreground" />
+                  <div className="flex h-11 w-11 items-center justify-center rounded-lg border bg-muted/50">
+                    <Building2 className="h-5 w-5 text-muted-foreground/60" />
                   </div>
                 )}
                 <div>
-                  <h3 className="text-lg font-bold">{selectedJob.title}</h3>
-                  <p className="text-sm text-muted-foreground inline-flex items-center gap-1">{selectedJob.companies?.name} {selectedJob.companies?.is_verified && <VerifiedBadge className="h-3.5 w-3.5" />} · {selectedJob.location}</p>
+                  <h3 className="text-lg font-bold leading-tight">{selectedJob.title}</h3>
+                  <p className="text-sm text-muted-foreground inline-flex items-center gap-1">{selectedJob.companies?.name} {selectedJob.companies?.is_verified && <VerifiedBadge className="h-3.5 w-3.5" />}</p>
                 </div>
               </div>
-              <div className="mt-3 flex flex-wrap gap-2">
-                <span className={`rounded-full border px-3 py-1 text-sm font-medium ${typeColorMap[selectedJob.job_type] || "bg-secondary"}`}>
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                <span className={`rounded-md px-2.5 py-1 text-xs font-semibold ${typeColorMap[selectedJob.job_type] || "bg-secondary"}`}>
                   {selectedJob.job_type}
                 </span>
-                <span className="rounded-full border bg-secondary px-3 py-1 text-sm font-semibold">
+                <span className="inline-flex items-center gap-1 rounded-md bg-secondary px-2.5 py-1 text-xs font-medium">
+                  <Banknote className="h-3 w-3" />
                   {formatSalary(selectedJob.salary_min, selectedJob.salary_max)}
                 </span>
+                <span className="inline-flex items-center gap-1 rounded-md bg-secondary px-2.5 py-1 text-xs text-muted-foreground">
+                  <MapPin className="h-3 w-3" />
+                  {selectedJob.location}
+                </span>
               </div>
-              <p className="mt-4 leading-relaxed text-muted-foreground whitespace-pre-line">{selectedJob.description}</p>
+              <p className="mt-4 text-sm leading-relaxed text-muted-foreground whitespace-pre-line">{selectedJob.description}</p>
               {selectedJob.requirements && selectedJob.requirements.length > 0 && (
-                <ul className="mt-4 space-y-2">
+                <ul className="mt-4 space-y-1.5">
                   {selectedJob.requirements.map((r, i) => (
-                    <li key={i} className="flex items-start gap-2 text-muted-foreground">
-                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                    <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                      <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-primary" />
                       {r}
                     </li>
                   ))}
                 </ul>
               )}
               <JobFraudWarning className="mt-4" />
-              <div className="mt-6 flex gap-3">
+              <div className="mt-5 flex gap-2.5">
                 {!selectedJob.hide_apply && (
-                  <Button onClick={() => handleApply(selectedJob.id)} className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90 font-semibold rounded-xl py-3 gap-2">
+                  <Button onClick={() => handleApply(selectedJob.id)} className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90 font-semibold rounded-lg gap-2">
                     Apply Now <ArrowRight className="h-4 w-4" />
                   </Button>
                 )}
-                <Button variant="outline" className="rounded-xl flex-1" asChild>
+                <Button variant="outline" className="rounded-lg flex-1" asChild>
                   <Link to={`/jobs/${selectedJob.id}`}>Details</Link>
                 </Button>
               </div>
@@ -494,8 +529,8 @@ const JobBoard = () => {
           </div>
         )}
 
-        <div className="mt-8 text-center">
-          <Button variant="outline" className="gap-2 rounded-xl border-primary text-primary hover:bg-primary hover:text-primary-foreground px-6" asChild>
+        <div className="mt-10 text-center">
+          <Button variant="outline" className="gap-2 rounded-lg border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground px-6" asChild>
             <Link to="/jobs">
               সব চাকরি দেখুন <ChevronRight className="h-4 w-4" />
             </Link>
