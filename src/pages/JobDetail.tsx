@@ -259,6 +259,11 @@ const JobDetail = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SeoHead
+        title={`${job.title} — ${company?.name || "চাকরি"}`}
+        description={`${job.title} পদে ${company?.name || ""} কোম্পানিতে চাকরির সুযোগ। লোকেশন: ${job.location}। বেতন: ${formatSalary(job.salary_min, job.salary_max)}।`}
+        ogImage={company?.logo_url || undefined}
+      />
       {jobJsonLd && (
         <script
           type="application/ld+json"

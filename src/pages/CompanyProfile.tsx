@@ -39,6 +39,11 @@ const CompanyProfile = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SeoHead
+        title={company?.name ? `${company.name} — কোম্পানি প্রোফাইল` : "কোম্পানি প্রোফাইল"}
+        description={company?.description?.slice(0, 155) || `${company?.name || ""} কোম্পানির প্রোফাইল এবং চাকরির বিজ্ঞপ্তি দেখুন Job লাগবে-তে।`}
+        ogImage={company?.logo_url || undefined}
+      />
       <Header />
       <div className="container py-8">
         <Link to="/" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary mb-6">

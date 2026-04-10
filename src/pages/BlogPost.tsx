@@ -46,6 +46,12 @@ const BlogPost = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SeoHead
+        title={post?.title}
+        description={post?.excerpt || undefined}
+        ogImage={post?.cover_image_url || undefined}
+        ogType="article"
+      />
       <Header />
       <div className="container max-w-3xl py-8 px-4 sm:px-6">
         <Link to="/blog" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary mb-6 transition-colors">
