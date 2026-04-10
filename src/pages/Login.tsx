@@ -1,4 +1,5 @@
 import { useState } from "react";
+import SeoHead from "@/components/SeoHead";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
