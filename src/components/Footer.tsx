@@ -78,12 +78,12 @@ const Footer = ({ contentLoading = false }: FooterProps) => {
                   ? `https://wa.me/${link.url.replace(/[^0-9]/g, "")}`
                   : link.url || "#";
                 return (
-                  <a key={i} href={href} target="_blank" rel="noopener noreferrer" title={link.label || link.platform} className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary text-muted-foreground transition-colors hover:bg-primary hover:text-primary-foreground">
+                  <a key={i} href={href} target="_blank" rel="noopener noreferrer" title={link.label || link.platform} className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary text-muted-foreground transition-all hover:bg-primary hover:text-primary-foreground hover:scale-110" aria-label={link.label || link.platform}>
                     <Icon className="h-4 w-4" />
                   </a>
                 );
               })}
-              <a href={`mailto:${email}`} className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary text-muted-foreground transition-colors hover:bg-primary hover:text-primary-foreground">
+              <a href={`mailto:${email}`} className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary text-muted-foreground transition-all hover:bg-primary hover:text-primary-foreground hover:scale-110" aria-label="Email">
                 <Mail className="h-4 w-4" />
               </a>
             </div>

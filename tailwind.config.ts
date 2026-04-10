@@ -84,6 +84,10 @@ export default {
           from: { opacity: "0", transform: "translateY(12px)" },
           to: { opacity: "1", transform: "translateY(0)" },
         },
+        "slide-in-left": {
+          from: { transform: "translateX(-100%)", opacity: "0" },
+          to: { transform: "translateX(0)", opacity: "1" },
+        },
         "chat-bounce": {
           "0%": { transform: "scale(1) rotate(0deg)" },
           "0.5%": { transform: "scale(1.15) rotate(-10deg)" },
@@ -108,6 +112,7 @@ export default {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.5s ease-out forwards",
+        "slide-in-left": "slide-in-left 0.3s ease-out forwards",
         "chat-bounce": "chat-bounce 60s ease-in-out infinite",
         "chat-glow": "chat-glow 30s ease-in-out infinite",
       },

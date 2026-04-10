@@ -168,19 +168,37 @@ const SignUp = () => {
 
           <TabsContent value="email">
             <form onSubmit={handleSignUp} className="space-y-4">
-              <div>
+              <div className="form-group">
                 <Label htmlFor="fullName">Full Name</Label>
                 <Input id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} required placeholder="Your full name" className="mt-1.5 rounded-xl" />
               </div>
-              <div>
+              <div className="form-group">
                 <Label htmlFor="email">Email Address</Label>
                 <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" className="mt-1.5 rounded-xl" />
               </div>
-              <div>
+              <div className="form-group">
                 <Label htmlFor="password">Password</Label>
                 <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} placeholder="Min 6 characters" className="mt-1.5 rounded-xl" />
+                {/* Password strength indicator */}
+                {password.length > 0 && (
+                  <div className="mt-2 flex gap-1">
+                    {[1, 2, 3, 4].map((level) => {
+                      const strength = password.length >= 12 ? 4 : password.length >= 8 ? 3 : password.length >= 6 ? 2 : 1;
+                      return (
+                        <div
+                          key={level}
+                          className={`h-1 flex-1 rounded-full transition-colors ${
+                            level <= strength
+                              ? strength <= 1 ? "bg-destructive" : strength <= 2 ? "bg-accent" : "bg-success"
+                              : "bg-muted"
+                          }`}
+                        />
+                      );
+                    })}
+                  </div>
+                )}
               </div>
-              <div>
+              <div className="form-group">
                 <Label htmlFor="nid">NID Number <span className="text-destructive">*</span></Label>
                 <Input id="nid" type="text" inputMode="numeric" value={nidNumber} onChange={(e) => setNidNumber(e.target.value.replace(/[^\d]/g, ""))} required placeholder="১০/১৩/১৭ ডিজিট NID নম্বর" className="mt-1.5 rounded-xl" />
               </div>
@@ -199,7 +217,7 @@ const SignUp = () => {
                   <Link to="/privacy-policy" target="_blank" className="text-primary underline hover:opacity-80">Privacy Policy</Link>
                 </label>
               </div>
-              <Button type="submit" disabled={loading || !agreedToTerms} className="w-full bg-accent text-accent-foreground hover:bg-accent/90 font-semibold rounded-xl py-2.5">
+              <Button type="submit" disabled={loading || !agreedToTerms} className="w-full bg-accent text-accent-foreground hover:bg-accent/90 hover:scale-[1.01] active:scale-[0.99] font-semibold rounded-xl py-2.5 transition-transform">
                 {loading ? "Creating account..." : "Sign Up"}
               </Button>
             </form>

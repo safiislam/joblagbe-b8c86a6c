@@ -192,7 +192,7 @@ const Jobs = () => {
                   <div key={job.id}>
                     <Link
                       to={`/jobs/${job.id}`}
-                      className="group flex flex-col gap-3 rounded-2xl border bg-card p-5 shadow-card transition-all hover:shadow-elevated hover:border-primary/30 sm:flex-row sm:items-center sm:justify-between"
+                      className="group flex flex-col gap-3 rounded-2xl border bg-card p-5 shadow-card transition-all hover:shadow-elevated hover:border-primary/30 hover:-translate-y-0.5 sm:flex-row sm:items-center sm:justify-between"
                     >
                       <div className="flex items-start gap-4">
                         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10">

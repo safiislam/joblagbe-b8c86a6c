@@ -62,24 +62,24 @@ const HeroSection = ({ contentLoading = false }: HeroSectionProps) => {
             </>
           ) : (
             <>
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border bg-card px-4 py-1.5 text-sm shadow-card animate-fade-in">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border bg-card px-4 py-1.5 text-sm shadow-card animate-fade-in" style={{ animationDelay: "0s" }}>
                 <TrendingUp className="h-4 w-4 text-accent" />
                 <span className="text-muted-foreground">{c.badge}</span>
               </div>
 
-              <h1 className="font-bangla text-3xl font-bold leading-tight text-foreground md:text-5xl lg:text-[3.5rem] animate-fade-in">
+              <h1 className="font-bangla text-3xl font-bold leading-tight text-foreground md:text-5xl lg:text-[3.5rem] animate-fade-in" style={{ animationDelay: "0.1s" }}>
                 {c.title_line1}{" "}
                 <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">{c.title_highlight}</span>
               </h1>
-              <p className="mx-auto mt-4 max-w-xl text-muted-foreground md:text-lg animate-fade-in" style={{ animationDelay: "0.1s" }}>
+              <p className="mx-auto mt-4 max-w-xl text-muted-foreground md:text-lg animate-fade-in" style={{ animationDelay: "0.2s" }}>
                 {c.subtitle}
               </p>
             </>
           )}
         </div>
 
-        <form onSubmit={handleSearch} className="mx-auto mt-8 max-w-2xl animate-fade-in" style={{ animationDelay: "0.2s" }}>
-          <div className="flex flex-col gap-3 rounded-2xl border bg-card p-3 shadow-elevated md:flex-row md:items-center md:gap-2 md:p-2">
+        <form onSubmit={handleSearch} className="mx-auto mt-8 max-w-2xl animate-fade-in" style={{ animationDelay: "0.3s" }}>
+          <div className="flex flex-col gap-3 rounded-2xl border bg-card p-3 shadow-elevated md:flex-row md:items-center md:gap-2 md:p-2 transition-shadow focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-1">
             <div className="flex flex-1 items-center gap-2 rounded-xl bg-secondary px-4 py-3">
               <Search className="h-5 w-5 shrink-0 text-muted-foreground" />
               <input type="text" placeholder="Job title or keyword" value={keyword} onChange={(e) => setKeyword(e.target.value)} className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground" />
@@ -88,7 +88,7 @@ const HeroSection = ({ contentLoading = false }: HeroSectionProps) => {
               <MapPin className="h-5 w-5 shrink-0 text-muted-foreground" />
               <input type="text" placeholder="Location" value={location} onChange={(e) => setLocation(e.target.value)} className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground" />
             </div>
-            <Button type="submit" className="bg-accent text-accent-foreground hover:bg-accent/90 px-8 py-3 text-base font-semibold rounded-xl">
+            <Button type="submit" className="bg-accent text-accent-foreground hover:bg-accent/90 hover:scale-[1.02] active:scale-[0.98] px-8 py-3 text-base font-semibold rounded-xl transition-transform">
               Search
             </Button>
           </div>
@@ -102,10 +102,10 @@ const HeroSection = ({ contentLoading = false }: HeroSectionProps) => {
             <Skeleton className="h-7 w-28 rounded-full" />
           </div>
         ) : (
-          <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: "0.3s" }}>
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: "0.4s" }}>
             <span>Popular:</span>
             {(c.popular_tags || []).map((tag) => (
-              <button type="button" key={tag} onClick={() => handleTagClick(tag)} className="rounded-full border bg-card px-3 py-1 text-xs transition-colors hover:border-primary hover:text-primary hover:shadow-card">
+              <button type="button" key={tag} onClick={() => handleTagClick(tag)} className="rounded-full border bg-card px-3 py-1 text-xs transition-all hover:border-primary hover:text-primary hover:shadow-card hover:scale-105 active:scale-95">
                 {tag}
               </button>
             ))}

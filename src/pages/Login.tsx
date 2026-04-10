@@ -129,11 +129,11 @@ const Login = () => {
 
               <TabsContent value="email">
                 <form onSubmit={handleLogin} className="space-y-4">
-                  <div>
+                  <div className="form-group">
                     <Label htmlFor="email">Email</Label>
                     <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="you@example.com" className="mt-1.5 rounded-xl" />
                   </div>
-                  <div>
+                  <div className="form-group">
                     <div className="flex items-center justify-between">
                       <Label htmlFor="password">Password</Label>
                       <button type="button" onClick={() => setShowForgot(true)} className="text-xs text-primary hover:underline">
@@ -142,7 +142,7 @@ const Login = () => {
                     </div>
                     <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="••••••••" className="mt-1.5 rounded-xl" />
                   </div>
-                  <Button type="submit" disabled={loading} className="w-full bg-accent text-accent-foreground hover:bg-accent/90 font-semibold rounded-xl py-2.5">
+                  <Button type="submit" disabled={loading} className="w-full bg-accent text-accent-foreground hover:bg-accent/90 hover:scale-[1.01] active:scale-[0.99] font-semibold rounded-xl py-2.5 transition-transform">
                     {loading ? "Logging in..." : "Login"}
                   </Button>
                 </form>

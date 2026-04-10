@@ -45,8 +45,8 @@ const EmployerCTA = ({ contentLoading = false }: EmployerCTAProps) => {
                 </span>
                 <h2 className="mt-4 text-2xl font-bold md:text-3xl lg:text-4xl">{title}</h2>
                 <p className="mt-3 text-primary-foreground/80 md:text-lg leading-relaxed">{description}</p>
-                <Button className="mt-6 bg-accent text-accent-foreground hover:bg-accent/90 gap-2 px-8 font-semibold rounded-xl text-base" asChild>
-                  <Link to="/post-job">{buttonText} <ArrowRight className="h-4 w-4" /></Link>
+                <Button className="mt-6 bg-accent text-accent-foreground hover:bg-accent/90 hover:scale-[1.03] active:scale-[0.97] gap-2 px-8 font-semibold rounded-xl text-base transition-transform" asChild>
+                  <Link to="/post-job">{buttonText} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></Link>
                 </Button>
               </>
             )}
