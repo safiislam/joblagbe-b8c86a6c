@@ -315,7 +315,7 @@ const JobBoard = () => {
         ) : (
           <div className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
             {/* Job list */}
-            <div className="space-y-2.5 max-h-[680px] overflow-y-auto pr-1 scrollbar-thin">
+            <div className="space-y-2.5">
               {jobs?.map((job) => (
                 <JobCard
                   key={job.id}
