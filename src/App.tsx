@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { lazy, Suspense } from "react";
 import { MobileBottomNav } from "@/components/Header";
+import SeoHead from "@/components/SeoHead";
 import Index from "./pages/Index";
 
 const AIChatWidget = lazy(() => import("@/components/AIChatWidget"));
@@ -59,6 +60,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Suspense fallback={<div className="min-h-screen bg-background" />}>
+            <SeoHead />
             <div>
               <Routes>
                 <Route path="/" element={<Index />} />
