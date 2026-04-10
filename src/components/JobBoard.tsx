@@ -73,10 +73,10 @@ const JobCard = ({
   return (
     <button
       onClick={onClick}
-      className={`group relative w-full text-left transition-all duration-200 rounded-xl border p-4 ${
+      className={`group relative w-full text-left transition-all duration-200 rounded-xl border p-4 hover:-translate-y-0.5 ${
         isSelected
           ? "border-primary/50 bg-primary/[0.03] shadow-md ring-1 ring-primary/20"
-          : "border-border/60 bg-card hover:border-primary/30 hover:shadow-sm"
+          : "border-border/60 bg-card hover:border-primary/30 hover:shadow-elevated"
       }`}
     >
       {/* Tag ribbon */}
@@ -296,15 +296,15 @@ const JobBoard = () => {
 
         {/* Loading skeleton */}
         {isLoading ? (
-          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 animate-shimmer-none">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div key={i} className="flex gap-3.5 rounded-xl border p-4">
-                <div className="h-11 w-11 animate-pulse rounded-lg bg-muted" />
+                <div className="h-11 w-11 rounded-lg animate-shimmer" />
                 <div className="flex-1 space-y-2.5">
-                  <div className="h-4 w-3/4 animate-pulse rounded bg-muted" />
-                  <div className="h-3 w-1/3 animate-pulse rounded bg-muted" />
-                  <div className="h-5 w-16 animate-pulse rounded-md bg-muted" />
-                  <div className="h-3 w-2/3 animate-pulse rounded bg-muted" />
+                  <div className="h-4 w-3/4 rounded animate-shimmer" />
+                  <div className="h-3 w-1/3 rounded animate-shimmer" />
+                  <div className="h-5 w-16 rounded-md animate-shimmer" />
+                  <div className="h-3 w-2/3 rounded animate-shimmer" />
                 </div>
               </div>
             ))}

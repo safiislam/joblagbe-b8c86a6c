@@ -128,7 +128,7 @@ const ServicesSection = ({ contentLoading = false }: ServicesSectionProps) => {
             const Icon = iconMap[s.icon] || FileText;
             const style = colorCycle[i % colorCycle.length];
             return (
-              <div key={s.title || i} className={`rounded-xl border ${style.border} bg-card p-5 flex flex-col items-center text-center gap-3 transition-shadow hover:shadow-elevated`}>
+              <div key={s.title || i} className={`rounded-xl border ${style.border} bg-card p-5 flex flex-col items-center text-center gap-3 transition-all hover:shadow-elevated hover:-translate-y-1`}>
                 <div className={`inline-flex h-10 w-10 items-center justify-center rounded-lg ${style.color}`}>
                   <Icon className="h-5 w-5" />
                 </div>
