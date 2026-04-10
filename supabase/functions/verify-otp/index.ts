@@ -92,7 +92,9 @@ Deno.serve(async (req) => {
 
       // Update profile phone
       if (newUser?.user) {
-        await supabase.from("profiles").update({ phone }).eq("user_id", newUser.user.id);
+        const updateData: Record<string, string> = { phone };
+        if (nid_number) updateData.nid_number = nid_number;
+        await supabase.from("profiles").update(updateData).eq("user_id", newUser.user.id);
       }
 
       // Sign in the user
