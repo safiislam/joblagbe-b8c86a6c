@@ -238,12 +238,19 @@ const DashboardChatLogs = () => {
                 <span>Session: {selectedLog.session_id.slice(0, 16)}...</span>
                 <span>·</span>
                 <span>{format(new Date(selectedLog.created_at), "MMM dd, yyyy HH:mm")}</span>
-                {selectedLog.user_id && (
+                {selectedLog.user_id && userProfiles?.[selectedLog.user_id] ? (
+                  <>
+                    <span>·</span>
+                    <Badge variant="outline" className="text-[10px] h-4 text-success border-success/30">
+                      {userProfiles[selectedLog.user_id].full_name || "নাম নেই"} {userProfiles[selectedLog.user_id].phone ? `(${userProfiles[selectedLog.user_id].phone})` : ""}
+                    </Badge>
+                  </>
+                ) : selectedLog.user_id ? (
                   <>
                     <span>·</span>
                     <Badge variant="outline" className="text-[10px] h-4 text-success border-success/30">Logged In User</Badge>
                   </>
-                )}
+                ) : null}
               </div>
             )}
           </DialogHeader>
