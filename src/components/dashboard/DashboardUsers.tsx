@@ -5,7 +5,7 @@ import { formatDistanceToNow, format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Eye, Phone, Calendar, FileText, User, Briefcase, Search, Shield, Download, Bell, Send, Loader2 } from "lucide-react";
+import { Eye, Phone, Calendar, FileText, User, Briefcase, Search, Shield, Download, Bell, Send, Loader2, CreditCard } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -196,7 +196,7 @@ const DashboardUsers = () => {
                   <div className="min-w-0">
                     <p className="font-semibold text-sm truncate">{p.full_name || "No name"}</p>
                     <p className="text-xs text-muted-foreground truncate">
-                      {p.phone || "No phone"} · {formatDistanceToNow(new Date(p.created_at), { addSuffix: true })}
+                      {p.phone || "No phone"} · NID: {p.nid_number || "N/A"} · {formatDistanceToNow(new Date(p.created_at), { addSuffix: true })}
                     </p>
                   </div>
                 </div>
@@ -265,6 +265,11 @@ const DashboardUsers = () => {
                   <Phone className="h-4 w-4 text-muted-foreground" />
                   <span className="text-muted-foreground">Phone:</span>
                   <span className="font-medium">{selected.phone || "Not provided"}</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm">
+                  <CreditCard className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-muted-foreground">NID:</span>
+                  <span className="font-medium">{selected.nid_number || "Not provided"}</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm">
                   <Calendar className="h-4 w-4 text-muted-foreground" />
