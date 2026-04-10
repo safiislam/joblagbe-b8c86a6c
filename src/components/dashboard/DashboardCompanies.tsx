@@ -280,6 +280,7 @@ const DashboardCompanies = () => {
                         <span className="flex items-center gap-0.5"><MapPin className="h-3 w-3" />{c.location}</span>
                       )}
                       <span className="flex items-center gap-0.5"><Briefcase className="h-3 w-3" />{jobs} জব</span>
+                      <span className="flex items-center gap-0.5"><User className="h-3 w-3" />{c.user_id ? (ownerProfiles?.[c.user_id]?.full_name || "নাম নেই") : "অজানা"}</span>
                       <span>{formatDistanceToNow(new Date(c.created_at), { addSuffix: true })}</span>
                     </div>
                   </div>
