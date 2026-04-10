@@ -384,6 +384,7 @@ export type Database = {
         Row: {
           application_deadline: string | null
           category_id: string | null
+          circular_image_url: string | null
           company_id: string
           created_at: string
           description: string
@@ -393,6 +394,7 @@ export type Database = {
           is_approved: boolean
           job_type: string
           location: string
+          post_type: string
           requirements: string[] | null
           salary_max: number | null
           salary_min: number | null
@@ -404,6 +406,7 @@ export type Database = {
         Insert: {
           application_deadline?: string | null
           category_id?: string | null
+          circular_image_url?: string | null
           company_id: string
           created_at?: string
           description: string
@@ -413,6 +416,7 @@ export type Database = {
           is_approved?: boolean
           job_type?: string
           location: string
+          post_type?: string
           requirements?: string[] | null
           salary_max?: number | null
           salary_min?: number | null
@@ -424,6 +428,7 @@ export type Database = {
         Update: {
           application_deadline?: string | null
           category_id?: string | null
+          circular_image_url?: string | null
           company_id?: string
           created_at?: string
           description?: string
@@ -433,6 +438,7 @@ export type Database = {
           is_approved?: boolean
           job_type?: string
           location?: string
+          post_type?: string
           requirements?: string[] | null
           salary_max?: number | null
           salary_min?: number | null
