@@ -40,6 +40,20 @@ const DashboardChatLogs = () => {
     },
   });
 
+  // Fetch user profiles for logged-in chatters
+  const { data: userProfiles } = useQuery({
+    queryKey: ["admin-chat-user-profiles", logs?.map((l) => l.user_id).filter(Boolean)],
+    enabled: !!logs && logs.some((l) => l.user_id),
+    queryFn: async () => {
+      const userIds = [...new Set(logs?.map((l) => l.user_id).filter(Boolean) as string[])];
+      if (!userIds.length) return {};
+      const { data } = await supabase.from("profiles").select("user_id, full_name, phone").in("user_id", userIds);
+      const map: Record<string, { full_name: string | null; phone: string | null }> = {};
+      data?.forEach((p: any) => { map[p.user_id] = p; });
+      return map;
+    },
+  });
+
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase.from("chat_logs").delete().eq("id", id);
