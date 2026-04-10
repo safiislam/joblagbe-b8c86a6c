@@ -237,6 +237,7 @@ const Admin = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SeoHead noIndex />
       <Header />
       <div className="container py-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">

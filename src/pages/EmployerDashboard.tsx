@@ -255,6 +255,7 @@ const EmployerDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SeoHead title="নিয়োগকর্তা ড্যাশবোর্ড" noIndex />
       <Header />
       <div className="container py-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">

@@ -106,6 +106,7 @@ const SeekerDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SeoHead title="আমার ড্যাশবোর্ড" noIndex />
       <Header />
 
       <div className="container max-w-2xl py-8">
