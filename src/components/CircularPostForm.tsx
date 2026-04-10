@@ -225,6 +225,14 @@ const CircularPostForm = ({ companyId, onSuccess, isFree, effectivePrice, onPaym
         <p className="mt-1 text-xs text-muted-foreground">মূল বিজ্ঞপ্তির লিংক যোগ করুন</p>
       </div>
 
+      {/* Location */}
+      <div>
+        <Label>লোকেশন (ঐচ্ছিক)</Label>
+        <div className="mt-1.5">
+          <MultiLocationInput locations={locations} onChange={setLocations} placeholder="যেমন: ঢাকা" />
+        </div>
+      </div>
+
       <Button type="submit" disabled={submitting} className="bg-accent text-accent-foreground hover:bg-accent/90 px-8 font-semibold rounded-xl">
         {submitting ? <><Loader2 className="h-4 w-4 animate-spin mr-2" /> জমা হচ্ছে...</> : isFree ? "জমা দিন (রিভিউয়ের জন্য)" : `৳${effectivePrice} পে করুন ও জমা দিন`}
       </Button>
