@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import SeoHead from "@/components/SeoHead";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import {
@@ -236,6 +237,7 @@ const Admin = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SeoHead noIndex />
       <Header />
       <div className="container py-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">

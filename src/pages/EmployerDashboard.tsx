@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import SeoHead from "@/components/SeoHead";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Briefcase, Plus, Users, Clock, CheckCircle, Eye, XCircle, UserCheck, FileText, Upload, Building2, Ban, Loader2, BadgeCheck, ShieldCheck, Save, ShoppingBag, Search, Filter, Phone, User, BookOpen, Pencil } from "lucide-react";
@@ -254,6 +255,7 @@ const EmployerDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SeoHead title="নিয়োগকর্তা ড্যাশবোর্ড" noIndex />
       <Header />
       <div className="container py-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">

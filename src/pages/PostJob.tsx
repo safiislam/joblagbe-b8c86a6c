@@ -1,5 +1,6 @@
 import { useState, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import SeoHead from "@/components/SeoHead";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format, addDays, addMonths } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
@@ -265,7 +266,7 @@ const PostJob = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <SeoHead title="চাকরি পোস্ট করুন" noIndex />
       <div className="container max-w-2xl py-8">
         <h1 className="text-2xl font-bold md:text-3xl">চাকরি পোস্ট করুন</h1>
         <p className="mt-1 text-muted-foreground">আপনার চাকরির বিজ্ঞপ্তি প্রকাশ করুন</p>

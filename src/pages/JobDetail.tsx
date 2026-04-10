@@ -319,7 +319,7 @@ const JobDetail = () => {
             <div className="flex items-start gap-4">
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-muted">
                 {company?.logo_url ? (
-                  <img src={company.logo_url} alt="" className="h-8 w-8 rounded object-contain" />
+                  <img src={company.logo_url} alt={company?.name ? `${company.name} logo` : "Company logo"} className="h-8 w-8 rounded object-contain" />
                 ) : (
                   <Building2 className="h-6 w-6 text-muted-foreground" />
                 )}
@@ -353,7 +353,7 @@ const JobDetail = () => {
                   >
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10">
                       {(sj.companies as any)?.logo_url ? (
-                        <img src={(sj.companies as any).logo_url} alt="" className="h-7 w-7 rounded object-contain" />
+                        <img src={(sj.companies as any).logo_url} alt={company?.name ? `${company.name} logo` : "Company logo"} className="h-7 w-7 rounded object-contain" />
                       ) : (
                         <Building2 className="h-5 w-5 text-primary" />
                       )}
@@ -390,6 +390,17 @@ const JobDetail = () => {
         title={`${job.title} — ${company?.name || "চাকরি"}`}
         description={`${job.title} পদে ${company?.name || ""} কোম্পানিতে চাকরির সুযোগ। লোকেশন: ${job.location}। বেতন: ${formatSalary(job.salary_min, job.salary_max)}।`}
         ogImage={company?.logo_url || undefined}
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "হোম", item: "https://www.joblagbe.bd/" },
+              { "@type": "ListItem", position: 2, name: "চাকরি", item: "https://www.joblagbe.bd/jobs" },
+              { "@type": "ListItem", position: 3, name: job.title },
+            ],
+          },
+        ]}
       />
       {jobJsonLd && (
         <script
@@ -411,7 +422,7 @@ const JobDetail = () => {
                 <div className="flex items-start gap-4">
                   <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-primary/10">
                     {company?.logo_url ? (
-                      <img src={company.logo_url} alt="" className="h-10 w-10 rounded-lg object-contain" />
+                      <img src={company.logo_url} alt={company?.name ? `${company.name} logo` : "Company logo"} className="h-10 w-10 rounded-lg object-contain" />
                     ) : (
                       <Building2 className="h-7 w-7 text-primary" />
                     )}
@@ -651,7 +662,7 @@ const JobDetail = () => {
               <Link to={`/company/${job.company_id}`} className="flex items-center gap-3 mb-4 group">
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10">
                   {company?.logo_url ? (
-                    <img src={company.logo_url} alt="" className="h-8 w-8 rounded-lg object-contain" />
+                    <img src={company.logo_url} alt={company?.name ? `${company.name} logo` : "Company logo"} className="h-8 w-8 rounded-lg object-contain" />
                   ) : (
                     <Building2 className="h-6 w-6 text-primary" />
                   )}

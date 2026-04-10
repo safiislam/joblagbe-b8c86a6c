@@ -3,6 +3,7 @@ import { Download, Smartphone, Share, MoreVertical, Plus, CheckCircle2, ArrowRig
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import SeoHead from "@/components/SeoHead";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
@@ -103,6 +104,7 @@ const Install = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SeoHead title="অ্যাপ ইনস্টল করুন" description="Job লাগবে অ্যাপ আপনার ফোন বা কম্পিউটারে ইনস্টল করুন। চাকরির আপডেট সবার আগে পান!" />
       <Header />
       <main className="container mx-auto px-4 py-10 max-w-2xl">
         {/* Hero */}

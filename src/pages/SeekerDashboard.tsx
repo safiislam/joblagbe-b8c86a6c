@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import SeoHead from "@/components/SeoHead";
 import Header from "@/components/Header";
 import MyServiceOrders from "@/components/MyServiceOrders";
 import MyLibrary from "@/components/MyLibrary";
@@ -105,6 +106,7 @@ const SeekerDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SeoHead title="আমার ড্যাশবোর্ড" noIndex />
       <Header />
 
       <div className="container max-w-2xl py-8">
