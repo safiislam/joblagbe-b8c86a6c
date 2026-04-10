@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://zjahlpslrnclxqqvbaxt.supabase.co/functions/v1/sitemap
+Sitemap: https://www.joblagbe.bd/sitemap.xml

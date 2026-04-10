@@ -1,6 +1,7 @@
 {
   "rewrites": [
     { "source": "/~oauth/:path*", "destination": "https://joblagbe.lovable.app/~oauth/:path*" },
+    { "source": "/sitemap.xml", "destination": "https://zjahlpslrnclxqqvbaxt.supabase.co/functions/v1/sitemap" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
