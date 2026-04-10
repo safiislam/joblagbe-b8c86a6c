@@ -296,34 +296,30 @@ const JobBoard = () => {
 
         {/* Loading skeleton */}
         {isLoading ? (
-          <div className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
-            <div className="space-y-3">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="flex gap-3.5 rounded-xl border p-4">
-                  <div className="h-11 w-11 animate-pulse rounded-lg bg-muted" />
-                  <div className="flex-1 space-y-2.5">
-                    <div className="h-4 w-3/4 animate-pulse rounded bg-muted" />
-                    <div className="h-3 w-1/3 animate-pulse rounded bg-muted" />
-                    <div className="h-5 w-16 animate-pulse rounded-md bg-muted" />
-                    <div className="h-3 w-2/3 animate-pulse rounded bg-muted" />
-                  </div>
+          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="flex gap-3.5 rounded-xl border p-4">
+                <div className="h-11 w-11 animate-pulse rounded-lg bg-muted" />
+                <div className="flex-1 space-y-2.5">
+                  <div className="h-4 w-3/4 animate-pulse rounded bg-muted" />
+                  <div className="h-3 w-1/3 animate-pulse rounded bg-muted" />
+                  <div className="h-5 w-16 animate-pulse rounded-md bg-muted" />
+                  <div className="h-3 w-2/3 animate-pulse rounded bg-muted" />
                 </div>
-              ))}
-            </div>
-            <div className="hidden h-[500px] animate-pulse rounded-xl border bg-muted/30 lg:block" />
+              </div>
+            ))}
           </div>
         ) : (
-          <div className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
-            {/* Job list */}
-            <div className="space-y-2.5">
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {jobs?.map((job) => (
-                <JobCard
-                  key={job.id}
-                  job={job}
-                  isSelected={selectedJob?.id === job.id}
-                  onClick={() => setSelectedJob(job)}
-                  savedJobIds={savedJobIds}
-                />
+                <Link key={job.id} to={`/jobs/${job.id}`} className="block">
+                  <JobCard
+                    job={job}
+                    isSelected={false}
+                    onClick={() => {}}
+                    savedJobIds={savedJobIds}
+                  />
+                </Link>
               ))}
               {jobs?.length === 0 && (
                 <div className="flex flex-col items-center py-20 text-muted-foreground">
