@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 
 const DashboardSmsOtp = () => {
+  const qc = useQueryClient();
   const [searchPhone, setSearchPhone] = useState("");
   const [balanceData, setBalanceData] = useState<{ balance: string; status: string } | null>(null);
   const [balanceLoading, setBalanceLoading] = useState(false);
@@ -154,13 +155,14 @@ const DashboardSmsOtp = () => {
           ) : (
             <div className="overflow-auto">
               <Table>
-                <TableHeader>
+                 <TableHeader>
                   <TableRow>
                     <TableHead>ফোন</TableHead>
                     <TableHead>OTP কোড</TableHead>
                     <TableHead>স্ট্যাটাস</TableHead>
                     <TableHead>মেয়াদ</TableHead>
                     <TableHead>পাঠানো হয়েছে</TableHead>
+                    <TableHead className="w-10"></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -184,6 +186,22 @@ const DashboardSmsOtp = () => {
                         </TableCell>
                         <TableCell className="text-xs text-muted-foreground">
                           {format(new Date(otp.created_at), "dd MMM yyyy, hh:mm a")}
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                            title="ডিলিট করুন"
+                            onClick={async () => {
+                              if (!confirm("এই OTP রেকর্ড স্থায়ীভাবে মুছে ফেলতে চান?")) return;
+                              const { error } = await supabase.from("phone_otps").delete().eq("id", otp.id);
+                              if (error) toast.error(error.message);
+                              else { toast.success("মুছে ফেলা হয়েছে"); qc.invalidateQueries({ queryKey: ["admin-otp-logs"] }); }
+                            }}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
                         </TableCell>
                       </TableRow>
                     );
