@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { optimizeStorageImage } from "@/lib/imageOptimize";
@@ -7,6 +7,7 @@ import AnnouncementBanner from "@/components/AnnouncementBanner";
 import HeroSection from "@/components/HeroSection";
 import QuickLinks from "@/components/QuickLinks";
 import Footer from "@/components/Footer";
+import SeoHead from "@/components/SeoHead";
 import { useAllSiteContent } from "@/hooks/useSiteContent";
 
 // Lazy load below-the-fold sections to reduce initial JS bundle
@@ -64,8 +65,36 @@ const Index = () => {
     };
   }, [prefetchedBanners]);
 
+  const homepageJsonLd = useMemo(() => [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "Job লাগবে",
+      url: "https://www.joblagbe.bd",
+      potentialAction: {
+        "@type": "SearchAction",
+        target: "https://www.joblagbe.bd/jobs?q={search_term_string}",
+        "query-input": "required name=search_term_string",
+      },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: "Job লাগবে",
+      url: "https://www.joblagbe.bd",
+      logo: "https://www.joblagbe.bd/pwa-512x512.png",
+      sameAs: [],
+      contactPoint: {
+        "@type": "ContactPoint",
+        contactType: "customer service",
+        availableLanguage: ["Bengali", "English"],
+      },
+    },
+  ], []);
+
   return (
     <div className="min-h-screen bg-background">
+      <SeoHead jsonLd={homepageJsonLd} />
       <AnnouncementBanner contentLoading={cmsContentLoading} />
       
       <Header />
