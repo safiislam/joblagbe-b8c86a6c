@@ -1,6 +1,7 @@
 import { useState, useRef, useMemo } from "react";
 import { format, addDays, addMonths } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
+import MultiLocationInput from "@/components/MultiLocationInput";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,6 +32,7 @@ const CircularPostForm = ({ companyId, onSuccess, isFree, effectivePrice, onPaym
   const [title, setTitle] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [sourceUrl, setSourceUrl] = useState("");
+  const [locations, setLocations] = useState<string[]>([]);
   const [deadline, setDeadline] = useState<Date | undefined>(undefined);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -119,7 +121,7 @@ const CircularPostForm = ({ companyId, onSuccess, isFree, effectivePrice, onPaym
     const { error } = await supabase.from("jobs").insert({
       company_id: companyId,
       title: title.trim(),
-      location: "বাংলাদেশ",
+      location: locations.length > 0 ? locations.join(", ") : "বাংলাদেশ",
       description: `সার্কুলার বিজ্ঞপ্তি: ${title.trim()}`,
       category_id: categoryId || null,
       application_deadline: deadline ? deadline.toISOString() : null,
@@ -221,6 +223,14 @@ const CircularPostForm = ({ companyId, onSuccess, isFree, effectivePrice, onPaym
         <Label>সোর্স লিংক (ঐচ্ছিক)</Label>
         <Input value={sourceUrl} onChange={(e) => setSourceUrl(e.target.value)} placeholder="যেমন: https://army.mil.bd/circular" className="mt-1.5 rounded-xl" />
         <p className="mt-1 text-xs text-muted-foreground">মূল বিজ্ঞপ্তির লিংক যোগ করুন</p>
+      </div>
+
+      {/* Location */}
+      <div>
+        <Label>লোকেশন (ঐচ্ছিক)</Label>
+        <div className="mt-1.5">
+          <MultiLocationInput locations={locations} onChange={setLocations} placeholder="যেমন: ঢাকা" />
+        </div>
       </div>
 
       <Button type="submit" disabled={submitting} className="bg-accent text-accent-foreground hover:bg-accent/90 px-8 font-semibold rounded-xl">
