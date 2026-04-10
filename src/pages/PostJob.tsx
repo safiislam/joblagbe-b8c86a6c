@@ -369,99 +369,129 @@ const PostJob = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <Label>Job Title</Label>
-              <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required placeholder="e.g. Software Engineer" className="mt-1.5 rounded-xl" />
-            </div>
-            <div>
-              <Label>Location(s)</Label>
-              <div className="mt-1.5">
-                <MultiLocationInput locations={locations} onChange={setLocations} />
+        <Tabs defaultValue="regular" className="mt-6">
+          <TabsList className="grid w-full grid-cols-2 rounded-xl">
+            <TabsTrigger value="regular" className="gap-2 rounded-xl">
+              <FileText className="h-4 w-4" /> রেগুলার পোস্ট
+            </TabsTrigger>
+            <TabsTrigger value="circular" className="gap-2 rounded-xl">
+              <Image className="h-4 w-4" /> সার্কুলার পোস্ট
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="regular">
+            <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <Label>Job Title</Label>
+                  <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required placeholder="e.g. Software Engineer" className="mt-1.5 rounded-xl" />
+                </div>
+                <div>
+                  <Label>Location(s)</Label>
+                  <div className="mt-1.5">
+                    <MultiLocationInput locations={locations} onChange={setLocations} />
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-          <div className="grid gap-4 md:grid-cols-3">
-            <div>
-              <Label>Min Salary (৳)</Label>
-              <Input type="number" value={form.salaryMin} onChange={(e) => setForm({ ...form, salaryMin: e.target.value })} placeholder="40000" className="mt-1.5 rounded-xl" />
-            </div>
-            <div>
-              <Label>Max Salary (৳)</Label>
-              <Input type="number" value={form.salaryMax} onChange={(e) => setForm({ ...form, salaryMax: e.target.value })} placeholder="80000" className="mt-1.5 rounded-xl" />
-            </div>
-            <div>
-              <Label>Job Type</Label>
-              <Select value={form.jobType} onValueChange={(v) => setForm({ ...form, jobType: v })}>
-                <SelectTrigger className="mt-1.5 rounded-xl"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {["Full-time", "Part-time", "Contract", "Remote", "Internship"].map((t) => (
-                    <SelectItem key={t} value={t}>{t}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <Label>Category</Label>
-              <Select value={form.categoryId} onValueChange={(v) => setForm({ ...form, categoryId: v })}>
-                <SelectTrigger className="mt-1.5 rounded-xl"><SelectValue placeholder="Select category" /></SelectTrigger>
-                <SelectContent>
-                  {categories?.map((c) => (
-                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-           </div>
-          <div>
-            <Label>Application Deadline</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full mt-1.5 justify-start text-left font-normal rounded-xl",
-                    !deadline && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {deadline ? format(deadline, "dd MMM yyyy") : "ডেডলাইন নির্বাচন করুন"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={deadline}
-                  onSelect={setDeadline}
-                  disabled={(date) => date < minDeadline || date > maxDeadline}
-                  initialFocus
-                  className={cn("p-3 pointer-events-auto")}
+              <div className="grid gap-4 md:grid-cols-3">
+                <div>
+                  <Label>Min Salary (৳)</Label>
+                  <Input type="number" value={form.salaryMin} onChange={(e) => setForm({ ...form, salaryMin: e.target.value })} placeholder="40000" className="mt-1.5 rounded-xl" />
+                </div>
+                <div>
+                  <Label>Max Salary (৳)</Label>
+                  <Input type="number" value={form.salaryMax} onChange={(e) => setForm({ ...form, salaryMax: e.target.value })} placeholder="80000" className="mt-1.5 rounded-xl" />
+                </div>
+                <div>
+                  <Label>Job Type</Label>
+                  <Select value={form.jobType} onValueChange={(v) => setForm({ ...form, jobType: v })}>
+                    <SelectTrigger className="mt-1.5 rounded-xl"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {["Full-time", "Part-time", "Contract", "Remote", "Internship"].map((t) => (
+                        <SelectItem key={t} value={t}>{t}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <Label>Category</Label>
+                  <Select value={form.categoryId} onValueChange={(v) => setForm({ ...form, categoryId: v })}>
+                    <SelectTrigger className="mt-1.5 rounded-xl"><SelectValue placeholder="Select category" /></SelectTrigger>
+                    <SelectContent>
+                      {categories?.map((c) => (
+                        <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Application Deadline</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn("w-full mt-1.5 justify-start text-left font-normal rounded-xl", !deadline && "text-muted-foreground")}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {deadline ? format(deadline, "dd MMM yyyy") : "ডেডলাইন নির্বাচন করুন"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={deadline}
+                        onSelect={setDeadline}
+                        disabled={(date) => date < minDeadline || date > maxDeadline}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <p className="mt-1 text-xs text-muted-foreground">সর্বোচ্চ ১ মাস। ডেডলাইনের পর আবেদন স্বয়ংক্রিয়ভাবে বন্ধ হয়ে যাবে।</p>
+                </div>
+              </div>
+              <div>
+                <Label>Description</Label>
+                <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} required rows={5} placeholder="Describe the role and responsibilities..." className="mt-1.5 rounded-xl" />
+              </div>
+              <div>
+                <Label>Requirements (one per line)</Label>
+                <Textarea value={form.requirements} onChange={(e) => setForm({ ...form, requirements: e.target.value })} rows={4} placeholder="Bachelor's degree in CS&#10;3+ years experience&#10;..." className="mt-1.5 rounded-xl" />
+              </div>
+              <div>
+                <Label>Source Link (ঐচ্ছিক)</Label>
+                <Input value={form.sourceUrl} onChange={(e) => setForm({ ...form, sourceUrl: e.target.value })} placeholder="e.g. https://original-job-post.com/apply" className="mt-1.5 rounded-xl" />
+                <p className="mt-1 text-xs text-muted-foreground">মূল চাকরির বিজ্ঞপ্তির লিংক যোগ করুন (যদি থাকে)</p>
+              </div>
+              <Button type="submit" disabled={submitting || (!company && !showCompanyForm)} className="bg-accent text-accent-foreground hover:bg-accent/90 px-8 font-semibold rounded-xl">
+                {submitting ? "Submitting..." : isFree ? "Submit for Review" : `Pay ৳${effectivePrice} & Submit`}
+              </Button>
+            </form>
+          </TabsContent>
+
+          <TabsContent value="circular">
+            {company ? (
+              <div className="mt-4">
+                <CircularPostForm
+                  companyId={company.id}
+                  onSuccess={() => setSubmitted(true)}
+                  isFree={isFree}
+                  effectivePrice={effectivePrice}
+                  onPaymentRequired={(data) => {
+                    setPendingJobData(data);
+                    setShowPayment(true);
+                  }}
                 />
-              </PopoverContent>
-            </Popover>
-            <p className="mt-1 text-xs text-muted-foreground">সর্বোচ্চ ১ মাস। ডেডলাইনের পর আবেদন স্বয়ংক্রিয়ভাবে বন্ধ হয়ে যাবে।</p>
-          </div>
-          </div>
-          <div>
-            <Label>Description</Label>
-            <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} required rows={5} placeholder="Describe the role and responsibilities..." className="mt-1.5 rounded-xl" />
-          </div>
-          <div>
-            <Label>Requirements (one per line)</Label>
-            <Textarea value={form.requirements} onChange={(e) => setForm({ ...form, requirements: e.target.value })} rows={4} placeholder="Bachelor's degree in CS&#10;3+ years experience&#10;..." className="mt-1.5 rounded-xl" />
-          </div>
-          <div>
-            <Label>Source Link (ঐচ্ছিক)</Label>
-            <Input value={form.sourceUrl} onChange={(e) => setForm({ ...form, sourceUrl: e.target.value })} placeholder="e.g. https://original-job-post.com/apply" className="mt-1.5 rounded-xl" />
-            <p className="mt-1 text-xs text-muted-foreground">মূল চাকরির বিজ্ঞপ্তির লিংক যোগ করুন (যদি থাকে)</p>
-          </div>
-          <Button type="submit" disabled={submitting || (!company && !showCompanyForm)} className="bg-accent text-accent-foreground hover:bg-accent/90 px-8 font-semibold rounded-xl">
-            {submitting ? "Submitting..." : isFree ? "Submit for Review" : `Pay ৳${effectivePrice} & Submit`}
-          </Button>
-        </form>
-      </div>
+              </div>
+            ) : (
+              <div className="mt-4 rounded-2xl border bg-secondary/50 p-6 text-center">
+                <p className="text-muted-foreground">সার্কুলার পোস্ট করতে প্রথমে উপরে কোম্পানি প্রোফাইল তৈরি করুন।</p>
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
 
       {/* Payment Dialog */}
       <PaymentDialog
