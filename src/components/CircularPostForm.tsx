@@ -1,6 +1,7 @@
 import { useState, useRef, useMemo } from "react";
 import { format, addDays, addMonths } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
+import MultiLocationInput from "@/components/MultiLocationInput";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
