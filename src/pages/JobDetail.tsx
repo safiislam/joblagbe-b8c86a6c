@@ -7,7 +7,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -15,7 +15,8 @@ import SaveJobButton from "@/components/SaveJobButton";
 import ShareJobButton from "@/components/ShareJobButton";
 import {
   MapPin, Briefcase, Clock, Banknote, Building2, Phone, Globe,
-  ArrowLeft, CheckCircle2, FileText, Loader2, Upload, File, ExternalLink
+  ArrowLeft, CheckCircle2, FileText, Loader2, Upload, File, ExternalLink,
+  AlertTriangle
 } from "lucide-react";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import JobFraudWarning from "@/components/JobFraudWarning";
@@ -91,6 +92,32 @@ const JobDetail = () => {
       return data;
     },
     enabled: !!user && showApplyForm,
+  });
+
+  // Check if job is expired/inactive
+  const isExpired = job ? (!job.is_active || (job.application_deadline && new Date(job.application_deadline) < new Date())) : false;
+
+  // Fetch similar active jobs when the current job is expired
+  const { data: similarJobs } = useQuery({
+    queryKey: ["similar-jobs", job?.category_id, job?.id],
+    queryFn: async () => {
+      let query = supabase
+        .from("jobs")
+        .select("id, title, location, job_type, salary_min, salary_max, created_at, tag, companies(name, logo_url, is_verified)")
+        .eq("is_active", true)
+        .eq("is_approved", true)
+        .neq("id", job!.id)
+        .order("created_at", { ascending: false })
+        .limit(5);
+
+      if (job?.category_id) {
+        query = query.eq("category_id", job.category_id);
+      }
+
+      const { data } = await query;
+      return data ?? [];
+    },
+    enabled: !!job && !!isExpired,
   });
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -244,6 +271,7 @@ const JobDetail = () => {
   if (!job) {
     return (
       <div className="min-h-screen bg-background">
+        <SeoHead title="চাকরির বিজ্ঞপ্তি পাওয়া যায়নি" noIndex />
         <Header />
         <div className="container py-20 text-center">
           <Briefcase className="mx-auto mb-4 h-16 w-16 text-muted-foreground opacity-30" />
@@ -252,6 +280,104 @@ const JobDetail = () => {
           <Button onClick={() => navigate("/jobs")} variant="outline" className="mt-6 gap-2">
             <ArrowLeft className="h-4 w-4" /> সকল চাকরি দেখুন
           </Button>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Expired job — show details with expired banner + similar jobs
+  if (isExpired) {
+    return (
+      <div className="min-h-screen bg-background">
+        <SeoHead
+          title={`${job.title} — মেয়াদ শেষ`}
+          description={`${job.title} পদের নিয়োগ বিজ্ঞপ্তির মেয়াদ শেষ হয়েছে। একই ধরনের অন্যান্য চাকরি দেখুন।`}
+        />
+        <Header />
+        <div className="container py-8 max-w-3xl">
+          <Button onClick={() => navigate("/jobs")} variant="ghost" size="sm" className="mb-6 gap-1.5 text-muted-foreground hover:text-foreground">
+            <ArrowLeft className="h-4 w-4" /> সকল চাকরি
+          </Button>
+
+          {/* Expired Banner */}
+          <div className="rounded-2xl border-2 border-destructive/30 bg-destructive/5 p-6 text-center mb-8">
+            <AlertTriangle className="mx-auto h-12 w-12 text-destructive mb-3" />
+            <h1 className="text-2xl font-bold font-bangla text-destructive">এই চাকরির মেয়াদ শেষ হয়ে গেছে</h1>
+            <p className="mt-2 text-muted-foreground">
+              দুঃখিত, <strong className="text-foreground">{job.title}</strong> পদে আবেদনের সময়সীমা শেষ হয়ে গেছে।
+            </p>
+            {job.application_deadline && (
+              <p className="mt-1 text-sm text-muted-foreground">
+                ডেডলাইন ছিল: {format(new Date(job.application_deadline), "dd MMM yyyy")}
+              </p>
+            )}
+          </div>
+
+          {/* Job Summary Card */}
+          <div className="rounded-2xl border bg-card p-6 shadow-card mb-8 opacity-75">
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-muted">
+                {company?.logo_url ? (
+                  <img src={company.logo_url} alt="" className="h-8 w-8 rounded object-contain" />
+                ) : (
+                  <Building2 className="h-6 w-6 text-muted-foreground" />
+                )}
+              </div>
+              <div>
+                <h2 className="font-bold text-lg text-muted-foreground">{job.title}</h2>
+                <p className="text-sm text-muted-foreground">{company?.name}</p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <Badge variant="secondary" className="gap-1 text-xs">
+                    <MapPin className="h-3 w-3" /> {job.location}
+                  </Badge>
+                  <Badge variant="secondary" className="gap-1 text-xs">
+                    <Briefcase className="h-3 w-3" /> {job.job_type}
+                  </Badge>
+                  <Badge variant="destructive" className="text-xs">মেয়াদ শেষ</Badge>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Similar Jobs */}
+          {similarJobs && similarJobs.length > 0 && (
+            <div>
+              <h2 className="text-xl font-bold font-bangla mb-4">📌 একই ধরনের চাকরি দেখুন</h2>
+              <div className="space-y-3">
+                {similarJobs.map((sj) => (
+                  <Link
+                    key={sj.id}
+                    to={`/jobs/${sj.id}`}
+                    className="group flex items-center gap-4 rounded-2xl border bg-card p-4 shadow-sm transition-all hover:shadow-md hover:border-primary/30"
+                  >
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+                      {(sj.companies as any)?.logo_url ? (
+                        <img src={(sj.companies as any).logo_url} alt="" className="h-7 w-7 rounded object-contain" />
+                      ) : (
+                        <Building2 className="h-5 w-5 text-primary" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold group-hover:text-primary transition-colors truncate">{sj.title}</h3>
+                      <p className="text-xs text-muted-foreground flex items-center gap-2 mt-0.5">
+                        <span>{(sj.companies as any)?.name}</span>
+                        <span>•</span>
+                        <span className="flex items-center gap-0.5"><MapPin className="h-3 w-3" />{sj.location}</span>
+                      </p>
+                    </div>
+                    <Badge variant="secondary" className="text-xs shrink-0">{sj.job_type}</Badge>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="mt-8 text-center">
+            <Button onClick={() => navigate("/jobs")} className="gap-2">
+              <Briefcase className="h-4 w-4" /> সকল চাকরি দেখুন
+            </Button>
+          </div>
         </div>
         <Footer />
       </div>
