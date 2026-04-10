@@ -1,0 +1,1 @@
+CREATE POLICY "Admins can delete OTPs" ON public.phone_otps FOR DELETE TO authenticated USING (has_role(auth.uid(), 'admin'::app_role));
