@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import SeoHead from "@/components/SeoHead";
 import Header from "@/components/Header";
 import MyServiceOrders from "@/components/MyServiceOrders";
 import MyLibrary from "@/components/MyLibrary";

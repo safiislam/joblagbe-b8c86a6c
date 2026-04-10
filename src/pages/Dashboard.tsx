@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate, Routes, Route } from "react-router-dom";
+import SeoHead from "@/components/SeoHead";
 import { useAuth } from "@/contexts/AuthContext";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";

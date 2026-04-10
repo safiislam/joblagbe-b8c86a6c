@@ -3,6 +3,7 @@ import { Download, Smartphone, Share, MoreVertical, Plus, CheckCircle2, ArrowRig
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import SeoHead from "@/components/SeoHead";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 

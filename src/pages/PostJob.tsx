@@ -1,5 +1,6 @@
 import { useState, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import SeoHead from "@/components/SeoHead";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format, addDays, addMonths } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
