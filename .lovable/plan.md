@@ -1,82 +1,133 @@
 
 
-# UI/UX Improvement Plan — Full Website
+# SEO Audit Report — joblagbe.bd
 
-## Current State
-The website already has a solid foundation with proper skeleton loading, CMS-driven content, responsive grid layouts, and a cohesive color scheme. The key areas for improvement are around micro-interactions, accessibility, mobile experience, loading states, and navigation clarity.
+## Score: 7/10 — Good Foundation, Key Gaps to Fix
 
-## Improvement Areas
+---
 
-### 1. Global Smooth Scroll & Page Transitions
-- Add `scroll-behavior: smooth` to HTML root
-- Add `scroll-margin-top` for anchored sections (to account for sticky header)
-- Wrap page transitions with a subtle fade-in animation on route change
+## What's Working Well
 
-### 2. Header UX Improvements
-- Add active state highlighting for current nav link (underline or background)
-- Improve mobile menu with slide-in animation and overlay backdrop
-- Add keyboard accessibility (Escape to close mobile menu)
-- Make search input auto-focus when mobile search opens
+1. **SeoHead component** — Dynamic title, description, canonical, og:tags, hreflang, JSON-LD on most pages
+2. **index.html** — Proper `lang="bn"`, preconnect hints, inline critical CSS, skeleton for FCP
+3. **Structured data** — Homepage has WebSite + Organization JSON-LD; JobDetail has JobPosting schema
+4. **robots.txt** — Allows all crawlers, references sitemap
+5. **sitemap.xml** — Covers main static routes with priorities
+6. **Bengali descriptions** — Good localized meta descriptions on all key pages
+7. **Performance** — Lazy loading, font preloading, image optimization utilities
 
-### 3. Hero Section Polish
-- Add staggered animation delays for badge, title, subtitle, and search bar
-- Improve search bar with subtle focus ring animation
-- Add hover effect on popular tags (scale + shadow)
+---
 
-### 4. Job Cards & Listings
-- Add hover lift effect with smooth transform (`translateY(-2px)`)
-- Improve touch targets on mobile (minimum 44px tap areas)
-- Add empty state illustration when no jobs match filters
-- Add loading shimmer animation to skeleton cards
-- Improve pagination with "scroll to top" on page change
+## Issues Found (Ranked by Impact)
 
-### 5. Category Grid
-- Add hover scale + shadow transition on category cards
-- Add subtle gradient backgrounds per category
-- Improve mobile touch feedback
+### CRITICAL
 
-### 6. Forms (Login, Signup, PostJob, Contact)
-- Add focus-within styling on form groups (label color change)
-- Add password strength indicator on signup
-- Improve error states with red border + icon
-- Add success animations (checkmark) after form submission
-- Improve button loading states with spinner + disabled style
+**1. SPA Rendering = Invisible to Most Crawlers**
+- All meta tags are set via JavaScript (`document.createElement`). Googlebot can handle this, but Facebook, Twitter, LinkedIn, Telegram, WhatsApp preview bots CANNOT execute JS.
+- **Fix**: Use a prerendering service (e.g., prerender.io) or add server-side rendering for meta tags. Short-term: set static fallback OG tags in `index.html` that cover the homepage case.
+- **Status**: Partially mitigated — `index.html` has static OG tags for homepage, but all other pages (jobs, blog posts, companies) will show generic homepage meta when shared on social media.
 
-### 7. Footer
-- Add hover underline transitions on links
-- Improve social icon hover effects (scale + color)
-- Add "Back to Top" button
+**2. Missing `<SeoHead>` on Several Pages**
+- `NotFound.tsx` — No SeoHead, no `noIndex` (404 pages could get indexed with empty content)
+- `Install.tsx` — No SeoHead at all
+- `ResetPassword.tsx` — No SeoHead
+- `Dashboard.tsx` / `Admin.tsx` — No `noIndex` SeoHead (admin pages could leak into search)
+- `PostJob.tsx` — No SeoHead
+- `SeekerDashboard.tsx` / `EmployerDashboard.tsx` — No SeoHead
 
-### 8. Mobile Bottom Navigation
-- Add haptic-style visual feedback on tap (scale pulse)
-- Highlight active tab with filled icon + accent color
-- Add subtle top border on active item
+### HIGH
 
-### 9. Accessibility (a11y)
-- Add `focus-visible` ring styles globally for keyboard navigation
-- Ensure all interactive elements have proper `aria-label`s
-- Add `prefers-reduced-motion` media query to disable animations
-- Improve color contrast on muted-foreground text
+**3. Sitemap is Static — Misses Dynamic Content**
+- Individual job pages (`/jobs/:id`), blog posts (`/blog/:slug`), company profiles (`/company/:id`) are NOT in the sitemap
+- These are your most valuable pages for SEO
+- **Fix**: Generate a dynamic sitemap via an edge function that queries the database
 
-### 10. Toast & Feedback
-- Standardize toast positions (top-center on mobile, bottom-right on desktop)
-- Add success/error icons consistently in all toasts
+**4. Duplicate/Conflicting Meta Tags in index.html**
+- `index.html` has hardcoded `og:title`, `og:description`, `twitter:title`, `twitter:description` at the bottom of `<head>` AND the SeoHead component creates them dynamically
+- The hardcoded description is in English ("Bangladesh's trusted job portal") while SeoHead sets Bengali
+- **Fix**: Remove duplicate hardcoded OG/Twitter tags from index.html; keep only the base fallbacks
 
-## Technical Details
+**5. Missing JSON-LD on Key Pages**
+- Blog posts — No Article schema
+- Company profiles — No Organization schema  
+- Courses page — No Course schema
+- Jobs listing page — No ItemList schema
+- **Fix**: Add appropriate JSON-LD structured data to each page type
 
-### Files to modify:
-- **`src/index.css`** — Add smooth scroll, focus-visible styles, reduced-motion, shimmer animation, back-to-top utility
-- **`src/components/Header.tsx`** — Active nav link, mobile menu animation, keyboard a11y
-- **`src/components/HeroSection.tsx`** — Staggered animations, tag hover effects
-- **`src/components/JobBoard.tsx`** — Card hover lift, empty state, scroll-to-top on paginate
-- **`src/components/CategoryGrid.tsx`** — Hover transitions
-- **`src/components/QuickLinks.tsx`** — Hover polish
-- **`src/components/Footer.tsx`** — Link hover transitions, back-to-top button
-- **`src/components/ServicesSection.tsx`** — Card hover states
-- **`src/components/EmployerCTA.tsx`** — Button hover animation
-- **`src/pages/Login.tsx`** & **`src/pages/SignUp.tsx`** — Form UX improvements
-- **`src/pages/Jobs.tsx`** — Empty state, pagination scroll, filter UX
-- **`tailwind.config.ts`** — Add shimmer keyframe, transition utilities
+### MEDIUM
 
-### No database changes needed.
+**6. Image SEO Issues**
+- Company logos in JobDetail use `alt=""` (empty alt text)
+- Many dashboard images use `alt=""` or generic alt text
+- No `width`/`height` attributes on most images (causes CLS)
+- **Fix**: Use descriptive alt text: `alt={company.name + " logo"}`
+
+**7. Twitter Site Tag Wrong**
+- `index.html` line 45: `twitter:site` is `@Lovable` instead of your own brand handle
+- **Fix**: Change to your brand's Twitter handle or remove
+
+**8. No `og:url` in index.html Static Tags**
+- Missing static `og:url` and `og:site_name` fallbacks
+- **Fix**: Add `<meta property="og:url" content="https://www.joblagbe.bd/" />`
+
+**9. Missing `<lastmod>` in Sitemap**
+- No `<lastmod>` dates in sitemap entries — crawlers can't prioritize fresh content
+- **Fix**: Add lastmod dates, ideally from database timestamps
+
+**10. No Breadcrumb Structured Data**
+- Job detail and blog post pages lack BreadcrumbList JSON-LD
+- This helps Google show breadcrumbs in search results
+
+### LOW
+
+**11. 404 Page Needs Work**
+- Text is in English ("Oops! Page not found") on a Bengali site
+- No Header/Footer, no SeoHead with noIndex
+- No helpful links or search to reduce bounce
+
+**12. Missing `manifest.json` Link in HTML**
+- PWA icons referenced but no `<link rel="manifest">` in index.html
+
+**13. No `<h1>` Hierarchy Enforcement**
+- Multiple pages may have inconsistent heading structures
+
+---
+
+## Implementation Plan
+
+### Phase 1 — Quick Fixes (High Impact, Low Effort)
+1. Add `<SeoHead noIndex />` to NotFound, Dashboard, Admin, PostJob, Install, ResetPassword, SeekerDashboard, EmployerDashboard
+2. Remove duplicate OG/Twitter meta tags from bottom of `index.html`
+3. Fix `twitter:site` to correct brand handle
+4. Fix empty `alt=""` on company logos → use company name
+5. Translate 404 page to Bengali, add Header/Footer
+
+### Phase 2 — Structured Data
+6. Add Article JSON-LD to BlogPost.tsx
+7. Add BreadcrumbList JSON-LD to JobDetail and BlogPost
+8. Add ItemList JSON-LD to Jobs listing page
+9. Add Organization JSON-LD to CompanyProfile
+
+### Phase 3 — Dynamic Sitemap
+10. Create an edge function `sitemap/index.ts` that queries jobs, blog posts, and companies to generate a dynamic sitemap.xml
+11. Update robots.txt to point to the edge function URL
+
+### Technical Details
+
+**Files to modify:**
+- `index.html` — Remove duplicate meta, fix twitter:site
+- `src/pages/NotFound.tsx` — Add SeoHead, Bengali text, Header/Footer
+- `src/pages/PostJob.tsx` — Add `<SeoHead noIndex />`
+- `src/pages/Dashboard.tsx` — Add `<SeoHead noIndex />`
+- `src/pages/Install.tsx` — Add `<SeoHead title="অ্যাপ ইনস্টল করুন" />`
+- `src/pages/ResetPassword.tsx` — Add `<SeoHead noIndex />`
+- `src/pages/BlogPost.tsx` — Add Article JSON-LD
+- `src/pages/JobDetail.tsx` — Add BreadcrumbList JSON-LD, fix logo alt
+- `src/pages/Jobs.tsx` — Add ItemList JSON-LD
+- `src/pages/CompanyProfile.tsx` — Add Organization JSON-LD
+
+**New files:**
+- `supabase/functions/sitemap/index.ts` — Dynamic sitemap generator
+
+**No database changes needed.**
 
