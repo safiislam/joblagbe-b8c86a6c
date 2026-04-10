@@ -267,8 +267,8 @@ const PostJob = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <div className="container max-w-2xl py-8">
-        <h1 className="text-2xl font-bold md:text-3xl">Post a Job</h1>
-        <p className="mt-1 text-muted-foreground">Fill in the details to publish your job listing</p>
+        <h1 className="text-2xl font-bold md:text-3xl">চাকরি পোস্ট করুন</h1>
+        <p className="mt-1 text-muted-foreground">আপনার চাকরির বিজ্ঞপ্তি প্রকাশ করুন</p>
 
         <Alert className="mt-4 border-accent/30 bg-accent/5">
           <AlertTriangle className="h-4 w-4 text-accent" />
