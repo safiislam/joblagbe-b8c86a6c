@@ -326,6 +326,10 @@ const Ebooks = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SeoHead
+        title="ই-বুক ও বই সমূহ"
+        description="ক্যারিয়ার গাইড, চাকরির প্রস্তুতি এবং স্কিল ডেভেলপমেন্ট বই ডাউনলোড করুন Job লাগবে থেকে।"
+      />
       <Header />
       <div className="container py-10">
         {/* Hero */}
