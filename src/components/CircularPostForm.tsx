@@ -121,7 +121,7 @@ const CircularPostForm = ({ companyId, onSuccess, isFree, effectivePrice, onPaym
     const { error } = await supabase.from("jobs").insert({
       company_id: companyId,
       title: title.trim(),
-      location: "বাংলাদেশ",
+      location: locations.length > 0 ? locations.join(", ") : "বাংলাদেশ",
       description: `সার্কুলার বিজ্ঞপ্তি: ${title.trim()}`,
       category_id: categoryId || null,
       application_deadline: deadline ? deadline.toISOString() : null,
