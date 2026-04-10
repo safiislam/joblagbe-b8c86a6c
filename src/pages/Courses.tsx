@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import SeoHead from "@/components/SeoHead";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useQuery } from "@tanstack/react-query";
@@ -97,6 +98,10 @@ const Courses = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SeoHead
+        title="কোর্স সমূহ — ক্যারিয়ার গড়ার দরকারি কোর্স"
+        description="অনলাইন ও অফলাইন কোর্স খুঁজুন। ফ্রিল্যান্সিং, আইটি, ডিজাইন ও আরো অনেক কোর্স Job লাগবে-তে।"
+      />
       <Header />
       <div className="container py-10">
         <div className="text-center mb-8">

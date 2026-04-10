@@ -1,3 +1,4 @@
+import SeoHead from "@/components/SeoHead";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useQuery } from "@tanstack/react-query";
@@ -118,6 +119,10 @@ const Jobs = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SeoHead
+        title="সকল নিয়োগ বিজ্ঞপ্তি — সরকারি ও বেসরকারি চাকরি"
+        description="বাংলাদেশের সরকারি-বেসরকারি সকল চাকরির বিজ্ঞপ্তি খুঁজুন। ফুলটাইম, পার্টটাইম, রিমোট চাকরি এক জায়গায়।"
+      />
       <Header />
       <div className="container py-10">
         <div className="text-center mb-8">

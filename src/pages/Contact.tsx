@@ -1,4 +1,5 @@
 import { useState } from "react";
+import SeoHead from "@/components/SeoHead";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -71,6 +72,10 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SeoHead
+        title="যোগাযোগ করুন"
+        description="Job লাগবে টিমের সাথে যোগাযোগ করুন। আমরা আপনাকে সাহায্য করতে প্রস্তুত।"
+      />
       <Header />
       <main className="container mx-auto px-4 py-10 max-w-4xl">
         <div className="text-center mb-10">

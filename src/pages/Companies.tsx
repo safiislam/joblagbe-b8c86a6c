@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import SeoHead from "@/components/SeoHead";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useQuery } from "@tanstack/react-query";
@@ -20,6 +21,10 @@ const Companies = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SeoHead
+        title="কোম্পানি সমূহ"
+        description="Job লাগবে-তে নিয়োগদাতা কোম্পানির তালিকা দেখুন। বাংলাদেশের বিশ্বস্ত প্রতিষ্ঠানগুলোতে চাকরি খুঁজুন।"
+      />
       <Header />
       <div className="container py-10">
         <div className="text-center mb-10">

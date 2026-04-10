@@ -1,4 +1,5 @@
 import { useState } from "react";
+import SeoHead from "@/components/SeoHead";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -107,6 +108,7 @@ const PrivacyPolicy = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SeoHead title="গোপনীয়তা নীতি" description="Job লাগবে-এর গোপনীয়তা নীতি। আমরা কীভাবে আপনার তথ্য সংগ্রহ ও ব্যবহার করি জানুন।" />
       <Header />
       <main className="container max-w-3xl py-10 md:py-16">
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
