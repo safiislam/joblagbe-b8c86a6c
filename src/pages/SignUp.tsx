@@ -35,6 +35,12 @@ const SignUp = () => {
       return;
     }
 
+    const trimmedNid = nidNumber.replace(/\s/g, "");
+    if (!trimmedNid || !/^\d{10}(\d{3}|\d{7})?$/.test(trimmedNid)) {
+      toast.error("সঠিক NID নম্বর দিন (১০, ১৩ অথবা ১৭ ডিজিট)");
+      return;
+    }
+
     const trimmed = email.trim();
     if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
       toast.error("Please enter a valid email address.");
@@ -55,6 +61,11 @@ const SignUp = () => {
       toast.error(error.message);
       setLoading(false);
       return;
+    }
+
+    // Save NID to profile
+    if (data?.user) {
+      await supabase.from("profiles").update({ nid_number: trimmedNid } as any).eq("user_id", data.user.id);
     }
 
     toast.success("Account created! Check your email to confirm.");
