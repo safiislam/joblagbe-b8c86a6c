@@ -22,6 +22,7 @@ type Profile = {
   created_at: string;
   avatar_url: string | null;
   resume_url: string | null;
+  nid_number: string | null;
 };
 
 const DashboardUsers = () => {
@@ -37,7 +38,7 @@ const DashboardUsers = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("profiles")
-        .select("id, full_name, role, phone, user_id, created_at, avatar_url, resume_url")
+        .select("id, full_name, role, phone, user_id, created_at, avatar_url, resume_url, nid_number")
         .order("created_at", { ascending: false })
         .limit(500);
       return (data ?? []) as Profile[];
