@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import Header from "@/components/Header";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Clock, AlertTriangle, Upload, Building2, CalendarIcon, Tag, Gift } from "lucide-react";
+import { Clock, AlertTriangle, Upload, Building2, CalendarIcon, Tag, Gift, FileText, Image } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
