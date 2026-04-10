@@ -319,7 +319,7 @@ const JobDetail = () => {
             <div className="flex items-start gap-4">
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-muted">
                 {company?.logo_url ? (
-                  <img src={company.logo_url} alt="" className="h-8 w-8 rounded object-contain" />
+                  <img src={company.logo_url} alt={company?.name ? `${company.name} logo` : "Company logo"} className="h-8 w-8 rounded object-contain" />
                 ) : (
                   <Building2 className="h-6 w-6 text-muted-foreground" />
                 )}
@@ -353,7 +353,7 @@ const JobDetail = () => {
                   >
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10">
                       {(sj.companies as any)?.logo_url ? (
-                        <img src={(sj.companies as any).logo_url} alt="" className="h-7 w-7 rounded object-contain" />
+                        <img src={(sj.companies as any).logo_url} alt={company?.name ? `${company.name} logo` : "Company logo"} className="h-7 w-7 rounded object-contain" />
                       ) : (
                         <Building2 className="h-5 w-5 text-primary" />
                       )}
@@ -422,7 +422,7 @@ const JobDetail = () => {
                 <div className="flex items-start gap-4">
                   <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-primary/10">
                     {company?.logo_url ? (
-                      <img src={company.logo_url} alt="" className="h-10 w-10 rounded-lg object-contain" />
+                      <img src={company.logo_url} alt={company?.name ? `${company.name} logo` : "Company logo"} className="h-10 w-10 rounded-lg object-contain" />
                     ) : (
                       <Building2 className="h-7 w-7 text-primary" />
                     )}
@@ -662,7 +662,7 @@ const JobDetail = () => {
               <Link to={`/company/${job.company_id}`} className="flex items-center gap-3 mb-4 group">
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10">
                   {company?.logo_url ? (
-                    <img src={company.logo_url} alt="" className="h-8 w-8 rounded-lg object-contain" />
+                    <img src={company.logo_url} alt={company?.name ? `${company.name} logo` : "Company logo"} className="h-8 w-8 rounded-lg object-contain" />
                   ) : (
                     <Building2 className="h-6 w-6 text-primary" />
                   )}
