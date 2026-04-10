@@ -180,6 +180,10 @@ const SignUp = () => {
                 <Label htmlFor="password">Password</Label>
                 <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} placeholder="Min 6 characters" className="mt-1.5 rounded-xl" />
               </div>
+              <div>
+                <Label htmlFor="nid">NID Number <span className="text-destructive">*</span></Label>
+                <Input id="nid" type="text" inputMode="numeric" value={nidNumber} onChange={(e) => setNidNumber(e.target.value.replace(/[^\d]/g, ""))} required placeholder="১০/১৩/১৭ ডিজিট NID নম্বর" className="mt-1.5 rounded-xl" />
+              </div>
               {/* Terms agreement */}
               <div className="flex items-start gap-2.5">
                 <Checkbox
@@ -206,6 +210,10 @@ const SignUp = () => {
               <div>
                 <Label htmlFor="fullNamePhone">Full Name</Label>
                 <Input id="fullNamePhone" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Your full name" className="mt-1.5 rounded-xl" />
+              </div>
+              <div>
+                <Label htmlFor="nidPhone">NID Number <span className="text-destructive">*</span></Label>
+                <Input id="nidPhone" type="text" inputMode="numeric" value={nidNumber} onChange={(e) => setNidNumber(e.target.value.replace(/[^\d]/g, ""))} placeholder="১০/১৩/১৭ ডিজিট NID নম্বর" className="mt-1.5 rounded-xl" />
               </div>
               {/* Terms agreement */}
               <div className="flex items-start gap-2.5">
