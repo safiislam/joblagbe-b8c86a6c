@@ -94,6 +94,32 @@ const JobDetail = () => {
     enabled: !!user && showApplyForm,
   });
 
+  // Check if job is expired/inactive
+  const isExpired = job ? (!job.is_active || (job.application_deadline && new Date(job.application_deadline) < new Date())) : false;
+
+  // Fetch similar active jobs when the current job is expired
+  const { data: similarJobs } = useQuery({
+    queryKey: ["similar-jobs", job?.category_id, job?.id],
+    queryFn: async () => {
+      let query = supabase
+        .from("jobs")
+        .select("id, title, location, job_type, salary_min, salary_max, created_at, tag, companies(name, logo_url, is_verified)")
+        .eq("is_active", true)
+        .eq("is_approved", true)
+        .neq("id", job!.id)
+        .order("created_at", { ascending: false })
+        .limit(5);
+
+      if (job?.category_id) {
+        query = query.eq("category_id", job.category_id);
+      }
+
+      const { data } = await query;
+      return data ?? [];
+    },
+    enabled: !!job && !!isExpired,
+  });
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
