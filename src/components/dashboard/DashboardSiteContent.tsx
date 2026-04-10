@@ -255,9 +255,10 @@ const DashboardSiteContent = () => {
                 </div>
                 <Input placeholder="Title" value={item.title || ""} onChange={(e) => updateNestedField("services", "items", i, "title", e.target.value)} />
                 <Textarea placeholder="Description" value={item.desc || ""} onChange={(e) => updateNestedField("services", "items", i, "desc", e.target.value)} />
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   <Input placeholder="Icon (e.g. ScrollText)" value={item.icon || ""} onChange={(e) => updateNestedField("services", "items", i, "icon", e.target.value)} />
                   <Input placeholder="Cost" value={item.cost || ""} onChange={(e) => updateNestedField("services", "items", i, "cost", e.target.value)} />
+                  <Input placeholder="Button Text (e.g. Order Now)" value={item.cta || ""} onChange={(e) => updateNestedField("services", "items", i, "cta", e.target.value)} />
                 </div>
                 <div>
                   <Label className="text-xs">Features (comma-separated)</Label>

@@ -22,7 +22,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const iconMap: Record<string, LucideIcon> = { ScrollText, FileText, Megaphone };
 
-type ServiceItem = { title: string; desc: string; icon: string; features: string[]; cost: string };
+type ServiceItem = { title: string; desc: string; icon: string; features: string[]; cost: string; cta?: string };
 type ServicesData = { title: string; subtitle: string; items: ServiceItem[] };
 
 type ServicesSectionProps = {
@@ -161,7 +161,7 @@ const ServicesSection = ({ contentLoading = false }: ServicesSectionProps) => {
           <div className="flex items-center justify-between pt-2">
             <span className="text-sm font-semibold font-bangla">{detailService?.cost}</span>
             <Button size="sm" className="text-xs h-8" onClick={() => detailService && openOrder(detailService)}>
-              Order Now
+              {detailService?.cta || "Order Now"}
             </Button>
           </div>
         </DialogContent>
