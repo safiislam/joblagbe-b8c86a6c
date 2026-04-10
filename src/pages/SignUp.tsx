@@ -1,4 +1,5 @@
 import { useState } from "react";
+import SeoHead from "@/components/SeoHead";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -87,6 +88,7 @@ const SignUp = () => {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-primary/5 to-background px-4 py-8">
+      <SeoHead title="রেজিস্ট্রেশন" noIndex />
       <div className="w-full max-w-md rounded-2xl border bg-card p-8 shadow-elevated">
         <div className="mb-6 flex flex-col items-center text-center">
           <Link to="/">

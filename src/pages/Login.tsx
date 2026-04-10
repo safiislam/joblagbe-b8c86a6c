@@ -71,6 +71,7 @@ const Login = () => {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-primary/5 to-background px-4">
+      <SeoHead title="লগইন" noIndex />
       <div className="w-full max-w-md rounded-2xl border bg-card p-8 shadow-elevated">
         <div className="mb-8 flex flex-col items-center text-center">
           <Link to="/">
