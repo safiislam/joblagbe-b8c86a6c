@@ -32,6 +32,7 @@ const CircularPostForm = ({ companyId, onSuccess, isFree, effectivePrice, onPaym
   const [title, setTitle] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [sourceUrl, setSourceUrl] = useState("");
+  const [locations, setLocations] = useState<string[]>([]);
   const [deadline, setDeadline] = useState<Date | undefined>(undefined);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
