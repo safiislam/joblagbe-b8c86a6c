@@ -335,8 +335,9 @@ const JobBoard = () => {
                   )}
                 </div>
               )}
-            </div>
           </div>
+        )}
+
         <div className="mt-10 text-center">
           <Button variant="outline" className="gap-2 rounded-lg border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground px-6" asChild>
             <Link to="/jobs">
