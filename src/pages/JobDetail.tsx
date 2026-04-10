@@ -1,3 +1,4 @@
+import SeoHead from "@/components/SeoHead";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useParams, useNavigate, Link } from "react-router-dom";
