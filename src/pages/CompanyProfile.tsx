@@ -43,6 +43,16 @@ const CompanyProfile = () => {
         title={company?.name ? `${company.name} — কোম্পানি প্রোফাইল` : "কোম্পানি প্রোফাইল"}
         description={company?.description?.slice(0, 155) || `${company?.name || ""} কোম্পানির প্রোফাইল এবং চাকরির বিজ্ঞপ্তি দেখুন Job লাগবে-তে।`}
         ogImage={company?.logo_url || undefined}
+        jsonLd={company ? {
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: company.name,
+          ...(company.description && { description: company.description }),
+          ...(company.logo_url && { logo: company.logo_url }),
+          ...(company.website && { url: company.website.startsWith("http") ? company.website : `https://${company.website}` }),
+          ...(company.location && { address: { "@type": "PostalAddress", addressLocality: company.location, addressCountry: "BD" } }),
+          ...(company.phone && { telephone: company.phone }),
+        } : undefined}
       />
       <Header />
       <div className="container py-8">

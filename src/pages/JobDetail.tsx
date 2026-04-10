@@ -390,6 +390,17 @@ const JobDetail = () => {
         title={`${job.title} — ${company?.name || "চাকরি"}`}
         description={`${job.title} পদে ${company?.name || ""} কোম্পানিতে চাকরির সুযোগ। লোকেশন: ${job.location}। বেতন: ${formatSalary(job.salary_min, job.salary_max)}।`}
         ogImage={company?.logo_url || undefined}
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "হোম", item: "https://www.joblagbe.bd/" },
+              { "@type": "ListItem", position: 2, name: "চাকরি", item: "https://www.joblagbe.bd/jobs" },
+              { "@type": "ListItem", position: 3, name: job.title },
+            ],
+          },
+        ]}
       />
       {jobJsonLd && (
         <script

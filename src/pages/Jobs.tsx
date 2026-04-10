@@ -122,6 +122,16 @@ const Jobs = () => {
       <SeoHead
         title="সকল নিয়োগ বিজ্ঞপ্তি — সরকারি ও বেসরকারি চাকরি"
         description="বাংলাদেশের সরকারি-বেসরকারি সকল চাকরির বিজ্ঞপ্তি খুঁজুন। ফুলটাইম, পার্টটাইম, রিমোট চাকরি এক জায়গায়।"
+        jsonLd={jobs.length > 0 ? {
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          itemListElement: jobs.slice(0, 10).map((j: any, i: number) => ({
+            "@type": "ListItem",
+            position: i + 1,
+            url: `https://www.joblagbe.bd/jobs/${j.id}`,
+            name: j.title,
+          })),
+        } : undefined}
       />
       <Header />
       <div className="container py-10">

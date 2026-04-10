@@ -51,6 +51,17 @@ const BlogPost = () => {
         description={post?.excerpt || undefined}
         ogImage={post?.cover_image_url || undefined}
         ogType="article"
+        jsonLd={post ? [
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "হোম", item: "https://www.joblagbe.bd/" },
+              { "@type": "ListItem", position: 2, name: "ব্লগ", item: "https://www.joblagbe.bd/blog" },
+              { "@type": "ListItem", position: 3, name: post.title },
+            ],
+          },
+        ] : undefined}
       />
       <Header />
       <div className="container max-w-3xl py-8 px-4 sm:px-6">
