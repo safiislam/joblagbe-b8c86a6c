@@ -7,7 +7,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -15,7 +15,8 @@ import SaveJobButton from "@/components/SaveJobButton";
 import ShareJobButton from "@/components/ShareJobButton";
 import {
   MapPin, Briefcase, Clock, Banknote, Building2, Phone, Globe,
-  ArrowLeft, CheckCircle2, FileText, Loader2, Upload, File, ExternalLink
+  ArrowLeft, CheckCircle2, FileText, Loader2, Upload, File, ExternalLink,
+  AlertTriangle
 } from "lucide-react";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import JobFraudWarning from "@/components/JobFraudWarning";
