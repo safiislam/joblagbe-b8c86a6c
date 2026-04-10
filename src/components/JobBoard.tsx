@@ -296,34 +296,30 @@ const JobBoard = () => {
 
         {/* Loading skeleton */}
         {isLoading ? (
-          <div className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
-            <div className="space-y-3">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="flex gap-3.5 rounded-xl border p-4">
-                  <div className="h-11 w-11 animate-pulse rounded-lg bg-muted" />
-                  <div className="flex-1 space-y-2.5">
-                    <div className="h-4 w-3/4 animate-pulse rounded bg-muted" />
-                    <div className="h-3 w-1/3 animate-pulse rounded bg-muted" />
-                    <div className="h-5 w-16 animate-pulse rounded-md bg-muted" />
-                    <div className="h-3 w-2/3 animate-pulse rounded bg-muted" />
-                  </div>
+          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="flex gap-3.5 rounded-xl border p-4">
+                <div className="h-11 w-11 animate-pulse rounded-lg bg-muted" />
+                <div className="flex-1 space-y-2.5">
+                  <div className="h-4 w-3/4 animate-pulse rounded bg-muted" />
+                  <div className="h-3 w-1/3 animate-pulse rounded bg-muted" />
+                  <div className="h-5 w-16 animate-pulse rounded-md bg-muted" />
+                  <div className="h-3 w-2/3 animate-pulse rounded bg-muted" />
                 </div>
-              ))}
-            </div>
-            <div className="hidden h-[500px] animate-pulse rounded-xl border bg-muted/30 lg:block" />
+              </div>
+            ))}
           </div>
         ) : (
-          <div className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
-            {/* Job list */}
-            <div className="space-y-2.5">
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {jobs?.map((job) => (
-                <JobCard
-                  key={job.id}
-                  job={job}
-                  isSelected={selectedJob?.id === job.id}
-                  onClick={() => setSelectedJob(job)}
-                  savedJobIds={savedJobIds}
-                />
+                <Link key={job.id} to={`/jobs/${job.id}`} className="block">
+                  <JobCard
+                    job={job}
+                    isSelected={false}
+                    onClick={() => {}}
+                    savedJobIds={savedJobIds}
+                  />
+                </Link>
               ))}
               {jobs?.length === 0 && (
                 <div className="flex flex-col items-center py-20 text-muted-foreground">
@@ -339,193 +335,6 @@ const JobBoard = () => {
                   )}
                 </div>
               )}
-            </div>
-
-            {/* Desktop detail panel */}
-            <div className="hidden rounded-xl border bg-card lg:block sticky top-20 self-start overflow-hidden">
-              {selectedJob ? (
-                <div className="max-h-[680px] overflow-y-auto">
-                  {/* Header */}
-                  <div className="border-b p-5 pb-4">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex gap-3.5">
-                        {selectedJob.companies?.logo_url ? (
-                          <img src={optimizeStorageImage(selectedJob.companies.logo_url, { width: 112, height: 112 })} alt="" className="h-12 w-12 rounded-lg border bg-background object-cover shrink-0" width={48} height={48} loading="lazy" decoding="async" />
-                        ) : (
-                          <div className="flex h-12 w-12 items-center justify-center rounded-lg border bg-muted/50 shrink-0">
-                            <Building2 className="h-5 w-5 text-muted-foreground/60" />
-                          </div>
-                        )}
-                        <div className="min-w-0">
-                          <h3 className="text-lg font-bold leading-tight">{selectedJob.title}</h3>
-                          <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
-                            <Link to={`/company/${selectedJob.company_id}`} className="hover:text-primary font-medium transition-colors inline-flex items-center gap-1">
-                              {selectedJob.companies?.name}
-                              {selectedJob.companies?.is_verified && <VerifiedBadge className="h-3.5 w-3.5" />}
-                            </Link>
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-0.5 shrink-0">
-                        <SaveJobButton jobId={selectedJob.id} saved={savedJobIds?.has(selectedJob.id)} />
-                        <ShareJobButton jobTitle={selectedJob.title} jobId={selectedJob.id} />
-                        <button
-                          onClick={() => setSelectedJob(null)}
-                          className="ml-0.5 rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                          title="বন্ধ করুন"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Info pills */}
-                    <div className="mt-3 flex flex-wrap gap-1.5">
-                      <span className={`inline-flex items-center rounded-md px-2.5 py-1 text-xs font-semibold ${typeColorMap[selectedJob.job_type] || "bg-secondary"}`}>
-                        {selectedJob.job_type}
-                      </span>
-                      <span className="inline-flex items-center gap-1 rounded-md bg-secondary px-2.5 py-1 text-xs font-medium text-foreground/70">
-                        <Banknote className="h-3 w-3" />
-                        {formatSalary(selectedJob.salary_min, selectedJob.salary_max)}
-                      </span>
-                      <span className="inline-flex items-center gap-1 rounded-md bg-secondary px-2.5 py-1 text-xs text-muted-foreground">
-                        <MapPin className="h-3 w-3" />
-                        {selectedJob.location}
-                      </span>
-                      <span className="inline-flex items-center gap-1 rounded-md bg-secondary px-2.5 py-1 text-xs text-muted-foreground">
-                        <Clock className="h-3 w-3" />
-                        {formatDistanceToNow(new Date(selectedJob.created_at), { addSuffix: true })}
-                      </span>
-                      {(() => { const dt = getJobDisplayTag(selectedJob.tag, selectedJob.created_at); return dt ? (
-                        <span className={`inline-flex items-center rounded-md px-2.5 py-1 text-xs font-bold ${
-                          dt === "Urgent"
-                            ? "bg-destructive/10 text-destructive"
-                            : "bg-accent/15 text-accent"
-                        }`}>
-                          {dt}
-                        </span>
-                      ) : null; })()}
-                      {selectedJob.application_deadline && (
-                        <span className={`inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-semibold ${
-                          new Date(selectedJob.application_deadline) < new Date() ? "bg-destructive/10 text-destructive" : "bg-accent/10 text-accent"
-                        }`}>
-                          <CalendarDays className="h-3 w-3" />
-                          ডেডলাইন: {format(new Date(selectedJob.application_deadline), "dd MMM yyyy")}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Content */}
-                  <div className="p-5 space-y-5">
-                    <div>
-                      <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/80 mb-2.5">Job Description</h4>
-                      <p className="text-sm leading-relaxed text-foreground/80 whitespace-pre-line">{selectedJob.description}</p>
-                    </div>
-                    {selectedJob.requirements && selectedJob.requirements.length > 0 && (
-                      <div>
-                        <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/80 mb-2.5">Requirements</h4>
-                        <ul className="space-y-1.5">
-                          {selectedJob.requirements.map((r, i) => (
-                            <li key={i} className="flex items-start gap-2 text-sm text-foreground/80">
-                              <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-primary" />
-                              {r}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                    <JobFraudWarning />
-                    <div className="flex items-center gap-2.5 pt-1">
-                      {!selectedJob.hide_apply && (
-                        <Button
-                          onClick={() => handleApply(selectedJob.id)}
-                          className="bg-accent text-accent-foreground hover:bg-accent/90 px-6 font-semibold rounded-lg gap-2"
-                        >
-                          Apply Now <ArrowRight className="h-4 w-4" />
-                        </Button>
-                      )}
-                      <Button variant="outline" className="rounded-lg" asChild>
-                        <Link to={`/jobs/${selectedJob.id}`}>View Full Details</Link>
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex h-full min-h-[440px] flex-col items-center justify-center p-8">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10">
-                    <Briefcase className="h-7 w-7 text-primary/40" />
-                  </div>
-                  <p className="mt-4 font-semibold text-foreground/50">Select a job to view details</p>
-                  <p className="mt-1 text-sm text-muted-foreground/60">Click on any job card from the list</p>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Mobile detail modal */}
-        {selectedJob && (
-          <div className="fixed inset-0 z-50 flex items-end bg-foreground/40 backdrop-blur-sm lg:hidden" onClick={() => setSelectedJob(null)}>
-            <div className="relative max-h-[85vh] w-full overflow-y-auto rounded-t-2xl bg-card p-5" onClick={(e) => e.stopPropagation()}>
-              <div className="flex items-center justify-between mb-4">
-                <div className="mx-auto h-1 w-10 rounded-full bg-border" />
-                <button
-                  onClick={() => setSelectedJob(null)}
-                  className="absolute right-4 top-4 rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-              <div className="flex items-start gap-3">
-                {selectedJob.companies?.logo_url ? (
-                  <img src={optimizeStorageImage(selectedJob.companies.logo_url, { width: 96, height: 96 })} alt="" className="h-11 w-11 rounded-lg border object-cover" width={44} height={44} loading="lazy" />
-                ) : (
-                  <div className="flex h-11 w-11 items-center justify-center rounded-lg border bg-muted/50">
-                    <Building2 className="h-5 w-5 text-muted-foreground/60" />
-                  </div>
-                )}
-                <div>
-                  <h3 className="text-lg font-bold leading-tight">{selectedJob.title}</h3>
-                  <p className="text-sm text-muted-foreground inline-flex items-center gap-1">{selectedJob.companies?.name} {selectedJob.companies?.is_verified && <VerifiedBadge className="h-3.5 w-3.5" />}</p>
-                </div>
-              </div>
-              <div className="mt-3 flex flex-wrap gap-1.5">
-                <span className={`rounded-md px-2.5 py-1 text-xs font-semibold ${typeColorMap[selectedJob.job_type] || "bg-secondary"}`}>
-                  {selectedJob.job_type}
-                </span>
-                <span className="inline-flex items-center gap-1 rounded-md bg-secondary px-2.5 py-1 text-xs font-medium">
-                  <Banknote className="h-3 w-3" />
-                  {formatSalary(selectedJob.salary_min, selectedJob.salary_max)}
-                </span>
-                <span className="inline-flex items-center gap-1 rounded-md bg-secondary px-2.5 py-1 text-xs text-muted-foreground">
-                  <MapPin className="h-3 w-3" />
-                  {selectedJob.location}
-                </span>
-              </div>
-              <p className="mt-4 text-sm leading-relaxed text-muted-foreground whitespace-pre-line">{selectedJob.description}</p>
-              {selectedJob.requirements && selectedJob.requirements.length > 0 && (
-                <ul className="mt-4 space-y-1.5">
-                  {selectedJob.requirements.map((r, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
-                      <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-primary" />
-                      {r}
-                    </li>
-                  ))}
-                </ul>
-              )}
-              <JobFraudWarning className="mt-4" />
-              <div className="mt-5 flex gap-2.5">
-                {!selectedJob.hide_apply && (
-                  <Button onClick={() => handleApply(selectedJob.id)} className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90 font-semibold rounded-lg gap-2">
-                    Apply Now <ArrowRight className="h-4 w-4" />
-                  </Button>
-                )}
-                <Button variant="outline" className="rounded-lg flex-1" asChild>
-                  <Link to={`/jobs/${selectedJob.id}`}>Details</Link>
-                </Button>
-              </div>
-            </div>
           </div>
         )}
 
