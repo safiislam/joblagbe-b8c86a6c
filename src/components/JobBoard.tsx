@@ -37,6 +37,9 @@ type JobRow = {
   company_id: string;
   hide_apply: boolean;
   application_deadline: string | null;
+  post_type?: string | null;
+  circular_image_url?: string | null;
+  source_url?: string | null;
   companies: { name: string; location: string | null; logo_url: string | null; is_verified: boolean } | null;
 };
 
@@ -69,6 +72,7 @@ const JobCard = ({
   savedJobIds?: Set<string>;
 }) => {
   const displayTag = getJobDisplayTag(job.tag, job.created_at);
+  const isCircular = job.post_type === "circular" && !!job.circular_image_url;
 
   return (
     <button
@@ -87,6 +91,23 @@ const JobCard = ({
             : "bg-accent text-accent-foreground"
         }`}>
           {displayTag}
+        </div>
+      )}
+
+      {isCircular && (
+        <div className="mb-3 -mx-1 overflow-hidden rounded-lg border bg-secondary/30">
+          <img
+            src={optimizeStorageImage(job.circular_image_url!, { width: 800 })}
+            alt={job.title}
+            className="w-full max-h-48 object-contain bg-background"
+            loading="lazy"
+            decoding="async"
+          />
+          <div className="absolute top-2 left-2">
+            <span className="rounded-md bg-primary/90 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary-foreground">
+              সার্কুলার
+            </span>
+          </div>
         </div>
       )}
 
