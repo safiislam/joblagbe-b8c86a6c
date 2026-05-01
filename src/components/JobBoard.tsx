@@ -95,7 +95,7 @@ const JobCard = ({
       )}
 
       {isCircular && (
-        <div className="mb-3 -mx-1 overflow-hidden rounded-lg border bg-secondary/30">
+        <div className="relative mb-3 -mx-1 overflow-hidden rounded-lg border bg-secondary/30">
           <img
             src={optimizeStorageImage(job.circular_image_url!, { width: 800 })}
             alt={job.title}
