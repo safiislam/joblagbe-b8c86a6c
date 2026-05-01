@@ -17,6 +17,7 @@ type AdminJob = {
   salary_min: number | null; salary_max: number | null;
   application_deadline: string | null; source_url: string | null;
   requirements: string[] | null;
+  post_type: string | null; circular_image_url: string | null;
   companies: { name: string; logo_url: string | null; is_verified: boolean; phone: string | null; website: string | null } | null;
   categories: { name: string } | null;
 };
@@ -37,7 +38,7 @@ const DashboardJobs = () => {
   const { data: adminJobs, isLoading } = useQuery({
     queryKey: ["admin-jobs", jobTab],
     queryFn: async () => {
-      let query = supabase.from("jobs").select("id, title, location, job_type, is_active, is_approved, created_at, description, tag, hide_apply, salary_min, salary_max, application_deadline, source_url, requirements, companies(name, logo_url, is_verified, phone, website), categories(name)").order("created_at", { ascending: false }).limit(50);
+      let query = supabase.from("jobs").select("id, title, location, job_type, is_active, is_approved, created_at, description, tag, hide_apply, salary_min, salary_max, application_deadline, source_url, requirements, post_type, circular_image_url, companies(name, logo_url, is_verified, phone, website), categories(name)").order("created_at", { ascending: false }).limit(50);
       if (jobTab === "pending") query = query.eq("is_approved", false).eq("is_active", true);
       if (jobTab === "approved") query = query.eq("is_approved", true);
       const { data } = await query;
@@ -122,6 +123,9 @@ const DashboardJobs = () => {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="font-semibold text-sm">{job.title}</h3>
+                    {job.post_type === "circular" && (
+                      <Badge className="text-[10px] bg-primary/10 text-primary border-primary/20">সার্কুলার</Badge>
+                    )}
                     {!job.is_approved && job.is_active && <Badge variant="outline" className="border-accent text-accent text-[10px]">Pending</Badge>}
                     {job.is_approved && <Badge variant="outline" className="border-success text-success text-[10px]">Live</Badge>}
                     {!job.is_active && <Badge variant="outline" className="border-destructive text-destructive text-[10px]">Rejected</Badge>}
@@ -176,6 +180,17 @@ const DashboardJobs = () => {
               </div>
               {expandedJob === job.id && (
                 <div className="mt-3 rounded-xl border bg-card p-5 space-y-4">
+                  {/* Circular Image */}
+                  {job.post_type === "circular" && job.circular_image_url && (
+                    <div className="overflow-hidden rounded-xl border bg-secondary/30">
+                      <img
+                        src={job.circular_image_url}
+                        alt={`${job.title} circular`}
+                        className="w-full max-h-[500px] object-contain bg-background"
+                        loading="lazy"
+                      />
+                    </div>
+                  )}
                   {/* Company & Meta Info */}
                   <div className="flex flex-wrap gap-4 items-start">
                     {job.companies?.logo_url && (

@@ -94,8 +94,11 @@ const JobDetail = () => {
     enabled: !!user && showApplyForm,
   });
 
-  // Check if job is expired/inactive
-  const isExpired = job ? (!job.is_active || (job.application_deadline && new Date(job.application_deadline) < new Date())) : false;
+  // Check if job is expired/inactive (circular posts remain viewable even after deadline)
+  const isCircular = (job as any)?.post_type === "circular";
+  const isExpired = job ? (
+    !isCircular && (!job.is_active || (job.application_deadline && new Date(job.application_deadline) < new Date()))
+  ) : false;
 
   // Fetch similar active jobs when the current job is expired
   const { data: similarJobs } = useQuery({
@@ -478,6 +481,16 @@ const JobDetail = () => {
 
             <div className="rounded-2xl border bg-card p-6 shadow-card">
               <h2 className="text-lg font-bold font-bangla mb-4">বিস্তারিত বিবরণ</h2>
+              {(job as any).circular_image_url && (
+                <div className="mb-5 overflow-hidden rounded-xl border bg-secondary/30">
+                  <img
+                    src={(job as any).circular_image_url}
+                    alt={`${job.title} circular`}
+                    className="w-full object-contain bg-background"
+                    loading="lazy"
+                  />
+                </div>
+              )}
               <div className="prose prose-sm max-w-none text-muted-foreground leading-relaxed whitespace-pre-wrap">
                 {job.description}
               </div>
