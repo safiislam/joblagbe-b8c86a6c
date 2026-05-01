@@ -47,30 +47,74 @@ const SignUp = () => {
       return;
     }
 
-    setLoading(true);
-
-    const { data, error } = await supabase.auth.signUp({
-      email: trimmed,
-      password,
-      options: {
-        data: { full_name: fullName, role },
-        emailRedirectTo: window.location.origin,
-      },
-    });
-    if (error) {
-      toast.error(error.message);
-      setLoading(false);
+    if (!fullName.trim()) {
+      toast.error("Please enter your full name.");
       return;
     }
 
-    // Save NID to profile
-    if (data?.user) {
-      await supabase.from("profiles").update({ nid_number: trimmedNid } as any).eq("user_id", data.user.id);
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters.");
+      return;
     }
 
-    toast.success("Account created! Check your email to confirm.");
-    setLoading(false);
-    navigate("/");
+    setLoading(true);
+
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: trimmed,
+        password,
+        options: {
+          data: { full_name: fullName, role },
+          emailRedirectTo: `${window.location.origin}/`,
+        },
+      });
+
+      if (error) {
+        console.error("Signup error:", error);
+        // Map common errors to user-friendly Bengali messages
+        const msg = error.message.toLowerCase();
+        if (msg.includes("already registered") || msg.includes("already been registered") || msg.includes("user already")) {
+          toast.error("এই ইমেইল ইতিমধ্যে রেজিস্টার করা আছে। লগইন করুন।");
+        } else if (msg.includes("password")) {
+          toast.error("পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।");
+        } else if (msg.includes("invalid") && msg.includes("email")) {
+          toast.error("সঠিক ইমেইল দিন।");
+        } else if (msg.includes("rate") || msg.includes("too many")) {
+          toast.error("অনেকবার চেষ্টা হয়েছে। কিছুক্ষণ পর আবার চেষ্টা করুন।");
+        } else {
+          toast.error(error.message);
+        }
+        setLoading(false);
+        return;
+      }
+
+      if (!data?.user) {
+        toast.error("অ্যাকাউন্ট তৈরিতে সমস্যা হয়েছে। আবার চেষ্টা করুন।");
+        setLoading(false);
+        return;
+      }
+
+      // Save NID to profile (best-effort)
+      try {
+        await supabase.from("profiles").update({ nid_number: trimmedNid } as any).eq("user_id", data.user.id);
+      } catch (e) {
+        console.warn("NID save failed:", e);
+      }
+
+      // If session exists, user is auto-confirmed (e.g. confirm-email disabled)
+      if (data.session) {
+        toast.success("অ্যাকাউন্ট তৈরি হয়েছে! স্বাগতম।");
+        navigate("/");
+      } else {
+        toast.success("✅ অ্যাকাউন্ট তৈরি হয়েছে! আপনার ইমেইল চেক করুন (Spam folder সহ) এবং কনফার্মেশন লিংকে ক্লিক করুন।", { duration: 8000 });
+        navigate("/login");
+      }
+    } catch (err: any) {
+      console.error("Unexpected signup error:", err);
+      toast.error("কিছু সমস্যা হয়েছে। আবার চেষ্টা করুন।");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleGoogleSignUp = async () => {
