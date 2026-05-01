@@ -26,6 +26,7 @@ type EmployerJob = {
   description: string; requirements: string[] | null;
   salary_min: number | null; salary_max: number | null;
   category_id: string | null; application_deadline: string | null;
+  post_type?: string | null; circular_image_url?: string | null;
 };
 
 type ApplicationRow = {
@@ -126,7 +127,7 @@ const EmployerDashboard = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("jobs")
-        .select("id, title, location, job_type, is_active, is_approved, created_at, description, requirements, salary_min, salary_max, category_id, application_deadline")
+        .select("id, title, location, job_type, is_active, is_approved, created_at, description, requirements, salary_min, salary_max, category_id, application_deadline, post_type, circular_image_url")
         .eq("company_id", company!.id)
         .order("created_at", { ascending: false });
       return (data as unknown as EmployerJob[]) ?? [];
@@ -386,13 +387,28 @@ const EmployerDashboard = () => {
                     {myJobs && myJobs.length > 0 ? myJobs.map((job) => (
                       <div key={job.id} className={`p-4 transition-colors hover:bg-secondary/50 ${selectedJobId === job.id ? "bg-primary/5 border-l-2 border-l-primary" : ""}`}>
                         <button onClick={() => setSelectedJobId(job.id)} className="w-full text-left">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <h3 className="font-semibold text-sm">{job.title}</h3>
-                            {!job.is_active && <Badge variant="outline" className="border-destructive text-destructive text-[10px]">Ended</Badge>}
-                            {job.is_active && !job.is_approved && <Badge variant="outline" className="border-accent text-accent text-[10px]">Pending</Badge>}
-                            {job.is_active && job.is_approved && <Badge variant="outline" className="border-success text-success text-[10px]">Live</Badge>}
+                          <div className="flex gap-3">
+                            {job.post_type === "circular" && job.circular_image_url && (
+                              <img
+                                src={job.circular_image_url}
+                                alt={job.title}
+                                className="h-14 w-14 shrink-0 rounded-lg border object-cover bg-secondary/30"
+                                loading="lazy"
+                              />
+                            )}
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <h3 className="font-semibold text-sm">{job.title}</h3>
+                                {job.post_type === "circular" && (
+                                  <Badge className="text-[10px] bg-primary/10 text-primary border-primary/20">সার্কুলার</Badge>
+                                )}
+                                {!job.is_active && <Badge variant="outline" className="border-destructive text-destructive text-[10px]">Ended</Badge>}
+                                {job.is_active && !job.is_approved && <Badge variant="outline" className="border-accent text-accent text-[10px]">Pending</Badge>}
+                                {job.is_active && job.is_approved && <Badge variant="outline" className="border-success text-success text-[10px]">Live</Badge>}
+                              </div>
+                              <p className="mt-0.5 text-xs text-muted-foreground">{job.location} · {job.job_type} · {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}</p>
+                            </div>
                           </div>
-                          <p className="mt-0.5 text-xs text-muted-foreground">{job.location} · {job.job_type} · {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}</p>
                         </button>
                         <div className="mt-2 flex gap-2 flex-wrap">
                           <Button
