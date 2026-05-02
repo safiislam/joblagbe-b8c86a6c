@@ -145,6 +145,11 @@ const JobCard = ({
             <span className={`inline-flex rounded-md px-2 py-0.5 text-[11px] font-semibold ${typeColorMap[job.job_type] || "bg-secondary text-muted-foreground"}`}>
               {job.job_type}
             </span>
+            {isCircular && (
+              <span className="ml-1.5 inline-flex rounded-md bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary">
+                সার্কুলার
+              </span>
+            )}
           </div>
 
           {/* Meta info */}
