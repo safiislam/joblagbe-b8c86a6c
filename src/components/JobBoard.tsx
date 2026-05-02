@@ -72,7 +72,7 @@ const JobCard = ({
   savedJobIds?: Set<string>;
 }) => {
   const displayTag = getJobDisplayTag(job.tag, job.created_at);
-  const isCircular = job.post_type === "circular" && !!job.circular_image_url;
+  const isCircular = job.post_type === "circular";
 
   return (
     <button
@@ -91,23 +91,6 @@ const JobCard = ({
             : "bg-accent text-accent-foreground"
         }`}>
           {displayTag}
-        </div>
-      )}
-
-      {isCircular && (
-        <div className="relative mb-3 -mx-1 overflow-hidden rounded-lg border bg-secondary/30">
-          <img
-            src={optimizeStorageImage(job.circular_image_url!, { width: 800 })}
-            alt={job.title}
-            className="w-full max-h-48 object-contain bg-background"
-            loading="lazy"
-            decoding="async"
-          />
-          <div className="absolute top-2 left-2">
-            <span className="rounded-md bg-primary/90 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary-foreground">
-              সার্কুলার
-            </span>
-          </div>
         </div>
       )}
 
@@ -162,6 +145,11 @@ const JobCard = ({
             <span className={`inline-flex rounded-md px-2 py-0.5 text-[11px] font-semibold ${typeColorMap[job.job_type] || "bg-secondary text-muted-foreground"}`}>
               {job.job_type}
             </span>
+            {isCircular && (
+              <span className="ml-1.5 inline-flex rounded-md bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary">
+                সার্কুলার
+              </span>
+            )}
           </div>
 
           {/* Meta info */}

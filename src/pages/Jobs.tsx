@@ -205,22 +205,13 @@ const Jobs = () => {
                       className="group flex flex-col gap-3 rounded-2xl border bg-card p-5 shadow-card transition-all hover:shadow-elevated hover:border-primary/30 hover:-translate-y-0.5 sm:flex-row sm:items-center sm:justify-between"
                     >
                       <div className="flex items-start gap-4">
-                        {(job as any).post_type === "circular" && (job as any).circular_image_url ? (
-                          <img
-                            src={(job as any).circular_image_url}
-                            alt={job.title}
-                            className="h-20 w-20 sm:h-24 sm:w-24 shrink-0 rounded-xl border object-cover bg-secondary/30"
-                            loading="lazy"
-                          />
-                        ) : (
-                          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10">
-                            {(job.companies as any)?.logo_url ? (
-                              <img src={(job.companies as any).logo_url} alt="" className="h-8 w-8 rounded object-contain" />
-                            ) : (
-                              <Building2 className="h-6 w-6 text-primary" />
-                            )}
-                          </div>
-                        )}
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+                          {(job.companies as any)?.logo_url ? (
+                            <img src={(job.companies as any).logo_url} alt="" className="h-8 w-8 rounded object-contain" />
+                          ) : (
+                            <Building2 className="h-6 w-6 text-primary" />
+                          )}
+                        </div>
                         <div>
                           <h3 className="font-bold text-lg group-hover:text-primary transition-colors">{job.title}</h3>
                           <p className="text-sm text-muted-foreground inline-flex items-center gap-1">
