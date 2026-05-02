@@ -120,7 +120,16 @@ const DashboardJobs = () => {
           {isLoading ? <div className="p-8 text-center text-muted-foreground">Loading...</div> : adminJobs && adminJobs.length > 0 ? adminJobs.map((job) => (
             <div key={job.id} className="p-4">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0 flex gap-3">
+                  {job.post_type === "circular" && job.circular_image_url && (
+                    <img
+                      src={job.circular_image_url}
+                      alt={job.title}
+                      className="h-14 w-14 shrink-0 rounded-lg border object-cover bg-secondary/30"
+                      loading="lazy"
+                    />
+                  )}
+                  <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="font-semibold text-sm">{job.title}</h3>
                     {job.post_type === "circular" && (
@@ -131,6 +140,7 @@ const DashboardJobs = () => {
                     {!job.is_active && <Badge variant="outline" className="border-destructive text-destructive text-[10px]">Rejected</Badge>}
                   </div>
                   <p className="mt-0.5 text-xs text-muted-foreground">{job.companies?.name} · {job.location} · {job.job_type} · {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}</p>
+                  </div>
                 </div>
                 <div className="flex items-center gap-2 shrink-0 flex-wrap">
                   <div className="flex items-center gap-1.5 rounded-md border px-2 py-1">
