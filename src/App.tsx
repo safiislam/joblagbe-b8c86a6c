@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { lazy, Suspense } from "react";
 import { MobileBottomNav } from "@/components/Header";
+import ChunkErrorBoundary from "@/components/ChunkErrorBoundary";
 
 import Index from "./pages/Index";
 
@@ -59,7 +60,14 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Suspense fallback={<div className="min-h-screen bg-background" />}>
+          <ChunkErrorBoundary>
+          <Suspense
+            fallback={
+              <div className="min-h-screen bg-background flex items-center justify-center">
+                <div className="h-10 w-10 rounded-full border-2 border-muted border-t-primary animate-spin" />
+              </div>
+            }
+          >
             
             <div>
               <Routes>
@@ -90,6 +98,7 @@ const App = () => (
             <MobileBottomNav />
             <GlobalOverlays />
           </Suspense>
+          </ChunkErrorBoundary>
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
