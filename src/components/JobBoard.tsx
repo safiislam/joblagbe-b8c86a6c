@@ -1,7 +1,7 @@
 import { MapPin, Clock, Banknote, Building2, ChevronRight, Briefcase, Search, Filter, X, ArrowRight, CalendarDays } from "lucide-react";
 import { optimizeStorageImage } from "@/lib/imageOptimize";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -11,8 +11,7 @@ import { formatDistanceToNow, format } from "date-fns";
 import SaveJobButton from "@/components/SaveJobButton";
 import ShareJobButton from "@/components/ShareJobButton";
 import VerifiedBadge from "@/components/VerifiedBadge";
-import ApplyJobDialog from "@/components/ApplyJobDialog";
-import JobFraudWarning from "@/components/JobFraudWarning";
+const ApplyJobDialog = lazy(() => import("@/components/ApplyJobDialog"));
 import { getJobDisplayTag } from "@/lib/jobTag";
 import {
   Select,
@@ -357,14 +356,16 @@ const JobBoard = () => {
 
         {/* Apply Dialog */}
         {applyJob && (
-          <ApplyJobDialog
-            open={!!applyJobId}
-            onOpenChange={(open) => { if (!open) setApplyJobId(null); }}
-            jobId={applyJob.id}
-            jobTitle={applyJob.title}
-            companyName={applyJob.companies?.name ?? undefined}
-            companyId={applyJob.company_id}
-          />
+          <Suspense fallback={null}>
+            <ApplyJobDialog
+              open={!!applyJobId}
+              onOpenChange={(open) => { if (!open) setApplyJobId(null); }}
+              jobId={applyJob.id}
+              jobTitle={applyJob.title}
+              companyName={applyJob.companies?.name ?? undefined}
+              companyId={applyJob.company_id}
+            />
+          </Suspense>
         )}
       </div>
     </section>
