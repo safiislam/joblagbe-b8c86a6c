@@ -97,11 +97,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
+        setLoading(false);
         setTimeout(async () => {
-          const profileData = await fetchProfile(session.user.id);
+          const [profileData] = await Promise.all([
+            fetchProfile(session.user.id),
+            checkAdmin(session.user.id),
+          ]);
           await syncPendingSignupRole(session.user.id, profileData?.role);
-          await checkAdmin(session.user.id);
-          setLoading(false);
         }, 0);
       } else {
         setProfile(null);
@@ -113,12 +115,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      if (session?.user) {
-        const profileData = await fetchProfile(session.user.id);
-        await syncPendingSignupRole(session.user.id, profileData?.role);
-        await checkAdmin(session.user.id);
-      }
       setLoading(false);
+      if (session?.user) {
+        const [profileData] = await Promise.all([
+          fetchProfile(session.user.id),
+          checkAdmin(session.user.id),
+        ]);
+        await syncPendingSignupRole(session.user.id, profileData?.role);
+      }
     });
 
     return () => subscription.unsubscribe();

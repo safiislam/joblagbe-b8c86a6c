@@ -45,6 +45,14 @@ export default defineConfig(({ mode }) => ({
               networkTimeoutSeconds: 10,
             },
           },
+          {
+            urlPattern: /^https:\/\/.*\.supabase\.co\/storage\/v1\/(render\/image|object)\/public\/.*/i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "supabase-images",
+              expiration: { maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 30 },
+            },
+          },
         ],
       },
       manifest: {
@@ -90,6 +98,8 @@ export default defineConfig(({ mode }) => ({
           'vendor-supabase': ['@supabase/supabase-js'],
           'vendor-query': ['@tanstack/react-query'],
           'vendor-ui': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-tooltip', '@radix-ui/react-popover', '@radix-ui/react-select', '@radix-ui/react-tabs'],
+          'vendor-icons': ['lucide-react'],
+          'vendor-dates': ['date-fns'],
         },
       },
     },
