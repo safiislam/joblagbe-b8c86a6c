@@ -24,8 +24,9 @@ const SectionFallback = () => <div className="py-16" />;
 const Index = () => {
   // Prefetch all site_content rows in a single query — child components
   // read from this cache instead of making 6 separate requests.
-  const siteContentQuery = useAllSiteContent();
-  const cmsContentLoading = siteContentQuery.isLoading || siteContentQuery.isFetching;
+  // Note: we do NOT block rendering on this — sections render with
+  // fallback defaults immediately and hydrate when data arrives.
+  useAllSiteContent();
 
   // Prefetch popup banner data early so the image can be preloaded before
   // the lazy PopupBannerModal component mounts, reducing LCP resource load delay.
@@ -95,24 +96,24 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <SeoHead jsonLd={homepageJsonLd} />
-      <AnnouncementBanner contentLoading={cmsContentLoading} />
-      
+      <AnnouncementBanner />
+
       <Header />
-      <HeroSection contentLoading={cmsContentLoading} />
-      <QuickLinks contentLoading={cmsContentLoading} />
+      <HeroSection />
+      <QuickLinks />
       <Suspense fallback={<SectionFallback />}>
-        <CategoryGrid contentLoading={cmsContentLoading} />
+        <CategoryGrid />
       </Suspense>
       <Suspense fallback={<SectionFallback />}>
         <JobBoard />
       </Suspense>
       <Suspense fallback={<SectionFallback />}>
-        <ServicesSection contentLoading={cmsContentLoading} />
+        <ServicesSection />
       </Suspense>
       <Suspense fallback={<SectionFallback />}>
-        <EmployerCTA contentLoading={cmsContentLoading} />
+        <EmployerCTA />
       </Suspense>
-      <Footer contentLoading={cmsContentLoading} />
+      <Footer />
       <Suspense fallback={null}>
         <PopupBannerModal />
       </Suspense>
