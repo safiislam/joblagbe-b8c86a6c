@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { MobileBottomNav } from "@/components/Header";
 import ChunkErrorBoundary from "@/components/ChunkErrorBoundary";
 
@@ -40,9 +40,23 @@ const queryClient = new QueryClient();
 
 const GlobalOverlays = () => {
   const location = useLocation();
+  const [ready, setReady] = useState(false);
   const hideAds = location.pathname.startsWith("/dashboard") ||
     location.pathname === "/login" ||
     location.pathname === "/signup";
+
+  useEffect(() => {
+    const w = window as any;
+    const idle = w.requestIdleCallback
+      ? w.requestIdleCallback(() => setReady(true), { timeout: 3000 })
+      : window.setTimeout(() => setReady(true), 1500);
+    return () => {
+      if (w.cancelIdleCallback && typeof idle === "number") w.cancelIdleCallback(idle);
+      else window.clearTimeout(idle as number);
+    };
+  }, []);
+
+  if (!ready) return null;
 
   return (
     <Suspense fallback={null}>
