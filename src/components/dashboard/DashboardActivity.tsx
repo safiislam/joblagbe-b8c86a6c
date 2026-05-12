@@ -1,11 +1,12 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { formatDistanceToNow, format, subDays, subHours, isAfter } from "date-fns";
+import { formatDistanceToNow, format, subDays, subHours } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
   SelectContent,
@@ -54,92 +55,110 @@ const PAGE_SIZE = 25;
 
 const DashboardActivity = () => {
   const qc = useQueryClient();
+  const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [actionFilter, setActionFilter] = useState("all");
   const [timeFilter, setTimeFilter] = useState("all");
   const [page, setPage] = useState(0);
 
-  const { data: activities, isLoading, refetch } = useQuery({
-    queryKey: ["admin-activity"],
+  // Debounce search input
+  useEffect(() => {
+    const t = setTimeout(() => { setSearch(searchInput); setPage(0); }, 300);
+    return () => clearTimeout(t);
+  }, [searchInput]);
+
+  // Server-side filtered + paginated query
+  const { data: pageResult, isLoading, refetch, isFetching } = useQuery({
+    queryKey: ["admin-activity", { search, actionFilter, timeFilter, page }],
+    queryFn: async () => {
+      let q = supabase
+        .from("user_activity")
+        .select("*", { count: "exact" })
+        .order("created_at", { ascending: false });
+
+      if (timeFilter !== "all") {
+        const now = new Date();
+        const cutoff =
+          timeFilter === "1h" ? subHours(now, 1)
+          : timeFilter === "24h" ? subDays(now, 1)
+          : timeFilter === "7d" ? subDays(now, 7)
+          : subDays(now, 30);
+        q = q.gte("created_at", cutoff.toISOString());
+      }
+      if (actionFilter !== "all") q = q.eq("action", actionFilter);
+      if (search.trim()) {
+        const s = search.trim().replace(/[%,()]/g, "");
+        q = q.or(`action.ilike.%${s}%,resource_type.ilike.%${s}%,resource_id.ilike.%${s}%,ip_address.ilike.%${s}%`);
+      }
+
+      const from = page * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
+      const { data, count } = await q.range(from, to);
+      return { rows: data ?? [], total: count ?? 0 };
+    },
+    placeholderData: (prev) => prev,
+    staleTime: 30_000,
+  });
+
+  const pageData = pageResult?.rows ?? [];
+  const totalCount = pageResult?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+
+  // Lightweight stats (separate, cached)
+  const { data: stats } = useQuery({
+    queryKey: ["admin-activity-stats"],
+    queryFn: async () => {
+      const dayAgo = subDays(new Date(), 1).toISOString();
+      const [totalRes, todayRes, recent] = await Promise.all([
+        supabase.from("user_activity").select("id", { count: "exact", head: true }),
+        supabase.from("user_activity").select("id", { count: "exact", head: true }).gte("created_at", dayAgo),
+        supabase.from("user_activity").select("user_id, ip_address").order("created_at", { ascending: false }).limit(1000),
+      ]);
+      const userSet = new Set((recent.data ?? []).filter(a => a.user_id).map(a => a.user_id));
+      const ipSet = new Set((recent.data ?? []).filter(a => a.ip_address).map(a => a.ip_address));
+      return {
+        total: totalRes.count ?? 0,
+        today: todayRes.count ?? 0,
+        uniqueUsers: userSet.size,
+        uniqueIPs: ipSet.size,
+      };
+    },
+    staleTime: 60_000,
+  });
+
+  // Distinct actions for filter (cached)
+  const { data: actionTypes } = useQuery({
+    queryKey: ["admin-activity-actions"],
     queryFn: async () => {
       const { data } = await supabase
         .from("user_activity")
-        .select("*")
+        .select("action")
         .order("created_at", { ascending: false })
-        .limit(1000);
-      return data ?? [];
+        .limit(500);
+      return Array.from(new Set((data ?? []).map(d => d.action))).sort();
     },
+    staleTime: 5 * 60_000,
   });
 
+  // Profiles only for visible page user_ids
+  const userIds = useMemo(
+    () => Array.from(new Set(pageData.map((a: any) => a.user_id).filter(Boolean))),
+    [pageData]
+  );
   const { data: profiles } = useQuery({
-    queryKey: ["admin-profiles-map"],
+    queryKey: ["admin-profiles-map", userIds],
+    enabled: userIds.length > 0,
     queryFn: async () => {
-      const { data } = await supabase.from("profiles").select("user_id, full_name, phone");
+      const { data } = await supabase
+        .from("profiles")
+        .select("user_id, full_name, phone")
+        .in("user_id", userIds as string[]);
       const map: Record<string, { full_name: string | null; phone: string | null }> = {};
       (data ?? []).forEach((p) => { map[p.user_id] = { full_name: p.full_name, phone: p.phone }; });
       return map;
     },
+    staleTime: 60_000,
   });
-
-  // Unique action types for filter
-  const actionTypes = useMemo(() => {
-    if (!activities) return [];
-    const set = new Set(activities.map((a) => a.action));
-    return Array.from(set).sort();
-  }, [activities]);
-
-  // Filtered data
-  const filtered = useMemo(() => {
-    if (!activities) return [];
-    let list = activities;
-
-    // Time filter
-    if (timeFilter !== "all") {
-      const now = new Date();
-      const cutoff =
-        timeFilter === "1h" ? subHours(now, 1)
-        : timeFilter === "24h" ? subDays(now, 1)
-        : timeFilter === "7d" ? subDays(now, 7)
-        : subDays(now, 30);
-      list = list.filter((a) => isAfter(new Date(a.created_at), cutoff));
-    }
-
-    // Action filter
-    if (actionFilter !== "all") {
-      list = list.filter((a) => a.action === actionFilter);
-    }
-
-    // Search
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      list = list.filter((a) => {
-        const userName = a.user_id ? profiles?.[a.user_id]?.full_name?.toLowerCase() : "";
-        return (
-          a.action.toLowerCase().includes(q) ||
-          (a.resource_type?.toLowerCase() || "").includes(q) ||
-          (a.resource_id?.toLowerCase() || "").includes(q) ||
-          (a.ip_address?.toLowerCase() || "").includes(q) ||
-          (userName || "").includes(q)
-        );
-      });
-    }
-
-    return list;
-  }, [activities, search, actionFilter, timeFilter, profiles]);
-
-  // Pagination
-  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
-  const pageData = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
-
-  // Stats
-  const stats = useMemo(() => {
-    if (!activities) return { total: 0, today: 0, uniqueUsers: 0, uniqueIPs: 0 };
-    const todayCutoff = subDays(new Date(), 1);
-    const todayCount = activities.filter((a) => isAfter(new Date(a.created_at), todayCutoff)).length;
-    const userSet = new Set(activities.filter((a) => a.user_id).map((a) => a.user_id));
-    const ipSet = new Set(activities.filter((a) => a.ip_address).map((a) => a.ip_address));
-    return { total: activities.length, today: todayCount, uniqueUsers: userSet.size, uniqueIPs: ipSet.size };
-  }, [activities]);
 
   const getActionIcon = (action: string) => {
     const Icon = ACTION_ICONS[action] || Activity;
@@ -169,10 +188,10 @@ const DashboardActivity = () => {
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
-          { label: "Total Events", value: stats.total, icon: MousePointerClick, color: "text-primary" },
-          { label: "Last 24 Hours", value: stats.today, icon: Clock, color: "text-emerald-600" },
-          { label: "Unique Users", value: stats.uniqueUsers, icon: Users, color: "text-blue-600" },
-          { label: "Unique IPs", value: stats.uniqueIPs, icon: Globe, color: "text-violet-600" },
+          { label: "Total Events", value: stats?.total ?? 0, icon: MousePointerClick, color: "text-primary" },
+          { label: "Last 24 Hours", value: stats?.today ?? 0, icon: Clock, color: "text-emerald-600" },
+          { label: "Unique Users", value: stats?.uniqueUsers ?? 0, icon: Users, color: "text-blue-600" },
+          { label: "Unique IPs", value: stats?.uniqueIPs ?? 0, icon: Globe, color: "text-violet-600" },
         ].map((s) => (
           <div key={s.label} className="rounded-xl border bg-card p-4 flex items-center gap-3">
             <div className={`rounded-lg bg-muted p-2.5 ${s.color}`}>
@@ -192,8 +211,8 @@ const DashboardActivity = () => {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search by user, action, IP, resource..."
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(0); }}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
             className="pl-9"
           />
         </div>
@@ -203,7 +222,7 @@ const DashboardActivity = () => {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Actions</SelectItem>
-            {actionTypes.map((a) => (
+            {(actionTypes ?? []).map((a) => (
               <SelectItem key={a} value={a}>{a}</SelectItem>
             ))}
           </SelectContent>
@@ -225,16 +244,17 @@ const DashboardActivity = () => {
       {/* Results count */}
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          Showing {filtered.length === 0 ? 0 : page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, filtered.length)} of {filtered.length} events
+          Showing {totalCount === 0 ? 0 : page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, totalCount)} of {totalCount} events
+          {isFetching && !isLoading && <span className="ml-2 text-xs opacity-60">updating…</span>}
         </p>
         <Button
           variant="destructive"
           size="sm"
           className="gap-1.5"
-          disabled={filtered.length === 0}
+          disabled={totalCount === 0}
           onClick={async () => {
             if (!confirm("সকল অ্যাক্টিভিটি লগ স্থায়ীভাবে মুছে ফেলতে চান?")) return;
-            const ids = filtered.map((a) => a.id);
+            const ids = pageData.map((a: any) => a.id);
             const { error } = await supabase.from("user_activity").delete().in("id", ids);
             if (error) toast.error(error.message);
             else { toast.success("অ্যাক্টিভিটি মুছে ফেলা হয়েছে"); qc.invalidateQueries({ queryKey: ["admin-activity"] }); }
@@ -247,7 +267,17 @@ const DashboardActivity = () => {
       {/* Activity List */}
       <div className="rounded-xl border bg-card shadow-sm divide-y">
         {isLoading ? (
-          <div className="p-8 text-center text-muted-foreground">Loading activity...</div>
+          <div className="p-4 space-y-3">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="flex items-start gap-3">
+                <Skeleton className="h-8 w-8 rounded-lg" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-3.5 w-1/3" />
+                  <Skeleton className="h-3 w-2/3" />
+                </div>
+              </div>
+            ))}
+          </div>
         ) : pageData.length > 0 ? (
           pageData.map((a) => {
             const Icon = getActionIcon(a.action);
