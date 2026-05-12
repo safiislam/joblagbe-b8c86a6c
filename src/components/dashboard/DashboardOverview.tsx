@@ -5,6 +5,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pi
 import { format, subDays, formatDistanceToNow } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const COLORS = ["hsl(var(--primary))", "hsl(var(--accent))", "hsl(var(--success))", "hsl(var(--muted-foreground))"];
 
@@ -257,15 +258,15 @@ const activityIcon: Record<string, { icon: typeof UserPlus; color: string; bg: s
 };
 
 const RecentActivityFeed = () => {
-  const { data: feed } = useQuery({
+  const { data: feed, isLoading } = useQuery({
     queryKey: ["dashboard-activity-feed"],
     queryFn: async () => {
       const [recentProfiles, recentApplications, recentJobs, recentOrders, recentContacts] = await Promise.all([
-        supabase.from("profiles").select("full_name, role, created_at").order("created_at", { ascending: false }).limit(5),
-        supabase.from("applications").select("id, created_at, job_id, jobs(title)").order("created_at", { ascending: false }).limit(5),
-        supabase.from("jobs").select("title, created_at, companies(name)").order("created_at", { ascending: false }).limit(5),
-        supabase.from("service_orders").select("name, service_type, created_at, status").order("created_at", { ascending: false }).limit(5),
-        supabase.from("contact_submissions").select("name, subject, created_at").order("created_at", { ascending: false }).limit(5),
+        supabase.from("profiles").select("full_name, role, created_at").order("created_at", { ascending: false }).limit(4),
+        supabase.from("applications").select("id, created_at, job_id, jobs(title)").order("created_at", { ascending: false }).limit(4),
+        supabase.from("jobs").select("title, created_at, companies(name)").order("created_at", { ascending: false }).limit(4),
+        supabase.from("service_orders").select("name, service_type, created_at, status").order("created_at", { ascending: false }).limit(4),
+        supabase.from("contact_submissions").select("name, subject, created_at").order("created_at", { ascending: false }).limit(4),
       ]);
 
       type FeedItem = { type: string; text: string; time: string; badge?: string };
@@ -289,7 +290,9 @@ const RecentActivityFeed = () => {
 
       return items.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, 15);
     },
-    refetchInterval: 30000, // refresh every 30s
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
+    refetchInterval: 120_000,
   });
 
   return (
@@ -301,7 +304,19 @@ const RecentActivityFeed = () => {
         <Link to="/dashboard/activity" className="text-xs text-primary hover:underline">View All</Link>
       </div>
       <div className="divide-y max-h-[420px] overflow-y-auto">
-        {feed && feed.length > 0 ? feed.map((item, i) => {
+        {isLoading ? (
+          <div className="space-y-2 p-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="flex items-start gap-3">
+                <Skeleton className="h-8 w-8 rounded-lg" />
+                <div className="flex-1 space-y-1.5">
+                  <Skeleton className="h-3.5 w-3/4" />
+                  <Skeleton className="h-3 w-1/4" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : feed && feed.length > 0 ? feed.map((item, i) => {
           const config = activityIcon[item.type] || activityIcon.signup;
           const Icon = config.icon;
           return (
