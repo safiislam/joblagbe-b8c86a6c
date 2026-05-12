@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow, format } from "date-fns";
@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import {
   CheckCircle, XCircle, BadgeCheck, Clock, Search, Building2,
   MapPin, Phone, Globe, FileText, ChevronDown, ChevronUp,
-  Briefcase, Trash2, Eye, Shield, ShieldOff, User
+  Briefcase, Trash2, Eye, Shield, ShieldOff, User, Upload, ImageOff
 } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
@@ -18,6 +18,8 @@ const DashboardCompanies = () => {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "verified" | "unverified">("all");
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [uploadingId, setUploadingId] = useState<string | null>(null);
+  const fileInputs = useRef<Record<string, HTMLInputElement | null>>({});
 
   const { data: companies, isLoading } = useQuery({
     queryKey: ["admin-companies"],
@@ -131,6 +133,44 @@ const DashboardCompanies = () => {
     },
     onError: () => toast.error("ডিলিট করতে সমস্যা হয়েছে"),
   });
+
+  const updateLogo = useMutation({
+    mutationFn: async ({ companyId, logo_url }: { companyId: string; logo_url: string | null }) => {
+      const { error } = await supabase.from("companies").update({ logo_url }).eq("id", companyId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-companies"] });
+      toast.success("লোগো আপডেট হয়েছে");
+    },
+    onError: (e: any) => toast.error(e?.message || "লোগো আপডেট ব্যর্থ"),
+  });
+
+  const handleLogoUpload = async (companyId: string, file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast.error("শুধু ইমেজ ফাইল আপলোড করুন");
+      return;
+    }
+    if (file.size > 300 * 1024) {
+      toast.error("লোগো সর্বোচ্চ 300KB হতে হবে");
+      return;
+    }
+    try {
+      setUploadingId(companyId);
+      const ext = file.name.split(".").pop() || "png";
+      const path = `${companyId}/logo-${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from("company-logos")
+        .upload(path, file, { upsert: true, cacheControl: "3600" });
+      if (upErr) throw upErr;
+      const { data: pub } = supabase.storage.from("company-logos").getPublicUrl(path);
+      await updateLogo.mutateAsync({ companyId, logo_url: pub.publicUrl });
+    } catch (e: any) {
+      toast.error(e?.message || "আপলোড ব্যর্থ");
+    } finally {
+      setUploadingId(null);
+    }
+  };
 
   const filtered = companies?.filter((c: any) => {
     const matchSearch = !search || c.name.toLowerCase().includes(search.toLowerCase()) || c.location?.toLowerCase().includes(search.toLowerCase());
@@ -340,6 +380,37 @@ const DashboardCompanies = () => {
                         <Eye className="h-3.5 w-3.5" /> প্রোফাইল দেখুন
                       </Button>
                     </Link>
+                    <input
+                      ref={(el) => { fileInputs.current[c.id] = el; }}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        if (f) handleLogoUpload(c.id, f);
+                        e.target.value = "";
+                      }}
+                    />
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="gap-1 text-xs"
+                      disabled={uploadingId === c.id}
+                      onClick={(e) => { e.stopPropagation(); fileInputs.current[c.id]?.click(); }}
+                    >
+                      <Upload className="h-3.5 w-3.5" />
+                      {uploadingId === c.id ? "আপলোড হচ্ছে..." : (c.logo_url ? "লোগো বদলান" : "লোগো আপলোড")}
+                    </Button>
+                    {c.logo_url && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="gap-1 text-xs text-destructive border-destructive/30 hover:bg-destructive hover:text-destructive-foreground"
+                        onClick={(e) => { e.stopPropagation(); if (confirm("লোগো সরাতে চান?")) updateLogo.mutate({ companyId: c.id, logo_url: null }); }}
+                      >
+                        <ImageOff className="h-3.5 w-3.5" /> লোগো সরান
+                      </Button>
+                    )}
                     <Button
                       size="sm"
                       variant={c.is_verified ? "outline" : "default"}
