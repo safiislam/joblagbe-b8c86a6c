@@ -1,4 +1,4 @@
-import { Briefcase, Building2, Users, FileText, Clock, GraduationCap, BookMarked, BookOpen, TrendingUp, ArrowUpRight, UserPlus, Send, ShoppingBag, MessageSquare } from "lucide-react";
+import { Briefcase, Building2, Users, FileText, Clock, GraduationCap, BookMarked, BookOpen, TrendingUp, ArrowUpRight, UserPlus, Send, ShoppingBag, MessageSquare, CreditCard, ShieldCheck, CheckCircle2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area } from "recharts";
@@ -255,18 +255,25 @@ const activityIcon: Record<string, { icon: typeof UserPlus; color: string; bg: s
   job_post: { icon: Briefcase, color: "text-accent", bg: "bg-accent/10" },
   service_order: { icon: ShoppingBag, color: "text-primary", bg: "bg-primary/10" },
   contact: { icon: MessageSquare, color: "text-success", bg: "bg-success/10" },
+  payment: { icon: CreditCard, color: "text-accent", bg: "bg-accent/10" },
+  course: { icon: GraduationCap, color: "text-success", bg: "bg-success/10" },
+  verification: { icon: ShieldCheck, color: "text-primary", bg: "bg-primary/10" },
+  application_status: { icon: CheckCircle2, color: "text-success", bg: "bg-success/10" },
 };
 
 const RecentActivityFeed = () => {
   const { data: feed, isLoading } = useQuery({
     queryKey: ["dashboard-activity-feed"],
     queryFn: async () => {
-      const [recentProfiles, recentApplications, recentJobs, recentOrders, recentContacts] = await Promise.all([
-        supabase.from("profiles").select("full_name, role, created_at").order("created_at", { ascending: false }).limit(4),
-        supabase.from("applications").select("id, created_at, job_id, jobs(title)").order("created_at", { ascending: false }).limit(4),
-        supabase.from("jobs").select("title, created_at, companies(name)").order("created_at", { ascending: false }).limit(4),
-        supabase.from("service_orders").select("name, service_type, created_at, status").order("created_at", { ascending: false }).limit(4),
-        supabase.from("contact_submissions").select("name, subject, created_at").order("created_at", { ascending: false }).limit(4),
+      const [recentProfiles, recentApplications, recentJobs, recentOrders, recentContacts, recentPayments, recentCourses, recentVerifications] = await Promise.all([
+        supabase.from("profiles").select("full_name, role, created_at").order("created_at", { ascending: false }).limit(10),
+        supabase.from("applications").select("id, created_at, status, job_id, jobs(title)").order("created_at", { ascending: false }).limit(10),
+        supabase.from("jobs").select("title, created_at, is_approved, companies(name)").order("created_at", { ascending: false }).limit(10),
+        supabase.from("service_orders").select("name, service_type, created_at, status").order("created_at", { ascending: false }).limit(10),
+        supabase.from("contact_submissions").select("name, subject, created_at").order("created_at", { ascending: false }).limit(10),
+        supabase.from("payments").select("item_title, amount, payment_method, status, created_at").order("created_at", { ascending: false }).limit(10),
+        supabase.from("courses").select("title, created_at, is_approved").order("created_at", { ascending: false }).limit(10),
+        supabase.from("verification_requests").select("status, created_at, companies(name)").order("created_at", { ascending: false }).limit(10),
       ]);
 
       type FeedItem = { type: string; text: string; time: string; badge?: string };
@@ -276,10 +283,10 @@ const RecentActivityFeed = () => {
         type: "signup", text: `${p.full_name || "New user"} signed up as ${p.role}`, time: p.created_at,
       }));
       recentApplications.data?.forEach((a: any) => items.push({
-        type: "application", text: `New application for "${a.jobs?.title || "a job"}"`, time: a.created_at,
+        type: "application", text: `New application for "${a.jobs?.title || "a job"}"`, time: a.created_at, badge: a.status,
       }));
       recentJobs.data?.forEach((j: any) => items.push({
-        type: "job_post", text: `"${j.title}" posted by ${j.companies?.name || "a company"}`, time: j.created_at,
+        type: "job_post", text: `"${j.title}" posted by ${j.companies?.name || "a company"}`, time: j.created_at, badge: j.is_approved ? "approved" : "pending",
       }));
       recentOrders.data?.forEach((o) => items.push({
         type: "service_order", text: `${o.name} ordered ${o.service_type}`, time: o.created_at, badge: o.status,
@@ -287,8 +294,17 @@ const RecentActivityFeed = () => {
       recentContacts.data?.forEach((c) => items.push({
         type: "contact", text: `${c.name}: ${c.subject || "New message"}`, time: c.created_at,
       }));
+      recentPayments.data?.forEach((p: any) => items.push({
+        type: "payment", text: `Payment ৳${p.amount} via ${p.payment_method} for ${p.item_title || "item"}`, time: p.created_at, badge: p.status,
+      }));
+      recentCourses.data?.forEach((c: any) => items.push({
+        type: "course", text: `Course "${c.title}" submitted`, time: c.created_at, badge: c.is_approved ? "approved" : "pending",
+      }));
+      recentVerifications.data?.forEach((v: any) => items.push({
+        type: "verification", text: `${v.companies?.name || "A company"} requested verification`, time: v.created_at, badge: v.status,
+      }));
 
-      return items.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, 15);
+      return items.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, 50);
     },
     staleTime: 60_000,
     refetchOnWindowFocus: false,
@@ -303,7 +319,7 @@ const RecentActivityFeed = () => {
         </h3>
         <Link to="/dashboard/activity" className="text-xs text-primary hover:underline">View All</Link>
       </div>
-      <div className="divide-y max-h-[420px] overflow-y-auto">
+      <div className="divide-y max-h-[600px] overflow-y-auto">
         {isLoading ? (
           <div className="space-y-2 p-4">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -325,7 +341,7 @@ const RecentActivityFeed = () => {
                 <Icon className={`h-4 w-4 ${config.color}`} />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-sm leading-tight truncate">{item.text}</p>
+                <p className="text-sm leading-snug break-words">{item.text}</p>
                 <div className="flex items-center gap-2 mt-0.5">
                   <span className="text-[11px] text-muted-foreground">
                     {formatDistanceToNow(new Date(item.time), { addSuffix: true })}
