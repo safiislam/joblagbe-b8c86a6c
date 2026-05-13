@@ -3,6 +3,8 @@ import { Component, ReactNode } from "react";
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
+  /** When this value changes, the boundary resets (e.g. pass location.key). */
+  resetKey?: string;
 }
 
 interface State {
@@ -25,6 +27,10 @@ export class ChunkErrorBoundary extends Component<Props, State> {
       /Loading chunk [\d]+ failed/i.test(message) ||
       /Loading CSS chunk/i.test(message) ||
       /Failed to fetch dynamically imported module/i.test(message) ||
+      /error loading dynamically imported module/i.test(message) ||
+      /Importing a module script failed/i.test(message) ||
+      /Unable to preload CSS/i.test(message) ||
+      (name === "TypeError" && /Failed to fetch/i.test(message)) ||
       /Importing a module script failed/i.test(message) ||
       name === "ChunkLoadError";
 
@@ -44,6 +50,12 @@ export class ChunkErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: unknown) {
     console.error("[ChunkErrorBoundary]", error);
+  }
+
+  componentDidUpdate(prevProps: Props) {
+    if (this.state.hasError && prevProps.resetKey !== this.props.resetKey) {
+      this.setState({ hasError: false });
+    }
   }
 
   render() {

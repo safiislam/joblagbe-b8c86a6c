@@ -67,6 +67,48 @@ const GlobalOverlays = () => {
   );
 };
 
+const RoutedShell = () => {
+  const location = useLocation();
+  return (
+    <ChunkErrorBoundary resetKey={location.key}>
+      <Suspense
+        fallback={
+          <div className="min-h-screen bg-background flex items-center justify-center">
+            <div className="h-10 w-10 rounded-full border-2 border-muted border-t-primary animate-spin" />
+          </div>
+        }
+      >
+        <div>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/post-job" element={<PostJob />} />
+            <Route path="/dashboard/*" element={<Dashboard />} />
+            <Route path="/my-applications" element={<SeekerDashboard />} />
+            <Route path="/employer-dashboard" element={<EmployerDashboard />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
+            <Route path="/companies" element={<Companies />} />
+            <Route path="/company/:id" element={<CompanyProfile />} />
+            <Route path="/jobs" element={<Jobs />} />
+            <Route path="/jobs/:id" element={<JobDetail />} />
+            <Route path="/courses" element={<Courses />} />
+            <Route path="/ebooks" element={<Ebooks />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
+        <MobileBottomNav />
+        <GlobalOverlays />
+      </Suspense>
+    </ChunkErrorBoundary>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
@@ -74,45 +116,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <ChunkErrorBoundary>
-          <Suspense
-            fallback={
-              <div className="min-h-screen bg-background flex items-center justify-center">
-                <div className="h-10 w-10 rounded-full border-2 border-muted border-t-primary animate-spin" />
-              </div>
-            }
-          >
-            
-            <div>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<SignUp />} />
-                <Route path="/post-job" element={<PostJob />} />
-                
-                <Route path="/dashboard/*" element={<Dashboard />} />
-                <Route path="/my-applications" element={<SeekerDashboard />} />
-                <Route path="/employer-dashboard" element={<EmployerDashboard />} />
-                <Route path="/blog" element={<Blog />} />
-                <Route path="/blog/:slug" element={<BlogPost />} />
-                <Route path="/companies" element={<Companies />} />
-                <Route path="/company/:id" element={<CompanyProfile />} />
-                <Route path="/jobs" element={<Jobs />} />
-                <Route path="/jobs/:id" element={<JobDetail />} />
-                <Route path="/courses" element={<Courses />} />
-                <Route path="/ebooks" element={<Ebooks />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
-                <Route path="/terms" element={<Terms />} />
-                
-                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </div>
-            <MobileBottomNav />
-            <GlobalOverlays />
-          </Suspense>
-          </ChunkErrorBoundary>
+          <RoutedShell />
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>

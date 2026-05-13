@@ -356,7 +356,11 @@ const JobBoard = () => {
 
         {/* Apply Dialog */}
         {applyJob && (
-          <Suspense fallback={null}>
+          <Suspense fallback={
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/60 backdrop-blur-sm">
+              <div className="h-8 w-8 rounded-full border-2 border-muted border-t-primary animate-spin" />
+            </div>
+          }>
             <ApplyJobDialog
               open={!!applyJobId}
               onOpenChange={(open) => { if (!open) setApplyJobId(null); }}
