@@ -51,7 +51,7 @@ const ACTION_COLORS: Record<string, string> = {
   contact: "bg-pink-500/10 text-pink-600 border-pink-200",
 };
 
-const PAGE_SIZE = 25;
+const PAGE_SIZE = 50;
 
 const DashboardActivity = () => {
   const qc = useQueryClient();
@@ -109,13 +109,15 @@ const DashboardActivity = () => {
     queryKey: ["admin-activity-stats"],
     queryFn: async () => {
       const dayAgo = subDays(new Date(), 1).toISOString();
-      const [totalRes, todayRes, recent] = await Promise.all([
+      const sevenDaysAgo = subDays(new Date(), 7).toISOString();
+      const [totalRes, todayRes, recentUsers, recentIps] = await Promise.all([
         supabase.from("user_activity").select("id", { count: "exact", head: true }),
         supabase.from("user_activity").select("id", { count: "exact", head: true }).gte("created_at", dayAgo),
-        supabase.from("user_activity").select("user_id, ip_address").order("created_at", { ascending: false }).limit(1000),
+        supabase.from("user_activity").select("user_id").gte("created_at", sevenDaysAgo).not("user_id", "is", null).limit(5000),
+        supabase.from("user_activity").select("ip_address").gte("created_at", sevenDaysAgo).not("ip_address", "is", null).limit(5000),
       ]);
-      const userSet = new Set((recent.data ?? []).filter(a => a.user_id).map(a => a.user_id));
-      const ipSet = new Set((recent.data ?? []).filter(a => a.ip_address).map(a => a.ip_address));
+      const userSet = new Set((recentUsers.data ?? []).map((a: any) => a.user_id));
+      const ipSet = new Set((recentIps.data ?? []).map((a: any) => a.ip_address));
       return {
         total: totalRes.count ?? 0,
         today: todayRes.count ?? 0,
