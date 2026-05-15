@@ -13,6 +13,7 @@ import Index from "./pages/Index";
 const AIChatWidget = lazy(() => import("@/components/AIChatWidget"));
 const AffiliatePopupLazy = lazy(() => import("@/components/AffiliateAds").then(m => ({ default: m.AffiliatePopup })));
 const TutorialVideoButton = lazy(() => import("@/components/TutorialVideoButton"));
+const InAppBrowserPrompt = lazy(() => import("@/components/InAppBrowserPrompt"));
 
 const Login = lazy(() => import("./pages/Login"));
 const SignUp = lazy(() => import("./pages/SignUp"));
@@ -63,6 +64,7 @@ const GlobalOverlays = () => {
       <AIChatWidget />
       {!hideAds && <AffiliatePopupLazy />}
       <TutorialVideoButton />
+      <InAppBrowserPrompt />
     </Suspense>
   );
 };
