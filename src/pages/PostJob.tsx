@@ -381,6 +381,25 @@ const PostJob = () => {
               <Label>Description</Label>
               <Textarea value={companyForm.description} onChange={(e) => setCompanyForm({ ...companyForm, description: e.target.value })} className="mt-1.5 rounded-xl" />
             </div>
+            <div className="flex flex-wrap gap-2 pt-2">
+              <Button
+                type="button"
+                onClick={handleCreateCompanyClick}
+                disabled={creatingCompany}
+                className="bg-primary text-primary-foreground rounded-xl"
+              >
+                {creatingCompany ? "সেভ হচ্ছে..." : "কোম্পানি সেভ করুন"}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowCompanyForm(false)}
+                className="rounded-xl"
+              >
+                বাতিল
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">প্রথমে কোম্পানি সেভ করুন, তারপর সার্কুলার বা রেগুলার পোস্ট তৈরি করতে পারবেন।</p>
           </div>
         )}
 
@@ -502,7 +521,14 @@ const PostJob = () => {
               </div>
             ) : (
               <div className="mt-4 rounded-2xl border bg-secondary/50 p-6 text-center">
-                <p className="text-muted-foreground">সার্কুলার পোস্ট করতে প্রথমে উপরে কোম্পানি প্রোফাইল তৈরি করুন।</p>
+                <p className="text-muted-foreground">সার্কুলার পোস্ট করতে প্রথমে কোম্পানি প্রোফাইল তৈরি করুন।</p>
+                <Button
+                  type="button"
+                  onClick={() => { setShowCompanyForm(true); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                  className="mt-3 bg-primary text-primary-foreground rounded-xl"
+                >
+                  কোম্পানি প্রোফাইল তৈরি করুন
+                </Button>
               </div>
             )}
           </TabsContent>
