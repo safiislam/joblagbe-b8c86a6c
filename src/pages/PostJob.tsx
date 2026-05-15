@@ -147,8 +147,7 @@ const PostJob = () => {
     const created = await createCompany();
     setCreatingCompany(false);
     if (created) {
-      // refresh company query
-      await import("@tanstack/react-query");
+      queryClient.setQueryData(["my-company", user?.id], created);
     }
   };
 
