@@ -117,6 +117,9 @@ const PostJob = () => {
 
   const createCompany = async () => {
     if (!user) return null;
+    if (!companyForm.name.trim()) { toast.error("কোম্পানির নাম দিন"); return null; }
+    if (!companyForm.phone.trim()) { toast.error("ফোন নাম্বার দিন"); return null; }
+    if (!companyForm.website.trim()) { toast.error("ওয়েবসাইট/সোশ্যাল লিংক দিন"); return null; }
     const { data, error } = await supabase
       .from("companies")
       .insert({ user_id: user.id, name: companyForm.name, location: companyForm.location, description: companyForm.description, phone: companyForm.phone, website: companyForm.website })
@@ -132,9 +135,20 @@ const PostJob = () => {
       }
     }
 
-    toast.success("Company created!");
+    toast.success("কোম্পানি প্রোফাইল তৈরি হয়েছে!");
     setShowCompanyForm(false);
     return data;
+  };
+
+  const [creatingCompany, setCreatingCompany] = useState(false);
+  const handleCreateCompanyClick = async () => {
+    setCreatingCompany(true);
+    const created = await createCompany();
+    setCreatingCompany(false);
+    if (created) {
+      // refresh company query
+      await import("@tanstack/react-query");
+    }
   };
 
   const submitJob = async (companyId: string) => {
