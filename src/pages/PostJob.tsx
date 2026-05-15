@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import MultiLocationInput from "@/components/MultiLocationInput";
 import PaymentDialog from "@/components/PaymentDialog";
 import CircularPostForm from "@/components/CircularPostForm";
@@ -39,6 +39,7 @@ type JobPricing = {
 const PostJob = () => {
   const { user, profile, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
