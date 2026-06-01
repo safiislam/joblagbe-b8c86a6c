@@ -5,6 +5,7 @@ import MultiLocationInput from "@/components/MultiLocationInput";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { CalendarIcon, ImagePlus, X, Loader2 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -34,6 +35,10 @@ const CircularPostForm = ({ companyId, onSuccess, isFree, effectivePrice, onPaym
   const [sourceUrl, setSourceUrl] = useState("");
   const [locations, setLocations] = useState<string[]>([]);
   const [deadline, setDeadline] = useState<Date | undefined>(undefined);
+  const [jobType, setJobType] = useState<string>("Full-time");
+  const [description, setDescription] = useState("");
+  const [salaryMin, setSalaryMin] = useState<string>("");
+  const [salaryMax, setSalaryMax] = useState<string>("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -122,12 +127,15 @@ const CircularPostForm = ({ companyId, onSuccess, isFree, effectivePrice, onPaym
       company_id: companyId,
       title: title.trim(),
       location: locations.length > 0 ? locations.join(", ") : "বাংলাদেশ",
-      description: `সার্কুলার বিজ্ঞপ্তি: ${title.trim()}`,
+      description: description.trim() || `সার্কুলার বিজ্ঞপ্তি: ${title.trim()} — বিস্তারিত তথ্যের জন্য ছবি দেখুন।`,
       category_id: categoryId || null,
       application_deadline: deadline ? deadline.toISOString() : null,
       source_url: sourceUrl.trim() || null,
       circular_image_url: imageUrl,
       post_type: "circular",
+      job_type: jobType,
+      salary_min: salaryMin ? parseInt(salaryMin, 10) : null,
+      salary_max: salaryMax ? parseInt(salaryMax, 10) : null,
       is_approved: false,
       hide_apply: true,
     } as any);
@@ -178,7 +186,7 @@ const CircularPostForm = ({ companyId, onSuccess, isFree, effectivePrice, onPaym
         <Input value={title} onChange={(e) => setTitle(e.target.value)} required placeholder="যেমন: বাংলাদেশ সেনাবাহিনী নিয়োগ বিজ্ঞপ্তি ২০২৫" className="mt-1.5 rounded-xl" />
       </div>
 
-      {/* Category & Deadline */}
+      {/* Category & Job Type */}
       <div className="grid gap-4 md:grid-cols-2">
         <div>
           <Label>ক্যাটাগরি</Label>
@@ -190,6 +198,30 @@ const CircularPostForm = ({ companyId, onSuccess, isFree, effectivePrice, onPaym
               ))}
             </SelectContent>
           </Select>
+        </div>
+        <div>
+          <Label>চাকরির ধরন</Label>
+          <Select value={jobType} onValueChange={setJobType}>
+            <SelectTrigger className="mt-1.5 rounded-xl"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Full-time">ফুল-টাইম</SelectItem>
+              <SelectItem value="Part-time">পার্ট-টাইম</SelectItem>
+              <SelectItem value="Contract">চুক্তিভিত্তিক</SelectItem>
+              <SelectItem value="Internship">ইন্টার্নশিপ</SelectItem>
+              <SelectItem value="Remote">রিমোট</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      {/* Salary & Deadline */}
+      <div className="grid gap-4 md:grid-cols-2">
+        <div>
+          <Label>বেতন রেঞ্জ (ঐচ্ছিক)</Label>
+          <div className="mt-1.5 flex gap-2">
+            <Input type="number" min={0} value={salaryMin} onChange={(e) => setSalaryMin(e.target.value)} placeholder="সর্বনিম্ন" className="rounded-xl" />
+            <Input type="number" min={0} value={salaryMax} onChange={(e) => setSalaryMax(e.target.value)} placeholder="সর্বোচ্চ" className="rounded-xl" />
+          </div>
         </div>
         <div>
           <Label>আবেদনের শেষ তারিখ</Label>
@@ -216,6 +248,19 @@ const CircularPostForm = ({ companyId, onSuccess, isFree, effectivePrice, onPaym
           </Popover>
           <p className="mt-1 text-xs text-muted-foreground">সর্বোচ্চ ১ মাস</p>
         </div>
+      </div>
+
+      {/* Description */}
+      <div>
+        <Label>বিবরণ (ঐচ্ছিক)</Label>
+        <Textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="চাকরি সম্পর্কিত সংক্ষিপ্ত বিবরণ লিখুন (পদ, যোগ্যতা, আবেদনের নিয়ম ইত্যাদি)"
+          rows={4}
+          className="mt-1.5 rounded-xl"
+        />
+        <p className="mt-1 text-xs text-muted-foreground">খালি রাখলে শুধু ছবি দেখানো হবে</p>
       </div>
 
       {/* Source Link */}
