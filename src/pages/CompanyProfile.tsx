@@ -16,8 +16,13 @@ const CompanyProfile = () => {
   const { data: company, isLoading } = useQuery({
     queryKey: ["company", id],
     queryFn: async () => {
-      const { data } = await supabase.from("companies").select("*").eq("id", id).single();
-      return data;
+      // Use companies_public view so anonymous visitors don't get sensitive columns (trade_license).
+      const { data } = await supabase
+        .from("companies_public" as any)
+        .select("*")
+        .eq("id", id)
+        .single();
+      return data as any;
     },
     enabled: !!id,
   });
