@@ -108,7 +108,18 @@ const Terms = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <SeoHead title="শর্তাবলী" description="Job লাগবে ওয়েবসাইটের ব্যবহারের শর্তাবলী পড়ুন।" />
+      <SeoHead
+        title="শর্তাবলী"
+        description="Job লাগবে ওয়েবসাইটের ব্যবহারের শর্তাবলী পড়ুন।"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          name: "শর্তাবলী",
+          url: "https://www.joblagbe.bd/terms",
+          inLanguage: "bn",
+          isPartOf: { "@type": "WebSite", name: "Job লাগবে", url: "https://www.joblagbe.bd" },
+        }}
+      />
       <Header />
       <main className="container max-w-3xl py-10 md:py-16">
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
