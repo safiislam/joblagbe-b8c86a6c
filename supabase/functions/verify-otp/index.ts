@@ -5,6 +5,14 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+async function hashOtp(otp: string, phone: string): Promise<string> {
+  const data = new TextEncoder().encode(`${phone}:${otp}`);
+  const buf = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(buf))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -31,12 +39,13 @@ Deno.serve(async (req) => {
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
-    // Find valid OTP
+    // Find valid OTP (stored as a SHA-256 hash of phone:otp)
+    const otpHash = await hashOtp(otp, phone);
     const { data: otpRecord, error: otpError } = await supabase
       .from("phone_otps")
       .select("*")
       .eq("phone", phone)
-      .eq("otp_code", otp)
+      .eq("otp_code", otpHash)
       .eq("is_used", false)
       .gte("expires_at", new Date().toISOString())
       .order("created_at", { ascending: false })
@@ -92,9 +101,12 @@ Deno.serve(async (req) => {
 
       // Update profile phone
       if (newUser?.user) {
-        const updateData: Record<string, string> = { phone };
-        if (nid_number) updateData.nid_number = nid_number;
-        await supabase.from("profiles").update(updateData).eq("user_id", newUser.user.id);
+        await supabase.from("profiles").update({ phone }).eq("user_id", newUser.user.id);
+        if (nid_number) {
+          await supabase
+            .from("profile_sensitive")
+            .upsert({ user_id: newUser.user.id, nid_number }, { onConflict: "user_id" });
+        }
       }
 
       // Sign in the user
