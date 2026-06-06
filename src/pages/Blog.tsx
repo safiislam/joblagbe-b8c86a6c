@@ -31,6 +31,35 @@ const Blog = () => {
       <SeoHead
         title="ক্যারিয়ার টিপস ও ব্লগ"
         description="চাকরির ইন্টারভিউ টিপস, সিভি লেখার কৌশল এবং ক্যারিয়ার গাইডলাইন পড়ুন Job লাগবে ব্লগে।"
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "Blog",
+            name: "Job লাগবে ব্লগ",
+            url: "https://www.joblagbe.bd/blog",
+            description: "চাকরির ইন্টারভিউ টিপস, সিভি লেখার কৌশল এবং ক্যারিয়ার গাইডলাইন।",
+            inLanguage: "bn",
+            ...(posts && posts.length > 0 && {
+              blogPost: posts.slice(0, 20).map((p: any) => ({
+                "@type": "BlogPosting",
+                headline: p.title,
+                url: `https://www.joblagbe.bd/blog/${p.slug}`,
+                datePublished: p.created_at,
+                dateModified: p.updated_at || p.created_at,
+                author: { "@type": "Person", name: p.author_name },
+                ...(p.cover_image_url && { image: p.cover_image_url }),
+              })),
+            }),
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "হোম", item: "https://www.joblagbe.bd/" },
+              { "@type": "ListItem", position: 2, name: "ব্লগ", item: "https://www.joblagbe.bd/blog" },
+            ],
+          },
+        ]}
       />
       <Header />
       <div className="container py-10">
