@@ -19,7 +19,7 @@ const Companies = () => {
         .from("companies_public" as any)
         .select("*")
         .order("name");
-      return data ?? [];
+      return (data ?? []) as any[];
     },
   });
 
