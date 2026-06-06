@@ -462,6 +462,13 @@ export type Database = {
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "jobs_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       notifications: {
@@ -656,13 +663,33 @@ export type Database = {
         }
         Relationships: []
       }
+      profile_sensitive: {
+        Row: {
+          created_at: string
+          nid_number: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          nid_number?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          nid_number?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
           created_at: string
           full_name: string | null
           id: string
-          nid_number: string | null
           phone: string | null
           resume_url: string | null
           role: string
@@ -674,7 +701,6 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id?: string
-          nid_number?: string | null
           phone?: string | null
           resume_url?: string | null
           role?: string
@@ -686,7 +712,6 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id?: string
-          nid_number?: string | null
           phone?: string | null
           resume_url?: string | null
           role?: string
@@ -901,11 +926,59 @@ export type Database = {
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "verification_requests_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
     }
     Views: {
-      [_ in never]: never
+      companies_public: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string | null
+          is_verified: boolean | null
+          location: string | null
+          logo_url: string | null
+          name: string | null
+          phone: string | null
+          updated_at: string | null
+          user_id: string | null
+          website: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          is_verified?: boolean | null
+          location?: string | null
+          logo_url?: string | null
+          name?: string | null
+          phone?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          website?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          is_verified?: boolean | null
+          location?: string | null
+          logo_url?: string | null
+          name?: string | null
+          phone?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       check_rate_limit: {

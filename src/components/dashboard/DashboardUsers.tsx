@@ -38,10 +38,21 @@ const DashboardUsers = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("profiles")
-        .select("id, full_name, role, phone, user_id, created_at, avatar_url, resume_url, nid_number")
+        .select("id, full_name, role, phone, user_id, created_at, avatar_url, resume_url")
         .order("created_at", { ascending: false })
         .limit(500);
-      return (data ?? []) as Profile[];
+      const baseProfiles = (data ?? []) as Omit<Profile, "nid_number">[];
+      // Sensitive NID lives in a restricted table; fetch and merge for admins.
+      const userIds = baseProfiles.map((p) => p.user_id);
+      if (userIds.length === 0) return [] as Profile[];
+      const { data: sensitive } = await supabase
+        .from("profile_sensitive" as any)
+        .select("user_id, nid_number")
+        .in("user_id", userIds);
+      const nidMap = new Map<string, string | null>(
+        ((sensitive ?? []) as any[]).map((s) => [s.user_id, s.nid_number ?? null])
+      );
+      return baseProfiles.map((p) => ({ ...p, nid_number: nidMap.get(p.user_id) ?? null })) as Profile[];
     },
   });
 
