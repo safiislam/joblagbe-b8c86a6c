@@ -5,6 +5,15 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+async function hashOtp(otp: string, phone: string): Promise<string> {
+  // Phone is used as a salt so identical OTPs across users don't collide.
+  const data = new TextEncoder().encode(`${phone}:${otp}`);
+  const buf = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(buf))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -53,9 +62,10 @@ Deno.serve(async (req) => {
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString(); // 5 min expiry
 
     // Store OTP
+    const otpHash = await hashOtp(otp, phone);
     const { error: insertError } = await supabase.from("phone_otps").insert({
       phone,
-      otp_code: otp,
+      otp_code: otpHash,
       expires_at: expiresAt,
     });
 
