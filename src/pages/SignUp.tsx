@@ -94,9 +94,11 @@ const SignUp = () => {
         return;
       }
 
-      // Save NID to profile (best-effort)
+      // Save NID to the restricted sensitive table (best-effort)
       try {
-        await supabase.from("profiles").update({ nid_number: trimmedNid } as any).eq("user_id", data.user.id);
+        await supabase
+          .from("profile_sensitive" as any)
+          .upsert({ user_id: data.user.id, nid_number: trimmedNid } as any, { onConflict: "user_id" });
       } catch (e) {
         console.warn("NID save failed:", e);
       }
