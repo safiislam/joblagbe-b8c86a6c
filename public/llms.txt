@@ -1,0 +1,21 @@
+# Job লাগবে (Job Lagbe)
+
+> Bangladesh's trusted job portal — find government and private sector jobs, career resources, courses, and e-books in Bengali.
+
+Job Lagbe lists thousands of verified job circulars from across Bangladesh. Job seekers can search and apply, employers can post jobs, and the platform offers career-building courses, e-books, and a company directory.
+
+## Pages
+
+- [Home](/): Search jobs, browse categories, latest circulars.
+- [Jobs](/jobs): Full job listings with filters (category, location, type).
+- [Companies](/companies): Directory of hiring employers in Bangladesh.
+- [Blog](/blog): Career advice, interview tips, and job market insights.
+- [Courses](/courses): Skill-building courses for job seekers.
+- [E-books](/ebooks): Downloadable career and exam preparation e-books.
+- [Contact](/contact): Reach the Job Lagbe support team.
+- [Install App](/install): Install the Job Lagbe PWA on mobile/desktop.
+
+## Optional
+
+- [Terms of Service](/terms)
+- [Privacy Policy](/privacy-policy)
