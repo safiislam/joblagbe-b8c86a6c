@@ -101,6 +101,39 @@ const Courses = () => {
       <SeoHead
         title="কোর্স সমূহ — ক্যারিয়ার গড়ার দরকারি কোর্স"
         description="অনলাইন ও অফলাইন কোর্স খুঁজুন। ফ্রিল্যান্সিং, আইটি, ডিজাইন ও আরো অনেক কোর্স Job লাগবে-তে।"
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            name: "কোর্স সমূহ",
+            url: "https://www.joblagbe.bd/courses",
+            inLanguage: "bn",
+            ...(courses && courses.length > 0 && {
+              mainEntity: {
+                "@type": "ItemList",
+                itemListElement: courses.slice(0, 50).map((c: any, i: number) => ({
+                  "@type": "ListItem",
+                  position: i + 1,
+                  item: {
+                    "@type": "Course",
+                    name: c.title,
+                    description: c.description || c.title,
+                    provider: { "@type": "Organization", name: c.provider || "Job লাগবে", sameAs: "https://www.joblagbe.bd" },
+                    ...(c.image_url && { image: c.image_url }),
+                  },
+                })),
+              },
+            }),
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "হোম", item: "https://www.joblagbe.bd/" },
+              { "@type": "ListItem", position: 2, name: "কোর্স", item: "https://www.joblagbe.bd/courses" },
+            ],
+          },
+        ]}
       />
       <Header />
       <div className="container py-10">

@@ -24,6 +24,34 @@ const Companies = () => {
       <SeoHead
         title="কোম্পানি সমূহ"
         description="Job লাগবে-তে নিয়োগদাতা কোম্পানির তালিকা দেখুন। বাংলাদেশের বিশ্বস্ত প্রতিষ্ঠানগুলোতে চাকরি খুঁজুন।"
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            name: "কোম্পানি সমূহ",
+            url: "https://www.joblagbe.bd/companies",
+            inLanguage: "bn",
+            ...(companies && companies.length > 0 && {
+              mainEntity: {
+                "@type": "ItemList",
+                itemListElement: companies.slice(0, 50).map((c: any, i: number) => ({
+                  "@type": "ListItem",
+                  position: i + 1,
+                  url: `https://www.joblagbe.bd/company/${c.id}`,
+                  name: c.name,
+                })),
+              },
+            }),
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "হোম", item: "https://www.joblagbe.bd/" },
+              { "@type": "ListItem", position: 2, name: "কোম্পানি", item: "https://www.joblagbe.bd/companies" },
+            ],
+          },
+        ]}
       />
       <Header />
       <div className="container py-10">

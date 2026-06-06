@@ -329,6 +329,39 @@ const Ebooks = () => {
       <SeoHead
         title="ই-বুক ও বই সমূহ"
         description="ক্যারিয়ার গাইড, চাকরির প্রস্তুতি এবং স্কিল ডেভেলপমেন্ট বই ডাউনলোড করুন Job লাগবে থেকে।"
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            name: "ই-বুক ও বই সমূহ",
+            url: "https://www.joblagbe.bd/ebooks",
+            inLanguage: "bn",
+            ...(ebooks && ebooks.length > 0 && {
+              mainEntity: {
+                "@type": "ItemList",
+                itemListElement: ebooks.slice(0, 50).map((b: any, i: number) => ({
+                  "@type": "ListItem",
+                  position: i + 1,
+                  item: {
+                    "@type": "Book",
+                    name: b.title,
+                    ...(b.author && { author: { "@type": "Person", name: b.author } }),
+                    ...(b.cover_image_url && { image: b.cover_image_url }),
+                    ...(b.description && { description: b.description }),
+                  },
+                })),
+              },
+            }),
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "হোম", item: "https://www.joblagbe.bd/" },
+              { "@type": "ListItem", position: 2, name: "বই", item: "https://www.joblagbe.bd/ebooks" },
+            ],
+          },
+        ]}
       />
       <Header />
       <div className="container py-10">
