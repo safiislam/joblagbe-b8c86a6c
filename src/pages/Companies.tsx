@@ -14,7 +14,11 @@ const Companies = () => {
   const { data: companies, isLoading } = useQuery({
     queryKey: ["all-companies"],
     queryFn: async () => {
-      const { data } = await supabase.from("companies").select("*").order("name");
+      // Read via companies_public view so anonymous visitors don't get sensitive columns (trade_license).
+      const { data } = await supabase
+        .from("companies_public" as any)
+        .select("*")
+        .order("name");
       return data ?? [];
     },
   });
