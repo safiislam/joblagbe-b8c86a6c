@@ -80,7 +80,7 @@ const RoutedShell = () => {
           </div>
         }
       >
-        <div>
+        <main>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
@@ -103,7 +103,7 @@ const RoutedShell = () => {
             <Route path="/contact" element={<Contact />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </div>
+        </main>
         <MobileBottomNav />
         <GlobalOverlays />
       </Suspense>
