@@ -75,6 +75,24 @@ const Contact = () => {
       <SeoHead
         title="যোগাযোগ করুন"
         description="Job লাগবে টিমের সাথে যোগাযোগ করুন। আমরা আপনাকে সাহায্য করতে প্রস্তুত।"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "ContactPage",
+          name: "যোগাযোগ করুন",
+          url: "https://www.joblagbe.bd/contact",
+          inLanguage: "bn",
+          mainEntity: {
+            "@type": "Organization",
+            name: "Job লাগবে",
+            url: "https://www.joblagbe.bd",
+            contactPoint: {
+              "@type": "ContactPoint",
+              contactType: "customer support",
+              availableLanguage: ["Bengali", "English"],
+              areaServed: "BD",
+            },
+          },
+        }}
       />
       <Header />
       <main className="container mx-auto px-4 py-10 max-w-4xl">
