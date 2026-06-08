@@ -948,7 +948,6 @@ export type Database = {
           name: string | null
           phone: string | null
           updated_at: string | null
-          user_id: string | null
           website: string | null
         }
         Insert: {
@@ -961,7 +960,6 @@ export type Database = {
           name?: string | null
           phone?: string | null
           updated_at?: string | null
-          user_id?: string | null
           website?: string | null
         }
         Update: {
@@ -974,7 +972,6 @@ export type Database = {
           name?: string | null
           phone?: string | null
           updated_at?: string | null
-          user_id?: string | null
           website?: string | null
         }
         Relationships: []
