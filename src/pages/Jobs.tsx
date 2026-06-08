@@ -49,7 +49,7 @@ const Jobs = () => {
     queryFn: async () => {
       let query = supabase
         .from("jobs")
-        .select("*, companies(name, logo_url, is_verified), categories(name)", { count: "exact" })
+        .select("*, companies:companies_public(name, logo_url, is_verified), categories(name)", { count: "exact" })
         .eq("is_active", true)
         .eq("is_approved", true)
         .order("created_at", { ascending: false });

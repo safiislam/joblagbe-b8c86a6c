@@ -46,7 +46,7 @@ const JobDetail = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("jobs")
-        .select("*, companies(name, location, logo_url, phone, website, description, is_verified), categories(name)")
+        .select("*, companies:companies_public(name, location, logo_url, phone, website, description, is_verified), categories(name)")
         .eq("id", id!)
         .single();
       if (error) throw error;
@@ -106,7 +106,7 @@ const JobDetail = () => {
     queryFn: async () => {
       let query = supabase
         .from("jobs")
-        .select("id, title, location, job_type, salary_min, salary_max, created_at, tag, companies(name, logo_url, is_verified)")
+        .select("id, title, location, job_type, salary_min, salary_max, created_at, tag, companies:companies_public(name, logo_url, is_verified)")
         .eq("is_active", true)
         .eq("is_approved", true)
         .neq("id", job!.id)
