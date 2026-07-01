@@ -26,7 +26,7 @@ import {
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import MultiLocationInput from "@/components/MultiLocationInput";
 import PaymentDialog from "@/components/PaymentDialog";
-import CircularPostForm from "@/components/CircularPostForm";
+import CircularPostForm, { type CircularJobPayload } from "@/components/CircularPostForm";
 
 type JobPricing = {
   price: number;
@@ -36,6 +36,10 @@ type JobPricing = {
   show_original_price: boolean;
 };
 
+type PendingJobData =
+  | { type: "standard"; companyId: string }
+  | { type: "circular"; companyId: string; payload: CircularJobPayload };
+
 const PostJob = () => {
   const { user, profile, loading: authLoading } = useAuth();
   const navigate = useNavigate();
@@ -43,7 +47,7 @@ const PostJob = () => {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
-  const [pendingJobData, setPendingJobData] = useState<any>(null);
+  const [pendingJobData, setPendingJobData] = useState<PendingJobData | null>(null);
   const [form, setForm] = useState({
     title: "",
     salaryMin: "",
@@ -166,7 +170,32 @@ const PostJob = () => {
       is_approved: false,
       application_deadline: deadline ? deadline.toISOString() : null,
       source_url: form.sourceUrl.trim() || null,
-    } as any);
+    });
+
+    if (error) {
+      toast.error(error.message);
+      return false;
+    }
+    return true;
+  };
+
+  const submitCircularJob = async (payload: CircularJobPayload) => {
+    const { error } = await supabase.from("jobs").insert({
+      company_id: payload.companyId,
+      title: payload.title,
+      location: payload.locations.length > 0 ? payload.locations.join(", ") : "বাংলাদেশ",
+      description: payload.description.trim() || `সার্কুলার বিজ্ঞপ্তি: ${payload.title} — বিস্তারিত তথ্যের জন্য ছবি দেখুন।`,
+      category_id: payload.categoryId || null,
+      application_deadline: payload.deadline ? payload.deadline.toISOString() : null,
+      source_url: payload.sourceUrl.trim() || null,
+      circular_image_url: payload.imageUrl,
+      post_type: "circular",
+      job_type: payload.jobType,
+      salary_min: payload.salaryMin ? parseInt(payload.salaryMin, 10) : null,
+      salary_max: payload.salaryMax ? parseInt(payload.salaryMax, 10) : null,
+      is_approved: false,
+      hide_apply: true,
+    });
 
     if (error) {
       toast.error(error.message);
@@ -206,7 +235,7 @@ const PostJob = () => {
 
     // If not free, show payment dialog
     if (!isFree) {
-      setPendingJobData({ companyId });
+      setPendingJobData({ type: "standard", companyId });
       setShowPayment(true);
       setSubmitting(false);
       return;
@@ -221,7 +250,14 @@ const PostJob = () => {
   const handlePaymentSuccess = async () => {
     if (!pendingJobData?.companyId) return;
     setSubmitting(true);
-    const success = await submitJob(pendingJobData.companyId);
+    let success = false;
+
+    if (pendingJobData.type === "circular") {
+      success = await submitCircularJob(pendingJobData.payload);
+    } else {
+      success = await submitJob(pendingJobData.companyId);
+    }
+
     setSubmitting(false);
     setPendingJobData(null);
     if (success) setSubmitted(true);
@@ -264,7 +300,7 @@ const PostJob = () => {
           </div>
           <h2 className="text-2xl font-bold">Job Submitted for Review!</h2>
           <p className="mt-2 max-w-md text-muted-foreground">
-            Your job posting has been submitted and is pending admin approval. 
+            Your job posting has been submitted and is pending admin approval.
             You'll be notified once it's live on the platform.
           </p>
           <div className="mt-6 flex gap-3">
@@ -513,8 +549,8 @@ const PostJob = () => {
                   onSuccess={() => setSubmitted(true)}
                   isFree={isFree}
                   effectivePrice={effectivePrice}
-                  onPaymentRequired={(data) => {
-                    setPendingJobData(data);
+                  onPaymentRequired={({ companyId, payload }) => {
+                    setPendingJobData({ type: "circular", companyId, payload });
                     setShowPayment(true);
                   }}
                 />
@@ -541,7 +577,7 @@ const PostJob = () => {
         onOpenChange={setShowPayment}
         itemType="job_post"
         itemId={pendingJobData?.companyId}
-        itemTitle={`চাকরি পোস্ট: ${form.title}`}
+        itemTitle={`চাকরি পোস্ট: ${pendingJobData?.type === "circular" ? pendingJobData.payload.title : form.title}`}
         amount={effectivePrice}
         onSuccess={handlePaymentSuccess}
       />

@@ -20,12 +20,26 @@ import {
 } from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
 
+export interface CircularJobPayload {
+  companyId: string;
+  title: string;
+  categoryId: string;
+  sourceUrl: string;
+  locations: string[];
+  deadline?: Date;
+  jobType: string;
+  description: string;
+  salaryMin: string;
+  salaryMax: string;
+  imageUrl: string;
+}
+
 interface CircularPostFormProps {
   companyId: string;
   onSuccess: () => void;
   isFree: boolean;
   effectivePrice: number;
-  onPaymentRequired: (data: { companyId: string }) => void;
+  onPaymentRequired: (data: { companyId: string; payload: CircularJobPayload }) => void;
 }
 
 const CircularPostForm = ({ companyId, onSuccess, isFree, effectivePrice, onPaymentRequired }: CircularPostFormProps) => {
@@ -111,14 +125,29 @@ const CircularPostForm = ({ companyId, onSuccess, isFree, effectivePrice, onPaym
       return;
     }
 
-    if (!isFree) {
-      onPaymentRequired({ companyId });
+    const imageUrl = await uploadImage();
+    if (!imageUrl) {
       setSubmitting(false);
       return;
     }
 
-    const imageUrl = await uploadImage();
-    if (!imageUrl) {
+    if (!isFree) {
+      onPaymentRequired({
+        companyId,
+        payload: {
+          companyId,
+          title: title.trim(),
+          categoryId: categoryId || "",
+          sourceUrl: sourceUrl.trim(),
+          locations,
+          deadline,
+          jobType,
+          description: description.trim(),
+          salaryMin,
+          salaryMax,
+          imageUrl,
+        },
+      });
       setSubmitting(false);
       return;
     }
@@ -138,7 +167,7 @@ const CircularPostForm = ({ companyId, onSuccess, isFree, effectivePrice, onPaym
       salary_max: salaryMax ? parseInt(salaryMax, 10) : null,
       is_approved: false,
       hide_apply: true,
-    } as any);
+    });
 
     setSubmitting(false);
     if (error) {

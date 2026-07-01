@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { format, addDays, addMonths } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -38,6 +38,39 @@ interface EditJobDialogProps {
 
 const EditJobDialog = ({ job, open, onOpenChange, onSuccess }: EditJobDialogProps) => {
   const [loading, setLoading] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("ছবি সর্বোচ্চ 2MB হতে হবে");
+      return;
+    }
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    if (imageInputRef.current) imageInputRef.current.value = "";
+  };
+
+  // const uploadImage = async (): Promise<string | null> => {
+  //   if (!imageFile) return null;
+  //   const ext = imageFile.name.split(".").pop();
+  //   const path = `${companyId}/${Date.now()}.${ext}`;
+  //   const { error } = await supabase.storage.from("circular-images").upload(path, imageFile);
+  //   if (error) {
+  //     toast.error("ছবি আপলোড ব্যর্থ হয়েছে");
+  //     return null;
+  //   }
+  //   return supabase.storage.from("circular-images").getPublicUrl(path).data.publicUrl;
+  // };
+
   const [form, setForm] = useState({
     title: job.title,
     salaryMin: job.salary_min?.toString() ?? "",

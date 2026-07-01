@@ -227,9 +227,9 @@ const JobDetail = () => {
     ...(job.application_deadline && { validThrough: job.application_deadline }),
     employmentType: job.job_type === "Full-time" ? "FULL_TIME"
       : job.job_type === "Part-time" ? "PART_TIME"
-      : job.job_type === "Contract" ? "CONTRACT"
-      : job.job_type === "Internship" ? "INTERN"
-      : "OTHER",
+        : job.job_type === "Contract" ? "CONTRACT"
+          : job.job_type === "Internship" ? "INTERN"
+            : "OTHER",
     hiringOrganization: {
       "@type": "Organization",
       name: company?.name ?? "Unknown",
@@ -458,11 +458,13 @@ const JobDetail = () => {
                 <Badge variant="secondary" className="gap-1.5 px-3 py-1.5">
                   <Clock className="h-3.5 w-3.5" /> {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}
                 </Badge>
-                {(() => { const dt = getJobDisplayTag(job.tag, job.created_at); return dt ? (
-                  <Badge className={`px-3 py-1.5 ${dt === "Urgent" ? "bg-accent/15 text-accent border-accent/20" : "bg-success/15 text-success border-success/20"}`}>
-                    {dt}
-                  </Badge>
-                ) : null; })()}
+                {(() => {
+                  const dt = getJobDisplayTag(job.tag, job.created_at); return dt ? (
+                    <Badge className={`px-3 py-1.5 ${dt === "Urgent" ? "bg-accent/15 text-accent border-accent/20" : "bg-success/15 text-success border-success/20"}`}>
+                      {dt}
+                    </Badge>
+                  ) : null;
+                })()}
                 {category?.name && (
                   <Badge variant="outline" className="px-3 py-1.5">{category.name}</Badge>
                 )}
@@ -529,145 +531,144 @@ const JobDetail = () => {
           {/* Sidebar */}
           <div className="space-y-6">
             {!(job as any).hide_apply && (
-            <div className="rounded-2xl border bg-card p-6 shadow-card sticky top-20">
-              {existingApplication ? (
-                <div className="text-center">
-                  <CheckCircle2 className="mx-auto h-12 w-12 text-primary mb-3" />
-                  <h3 className="font-bold font-bangla text-lg">আবেদন সম্পন্ন</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    আবেদনের তারিখ: {format(new Date(existingApplication.created_at), "dd MMM yyyy")}
-                  </p>
-                  <Badge variant="secondary" className="mt-3 capitalize">{existingApplication.status}</Badge>
-                </div>
-              ) : (
-                <>
-                  <h3 className="font-bold font-bangla text-lg mb-2">এখনই আবেদন করুন</h3>
-                  {(job as any).application_deadline && new Date((job as any).application_deadline) < new Date() ? (
-                    <div className="text-center py-4">
-                      <Clock className="mx-auto h-10 w-10 text-destructive mb-2" />
-                      <p className="font-semibold text-destructive font-bangla">আবেদনের সময়সীমা শেষ</p>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        ডেডলাইন: {format(new Date((job as any).application_deadline), "dd MMM yyyy")}
-                      </p>
-                    </div>
-                  ) : (
+              <div className="rounded-2xl border bg-card p-6 shadow-card sticky top-20">
+                {existingApplication ? (
+                  <div className="text-center">
+                    <CheckCircle2 className="mx-auto h-12 w-12 text-primary mb-3" />
+                    <h3 className="font-bold font-bangla text-lg">আবেদন সম্পন্ন</h3>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      আবেদনের তারিখ: {format(new Date(existingApplication.created_at), "dd MMM yyyy")}
+                    </p>
+                    <Badge variant="secondary" className="mt-3 capitalize">{existingApplication.status}</Badge>
+                  </div>
+                ) : (
                   <>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    এই পদে আবেদন করতে নিচের বাটনে ক্লিক করুন
-                    {(job as any).application_deadline && (
-                      <span className="block mt-1 text-accent font-medium">
-                        ডেডলাইন: {format(new Date((job as any).application_deadline), "dd MMM yyyy")}
-                      </span>
-                    )}
-                  </p>
+                    <h3 className="font-bold font-bangla text-lg mb-2">এখনই আবেদন করুন</h3>
+                    {(job as any).application_deadline && new Date((job as any).application_deadline) < new Date() ? (
+                      <div className="text-center py-4">
+                        <Clock className="mx-auto h-10 w-10 text-destructive mb-2" />
+                        <p className="font-semibold text-destructive font-bangla">আবেদনের সময়সীমা শেষ</p>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          ডেডলাইন: {format(new Date((job as any).application_deadline), "dd MMM yyyy")}
+                        </p>
+                      </div>
+                    ) : (
+                      <>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          এই পদে আবেদন করতে নিচের বাটনে ক্লিক করুন
+                          {(job as any).application_deadline && (
+                            <span className="block mt-1 text-accent font-medium">
+                              ডেডলাইন: {format(new Date((job as any).application_deadline), "dd MMM yyyy")}
+                            </span>
+                          )}
+                        </p>
 
-                  {showApplyForm ? (
-                    <div className="space-y-4">
-                      {/* CV Selection */}
-                      <div>
-                        <label className="text-sm font-medium mb-2 block">সিভি নির্বাচন করুন</label>
-                        
-                        {userDocuments && userDocuments.length > 0 ? (
-                          <div className="space-y-2 mb-3 max-h-48 overflow-y-auto">
-                            {userDocuments.map((doc) => (
-                              <label
-                                key={doc.id}
-                                className={`flex items-center gap-3 rounded-xl border p-3 cursor-pointer transition-colors ${
-                                  selectedDocId === doc.id
-                                    ? "border-primary bg-primary/5"
-                                    : "border-border hover:border-muted-foreground/30"
-                                }`}
-                              >
-                                <input
-                                  type="radio"
-                                  name="cv-select"
-                                  checked={selectedDocId === doc.id}
-                                  onChange={() => setSelectedDocId(doc.id)}
-                                  className="accent-primary"
-                                />
-                                <File className="h-4 w-4 text-muted-foreground shrink-0" />
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-sm font-medium truncate">{doc.file_name}</p>
-                                  <p className="text-xs text-muted-foreground">
-                                    {format(new Date(doc.created_at), "dd MMM yyyy")}
-                                  </p>
+                        {showApplyForm ? (
+                          <div className="space-y-4">
+                            {/* CV Selection */}
+                            <div>
+                              <label className="text-sm font-medium mb-2 block">সিভি নির্বাচন করুন</label>
+
+                              {userDocuments && userDocuments.length > 0 ? (
+                                <div className="space-y-2 mb-3 max-h-48 overflow-y-auto">
+                                  {userDocuments.map((doc) => (
+                                    <label
+                                      key={doc.id}
+                                      className={`flex items-center gap-3 rounded-xl border p-3 cursor-pointer transition-colors ${selectedDocId === doc.id
+                                        ? "border-primary bg-primary/5"
+                                        : "border-border hover:border-muted-foreground/30"
+                                        }`}
+                                    >
+                                      <input
+                                        type="radio"
+                                        name="cv-select"
+                                        checked={selectedDocId === doc.id}
+                                        onChange={() => setSelectedDocId(doc.id)}
+                                        className="accent-primary"
+                                      />
+                                      <File className="h-4 w-4 text-muted-foreground shrink-0" />
+                                      <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium truncate">{doc.file_name}</p>
+                                        <p className="text-xs text-muted-foreground">
+                                          {format(new Date(doc.created_at), "dd MMM yyyy")}
+                                        </p>
+                                      </div>
+                                      {selectedDocId === doc.id && (
+                                        <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
+                                      )}
+                                    </label>
+                                  ))}
                                 </div>
-                                {selectedDocId === doc.id && (
-                                  <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
+                              ) : (
+                                <p className="text-xs text-muted-foreground mb-2">কোনো সিভি আপলোড করা হয়নি</p>
+                              )}
+
+                              <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept=".pdf,.doc,.docx"
+                                onChange={handleFileUpload}
+                                className="hidden"
+                              />
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => fileInputRef.current?.click()}
+                                disabled={uploading}
+                                className="w-full gap-2 rounded-xl"
+                              >
+                                {uploading ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Upload className="h-4 w-4" />
                                 )}
-                              </label>
-                            ))}
+                                {uploading ? "আপলোড হচ্ছে..." : "নতুন সিভি আপলোড করুন"}
+                              </Button>
+                            </div>
+
+                            {/* Cover letter */}
+                            <div>
+                              <label className="text-sm font-medium mb-1.5 block">কভার লেটার (ঐচ্ছিক)</label>
+                              <Textarea
+                                value={coverLetter}
+                                onChange={(e) => setCoverLetter(e.target.value)}
+                                placeholder="আপনার আবেদনের সাথে একটি কভার লেটার যোগ করুন..."
+                                rows={4}
+                                className="resize-none"
+                              />
+                            </div>
+
+                            <div className="flex gap-2">
+                              <Button
+                                onClick={handleApply}
+                                disabled={applying}
+                                className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90 font-semibold rounded-xl"
+                              >
+                                {applying ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <FileText className="h-4 w-4 mr-2" />}
+                                {applying ? "জমা হচ্ছে..." : "আবেদন জমা দিন"}
+                              </Button>
+                              <Button variant="outline" onClick={() => { setShowApplyForm(false); setSelectedDocId(null); }} className="rounded-xl">
+                                বাতিল
+                              </Button>
+                            </div>
                           </div>
                         ) : (
-                          <p className="text-xs text-muted-foreground mb-2">কোনো সিভি আপলোড করা হয়নি</p>
+                          <Button
+                            onClick={() => {
+                              if (!user) { toast.error("আবেদন করতে লগইন করুন"); navigate("/login"); return; }
+                              setShowApplyForm(true);
+                            }}
+                            className="w-full bg-accent text-accent-foreground hover:bg-accent/90 font-semibold rounded-xl py-3 text-base"
+                          >
+                            আবেদন করুন
+                          </Button>
                         )}
-
-                        <input
-                          ref={fileInputRef}
-                          type="file"
-                          accept=".pdf,.doc,.docx"
-                          onChange={handleFileUpload}
-                          className="hidden"
-                        />
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => fileInputRef.current?.click()}
-                          disabled={uploading}
-                          className="w-full gap-2 rounded-xl"
-                        >
-                          {uploading ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <Upload className="h-4 w-4" />
-                          )}
-                          {uploading ? "আপলোড হচ্ছে..." : "নতুন সিভি আপলোড করুন"}
-                        </Button>
-                      </div>
-
-                      {/* Cover letter */}
-                      <div>
-                        <label className="text-sm font-medium mb-1.5 block">কভার লেটার (ঐচ্ছিক)</label>
-                        <Textarea
-                          value={coverLetter}
-                          onChange={(e) => setCoverLetter(e.target.value)}
-                          placeholder="আপনার আবেদনের সাথে একটি কভার লেটার যোগ করুন..."
-                          rows={4}
-                          className="resize-none"
-                        />
-                      </div>
-
-                      <div className="flex gap-2">
-                        <Button
-                          onClick={handleApply}
-                          disabled={applying}
-                          className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90 font-semibold rounded-xl"
-                        >
-                          {applying ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <FileText className="h-4 w-4 mr-2" />}
-                          {applying ? "জমা হচ্ছে..." : "আবেদন জমা দিন"}
-                        </Button>
-                        <Button variant="outline" onClick={() => { setShowApplyForm(false); setSelectedDocId(null); }} className="rounded-xl">
-                          বাতিল
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    <Button
-                      onClick={() => {
-                        if (!user) { toast.error("আবেদন করতে লগইন করুন"); navigate("/login"); return; }
-                        setShowApplyForm(true);
-                      }}
-                      className="w-full bg-accent text-accent-foreground hover:bg-accent/90 font-semibold rounded-xl py-3 text-base"
-                    >
-                      আবেদন করুন
-                    </Button>
-                  )}
+                      </>
+                    )}
                   </>
-                  )}
-                </>
-              )}
-            </div>
+                )}
+              </div>
             )}
 
             <div className="rounded-2xl border bg-card p-6 shadow-card">
