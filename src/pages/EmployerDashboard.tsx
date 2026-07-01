@@ -105,10 +105,10 @@ const EmployerDashboard = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
-   const [applicantSearch, setApplicantSearch] = useState("");
-   const [applicantStatusFilter, setApplicantStatusFilter] = useState("all");
-   const [requestingVerify, setRequestingVerify] = useState(false);
-   const [editingJob, setEditingJob] = useState<EmployerJob | null>(null);
+  const [applicantSearch, setApplicantSearch] = useState("");
+  const [applicantStatusFilter, setApplicantStatusFilter] = useState("all");
+  const [requestingVerify, setRequestingVerify] = useState(false);
+  const [editingJob, setEditingJob] = useState<EmployerJob | null>(null);
   useEffect(() => {
     if (!loading && (!user || profile?.role !== "employer")) navigate("/");
   }, [user, profile, loading, navigate]);
@@ -345,8 +345,8 @@ const EmployerDashboard = () => {
                       {verificationStatus?.status === "pending"
                         ? "আপনার অনুরোধ পর্যালোচনা করা হচ্ছে"
                         : verificationStatus?.status === "rejected"
-                        ? "আপনার অনুরোধ প্রত্যাখ্যান করা হয়েছে, পুনরায় চেষ্টা করুন"
-                        : "ভেরিফাই ব্যাজ পেতে আবেদন করুন"}
+                          ? "আপনার অনুরোধ প্রত্যাখ্যান করা হয়েছে, পুনরায় চেষ্টা করুন"
+                          : "ভেরিফাই ব্যাজ পেতে আবেদন করুন"}
                     </p>
                   </div>
                 </div>
@@ -505,9 +505,9 @@ const EmployerDashboard = () => {
                             </div>
                             <Badge variant="outline" className={
                               app.status === "accepted" ? "border-success text-success" :
-                              app.status === "rejected" ? "border-destructive text-destructive" :
-                              app.status === "shortlisted" ? "border-primary text-primary" :
-                              "border-accent text-accent"
+                                app.status === "rejected" ? "border-destructive text-destructive" :
+                                  app.status === "shortlisted" ? "border-primary text-primary" :
+                                    "border-accent text-accent"
                             }>{app.status}</Badge>
                           </div>
                           {app.cover_letter && <p className="mt-2 text-sm text-muted-foreground bg-secondary/50 rounded-xl p-3 whitespace-pre-wrap">{app.cover_letter}</p>}
@@ -578,6 +578,7 @@ const EmployerDashboard = () => {
           job={editingJob}
           open={!!editingJob}
           onOpenChange={(open) => { if (!open) setEditingJob(null); }}
+          companyId={company.id}
           onSuccess={() => {
             setEditingJob(null);
             queryClient.invalidateQueries({ queryKey: ["employer-jobs", company?.id] });

@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { format, addDays, addMonths } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { CalendarIcon, Loader2 } from "lucide-react";
+import { CalendarIcon, ImagePlus, Loader2, X } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
@@ -30,17 +30,30 @@ interface EditJobDialogProps {
     category_id: string | null;
     application_deadline: string | null;
     source_url?: string | null;
+    circular_image_url?: string | null;
+    post_type?: string | null;
   };
+  companyId: string
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
 }
 
-const EditJobDialog = ({ job, open, onOpenChange, onSuccess }: EditJobDialogProps) => {
+const EditJobDialog = ({ job, open, onOpenChange, onSuccess, companyId }: EditJobDialogProps) => {
   const [loading, setLoading] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(job.circular_image_url ?? null);
+  const [imageRemoved, setImageRemoved] = useState(false);
   const imageInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setImageFile(null);
+    setImagePreview(job.circular_image_url ?? null);
+    setImageRemoved(false);
+    if (imageInputRef.current) {
+      imageInputRef.current.value = "";
+    }
+  }, [job.id, job.circular_image_url]);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -51,25 +64,31 @@ const EditJobDialog = ({ job, open, onOpenChange, onSuccess }: EditJobDialogProp
     }
     setImageFile(file);
     setImagePreview(URL.createObjectURL(file));
+    setImageRemoved(false);
   };
 
   const removeImage = () => {
     setImageFile(null);
+    setImageRemoved(true);
     setImagePreview(null);
     if (imageInputRef.current) imageInputRef.current.value = "";
   };
 
-  // const uploadImage = async (): Promise<string | null> => {
-  //   if (!imageFile) return null;
-  //   const ext = imageFile.name.split(".").pop();
-  //   const path = `${companyId}/${Date.now()}.${ext}`;
-  //   const { error } = await supabase.storage.from("circular-images").upload(path, imageFile);
-  //   if (error) {
-  //     toast.error("ছবি আপলোড ব্যর্থ হয়েছে");
-  //     return null;
-  //   }
-  //   return supabase.storage.from("circular-images").getPublicUrl(path).data.publicUrl;
-  // };
+  const uploadImage = async (): Promise<string | null> => {
+    if (!imageFile) return null;
+    const ext = imageFile.name.split(".").pop() || "jpg";
+    const path = `${companyId}/${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("circular-images").upload(path, imageFile, {
+      cacheControl: "3600",
+      upsert: true,
+    });
+    console.log(error)
+    if (error) {
+      toast.error("ছবি আপলোড ব্যর্থ হয়েছে");
+      return null;
+    }
+    return supabase.storage.from("circular-images").getPublicUrl(path).data.publicUrl;
+  };
 
   const [form, setForm] = useState({
     title: job.title,
@@ -107,6 +126,18 @@ const EditJobDialog = ({ job, open, onOpenChange, onSuccess }: EditJobDialogProp
     }
     setLoading(true);
 
+    let circularImageUrl = job.circular_image_url ?? null;
+    if (imageRemoved) {
+      circularImageUrl = null;
+    } else if (imageFile) {
+      const uploadedUrl = await uploadImage();
+      if (!uploadedUrl) {
+        setLoading(false);
+        return;
+      }
+      circularImageUrl = uploadedUrl;
+    }
+
     const { error } = await supabase
       .from("jobs")
       .update({
@@ -119,9 +150,10 @@ const EditJobDialog = ({ job, open, onOpenChange, onSuccess }: EditJobDialogProp
         description: form.description,
         requirements: form.requirements.split("\n").filter(Boolean),
         application_deadline: deadline ? deadline.toISOString() : null,
+        circular_image_url: circularImageUrl,
         is_approved: false,
         source_url: form.sourceUrl.trim() || null,
-      } as any)
+      })
       .eq("id", job.id);
 
     setLoading(false);
@@ -134,8 +166,20 @@ const EditJobDialog = ({ job, open, onOpenChange, onSuccess }: EditJobDialogProp
     }
   };
 
+  const handleDialogOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) {
+      setImageFile(null);
+      setImagePreview(job.circular_image_url ?? null);
+      setImageRemoved(false);
+      if (imageInputRef.current) {
+        imageInputRef.current.value = "";
+      }
+    }
+    onOpenChange(nextOpen);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleDialogOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>চাকরি সম্পাদনা করুন</DialogTitle>
@@ -217,6 +261,45 @@ const EditJobDialog = ({ job, open, onOpenChange, onSuccess }: EditJobDialogProp
             <Label>Requirements (one per line)</Label>
             <Textarea value={form.requirements} onChange={(e) => setForm({ ...form, requirements: e.target.value })} rows={4} className="mt-1.5 rounded-xl" />
           </div>
+          {job.post_type === "circular" && (
+            <div>
+              <Label className="text-base font-semibold">সার্কুলার ছবি (ঐচ্ছিক)</Label>
+              <p className="mt-1 text-xs text-muted-foreground">নতুন ছবি আপলোড করলে এটি আপডেট হবে। প্রিভিউ দেখুন এবং বাতিল করতে ×-এ ক্লিক করুন।</p>
+              {imagePreview ? (
+                <div className="relative mt-2 overflow-hidden rounded-xl border bg-secondary/30">
+                  <img src={imagePreview} alt="Circular preview" className="max-h-80 w-full object-contain" />
+                  <div className="absolute right-2 top-2 flex gap-2">
+                    <Button type="button" variant="outline" size="sm" className="rounded-full bg-background/90" onClick={() => imageInputRef.current?.click()}>
+                      Replace
+                    </Button>
+                    <Button type="button" variant="destructive" size="icon" className="h-8 w-8 rounded-full" onClick={removeImage}>
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => imageInputRef.current?.click()}
+                  className="mt-2 flex h-40 w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-muted-foreground/30 transition-colors hover:border-primary/50 hover:bg-primary/5"
+                >
+                  <ImagePlus className="h-8 w-8 text-muted-foreground/50" />
+                  <span className="text-sm text-muted-foreground">ক্লিক করে ছবি আপলোড করুন</span>
+                </button>
+              )}
+              <input ref={imageInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageSelect} />
+              <div className="mt-2 flex flex-wrap gap-2">
+                <Button type="button" variant="outline" size="sm" onClick={() => imageInputRef.current?.click()}>
+                  ছবি নির্বাচন করুন
+                </Button>
+                {imagePreview && (
+                  <Button type="button" variant="ghost" size="sm" onClick={removeImage}>
+                    বাতিল / মুছুন
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
           <div>
             <Label>Source Link (ঐচ্ছিক)</Label>
             <Input value={form.sourceUrl} onChange={(e) => setForm({ ...form, sourceUrl: e.target.value })} placeholder="e.g. https://original-job-post.com/apply" className="mt-1.5 rounded-xl" />
