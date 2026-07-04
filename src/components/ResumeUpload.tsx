@@ -109,8 +109,6 @@ const ResumeUpload = () => {
   const getFileUrl = (doc: DocumentRow) => {
     return signedUrls[doc.id] || "#";
   };
-  console.log(resumes)
-  console.log(signedUrls)
 
   return (
     <div className="space-y-4">

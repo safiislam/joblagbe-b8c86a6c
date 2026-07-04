@@ -285,7 +285,6 @@ const EmployerDashboard = () => {
       }));
     },
   });
-  console.log(applicants)
 
   const updateStatus = useMutation({
     mutationFn: async ({ appId, status, seekerUserId }: { appId: string; status: string; seekerUserId: string }) => {
