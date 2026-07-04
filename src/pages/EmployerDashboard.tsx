@@ -99,6 +99,14 @@ const CompanyEditForm = ({ company, queryClient }: { company: any; queryClient: 
     </div>
   );
 };
+type DocumentRow = {
+  id: string;
+  file_url: string;
+  file_name: string;
+  file_type: string;
+  created_at: string;
+};
+
 
 const EmployerDashboard = () => {
   const { user, profile, loading } = useAuth();
@@ -179,33 +187,105 @@ const EmployerDashboard = () => {
 
   const { data: applicants } = useQuery({
     queryKey: ["job-applicants", selectedJobId],
+    enabled: !!selectedJobId,
     queryFn: async () => {
-      const { data } = await supabase
+      // Applications
+      const { data: applications, error } = await supabase
         .from("applications")
-        .select("id, status, created_at, cover_letter, user_id, resume_doc_id")
+        .select(
+          "id, status, created_at, cover_letter, user_id, resume_doc_id"
+        )
         .eq("job_id", selectedJobId!);
-      if (!data || data.length === 0) return [];
-      const userIds = data.map(a => a.user_id);
-      const { data: profiles } = await supabase.from("profiles").select("user_id, full_name, phone").in("user_id", userIds);
-      const profileMap: Record<string, { full_name: string | null; phone: string | null }> = {};
-      profiles?.forEach(p => { profileMap[p.user_id] = { full_name: p.full_name, phone: p.phone }; });
 
-      // Fetch the actual resume documents linked to each application
-      const docIds = data.map(a => (a as any).resume_doc_id).filter(Boolean);
-      let docMap: Record<string, { file_url: string; file_name: string }> = {};
-      if (docIds.length > 0) {
-        const { data: docs } = await supabase.from("seeker_documents").select("id, file_url, file_name").in("id", docIds);
-        docs?.forEach(d => { docMap[d.id] = { file_url: d.file_url, file_name: d.file_name }; });
+      if (error) throw error;
+
+      if (!applications?.length) return [];
+
+      // Profiles
+      const userIds = [...new Set(applications.map((a) => a.user_id))];
+
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("user_id, full_name, phone")
+        .in("user_id", userIds);
+
+      const profileMap: Record<
+        string,
+        { full_name: string | null; phone: string | null }
+      > = {};
+
+      profiles?.forEach((p) => {
+        profileMap[p.user_id] = {
+          full_name: p.full_name,
+          phone: p.phone,
+        };
+      });
+
+      // Resume documents selected in application
+      const resumeIds = applications
+        .map((a) => a.resume_doc_id)
+        .filter(Boolean);
+
+      const docMap: Record<
+        string,
+        { file_url: string; file_name: string }
+      > = {};
+
+      if (resumeIds.length) {
+        const { data: docs } = await supabase
+          .from("seeker_documents")
+          .select("id, file_url, file_name")
+          .in("id", resumeIds);
+
+        docs?.forEach((doc) => {
+          docMap[doc.id] = {
+            file_url: doc.file_url,
+            file_name: doc.file_name,
+          };
+        });
       }
 
-      return data.map(a => ({
-        ...a,
-        profiles: profileMap[a.user_id] || { full_name: null, phone: null },
-        resume_doc: docMap[(a as any).resume_doc_id] || null,
-      })) as ApplicationRow[];
+      // Fallback documents (latest document for users whose resume_doc_id is null)
+      const usersWithoutResume = applications
+        .filter((a) => !a.resume_doc_id)
+        .map((a) => a.user_id);
+
+      const fallbackDocMap: Record<
+        string,
+        { file_url: string; file_name: string }
+      > = {};
+
+      if (usersWithoutResume.length) {
+        const { data: fallbackDocs } = await supabase
+          .from("seeker_documents")
+          .select("id, user_id, file_url, file_name, created_at")
+          .in("user_id", usersWithoutResume)
+          .order("created_at", { ascending: false });
+
+        // Keep only latest document per user
+        fallbackDocs?.forEach((doc) => {
+          if (!fallbackDocMap[doc.user_id]) {
+            fallbackDocMap[doc.user_id] = {
+              file_url: doc.file_url,
+              file_name: doc.file_name,
+            };
+          }
+        });
+      }
+
+      return applications.map((app) => ({
+        ...app,
+        profiles: profileMap[app.user_id] || {
+          full_name: null,
+          phone: null,
+        },
+        resume_doc: app.resume_doc_id
+          ? docMap[app.resume_doc_id] || null
+          : fallbackDocMap[app.user_id] || null,
+      }));
     },
-    enabled: !!selectedJobId,
   });
+  console.log(applicants)
 
   const updateStatus = useMutation({
     mutationFn: async ({ appId, status, seekerUserId }: { appId: string; status: string; seekerUserId: string }) => {

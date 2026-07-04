@@ -185,6 +185,7 @@ const JobDetail = () => {
       const { error } = await supabase.from("applications").insert({
         job_id: id!,
         user_id: user.id,
+        resume_doc_id: selectedDoc.id,
         cover_letter: (coverLetter.trim() + resumeInfo) || null,
       });
 
